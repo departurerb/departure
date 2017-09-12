@@ -40,7 +40,8 @@ module ActiveRecord
 
   module ConnectionAdapters
     class DepartureAdapter < AbstractMysqlAdapter
-      class Column < AbstractMysqlAdapter::Column
+
+      class Column < ActiveRecord::ConnectionAdapters::MySQL::Column
         def adapter
           DepartureAdapter
         end
@@ -53,9 +54,9 @@ module ActiveRecord
       def_delegators :mysql_adapter, :last_inserted_id, :each_hash, :set_field_encoding
 
       def initialize(connection, _logger, connection_options, _config)
+        @mysql_adapter = connection_options[:mysql_adapter]
         super
         @prepared_statements = false
-        @mysql_adapter = connection_options[:mysql_adapter]
       end
 
       def exec_delete(sql, name, binds)
@@ -75,8 +76,9 @@ module ActiveRecord
 
       # Executes a SELECT query and returns an array of rows. Each row is an
       # array of field values.
-      def select_rows(sql, name = nil)
-        execute(sql, name).to_a
+
+      def select_rows(arel, name = nil, binds = [])
+        select_all(arel, name, binds).rows
       end
 
       # Executes a SELECT query and returns an array of record hashes with the
@@ -90,9 +92,11 @@ module ActiveRecord
         true
       end
 
-      def new_column(field, default, cast_type, sql_type = nil, null = true, collation = '', extra = '') # rubocop:disable Metrics/ParameterLists, Metrics/LineLength
-        Column.new(field, default, cast_type, sql_type, null, collation, strict_mode?, extra)
+      # rubocop:disable Metrics/ParameterLists
+      def new_column(field, default, type_metadata, null, table_name, default_function, collation, comment)
+        Column.new(field, default, type_metadata, null, table_name, default_function, collation, comment)
       end
+      # rubocop:enable Metrics/ParameterLists
 
       # Adds a new index to the table
       #

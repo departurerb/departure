@@ -1,4 +1,4 @@
-class CreateIndexOnComments < ActiveRecord::Migration
+class CreateIndexOnComments < ActiveRecord::Migration[5.0]
   def change
     add_index :comments, :some_id_field
   end

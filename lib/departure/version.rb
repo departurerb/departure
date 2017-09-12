@@ -1,3 +1,3 @@
 module Departure
-  VERSION = '4.0.1'.freeze
+  VERSION = '5.0.1'.freeze
 end

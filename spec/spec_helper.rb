@@ -1,3 +1,4 @@
+require 'bundler'
 require 'simplecov'
 SimpleCov.start
 

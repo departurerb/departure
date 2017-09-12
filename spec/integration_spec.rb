@@ -16,21 +16,6 @@ describe Departure, integration: true do
   end
 
   describe 'logging' do
-    context 'when the migration logging is enabled' do
-      around(:each) do |example|
-        original_verbose = ActiveRecord::Migration.verbose
-        ActiveRecord::Migration.verbose = true
-        example.run
-        ActiveRecord::Migration.verbose = original_verbose
-      end
-
-      it 'sends the output to the stdout' do
-        expect do
-          ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
-        end.to output.to_stdout
-      end
-    end
-
     context 'when the migration logging is disabled' do
       around(:each) do |example|
         original_verbose = ActiveRecord::Migration.verbose
@@ -43,6 +28,21 @@ describe Departure, integration: true do
         expect do
           ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
         end.to_not output.to_stdout
+      end
+    end
+
+    context 'when the migration logging is enabled' do
+      around(:each) do |example|
+        original_verbose = ActiveRecord::Migration.verbose
+        ActiveRecord::Migration.verbose = true
+        example.run
+        ActiveRecord::Migration.verbose = original_verbose
+      end
+
+      it 'sends the output to the stdout' do
+        expect do
+          ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
+        end.to output.to_stdout
       end
     end
   end
@@ -206,11 +206,11 @@ describe Departure, integration: true do
       it 'does not allow to migrate' do
         expect do
           ClimateControl.modify PERCONA_ARGS: '--arg=foo' do
-            Departure.load
             ActiveRecord::Migrator.migrate(migrations_paths, 1)
           end
+        end.to raise_error do |exception|
+          ( exception.cause == Departure::ArgumentsNotSupported ) && ( excepton.to_s =~ /Unknown option: arg/ )
         end
-          .to raise_error(Departure::ArgumentsNotSupported)
       end
     end
   end

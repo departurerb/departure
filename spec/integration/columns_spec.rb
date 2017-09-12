@@ -73,7 +73,7 @@ describe Departure, integration: true do
           :comments,
           :some_id_field,
           :integer,
-          { limit: 11, default: nil }
+          { limit: 8, default: nil }
         )
       end
 

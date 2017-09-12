@@ -1,4 +1,4 @@
-class DataMigrationWithQuestionMarkInterpolation < ActiveRecord::Migration
+class DataMigrationWithQuestionMarkInterpolation < ActiveRecord::Migration[5.0]
   class Comment < ActiveRecord::Base; end
 
   def up

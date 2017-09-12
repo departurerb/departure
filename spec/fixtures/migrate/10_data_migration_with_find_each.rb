@@ -1,4 +1,4 @@
-class DataMigrationWithFindEach < ActiveRecord::Migration
+class DataMigrationWithFindEach < ActiveRecord::Migration[5.0]
   class Comment < ActiveRecord::Base; end
 
   def up

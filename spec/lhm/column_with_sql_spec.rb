@@ -86,6 +86,14 @@ describe Lhm::ColumnWithSql do
       context 'with limit' do
         subject { column.attributes[1] }
 
+        # ActiveRecord 5.1.x special cases tinyint(1) to be Type::Boolean with
+        # no limit specified in abstract AbstractMysqlAdapter. Perhaps this is
+        # a bug and it should do:
+        #
+        # m.register_type %r(^tinyint\(1\))i, Type::Boolean.new(limit: 1) if emulate_booleans
+        #
+        # But until that changes, this test will return nil for a limit instead
+        # of 1, as it did previously.
         let(:definition) { 'TINYINT(1)' }
         its([:limit]) { is_expected.to eq(1) }
       end

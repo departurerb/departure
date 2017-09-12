@@ -1,4 +1,4 @@
-class CreateThings < ActiveRecord::Migration
+class CreateThings < ActiveRecord::Migration[5.0]
   def up
     create_table :things do |t|
       t.datetime :created_at, null: false

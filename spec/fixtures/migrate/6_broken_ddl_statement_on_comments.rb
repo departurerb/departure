@@ -1,4 +1,4 @@
-class BrokenDdlStatementOnComments < ActiveRecord::Migration
+class BrokenDdlStatementOnComments < ActiveRecord::Migration[5.0]
   def up
     Lhm.change_table :comments, { stride: 5000, throttle: 150 } do |c|
       c.ddl('bla bla bla')

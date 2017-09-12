@@ -57,7 +57,6 @@ module Lhm
         name,
         default_value,
         cast_type,
-        definition,
         null_value
       )
     end

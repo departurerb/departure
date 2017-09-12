@@ -44,7 +44,11 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
     described_class.new(runner, logger, connection_options, config)
   end
 
+  let(:mysql_client) { double(:mysql_client) }
+
   before do
+    allow(mysql_client).to receive(:server_info).and_return({version: '5.7.19'})
+    allow(mysql_adapter).to receive(:raw_connection).and_return(mysql_client)
     allow(runner).to(
       receive(:execute).with('percona command').and_return(true)
     )
@@ -67,10 +71,13 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
     let(:type) { double(:type) }
     let(:null) { double(:null) }
     let(:collation) { double(:collation) }
+    let(:table_name) { double(:table_name) }
+    let(:default_function) { double(:default_function) }
+    let(:comment) { double(:comment) }
 
     it do
       expect(ActiveRecord::ConnectionAdapters::DepartureAdapter::Column).to receive(:new)
-      adapter.new_column(field, default, type, null, collation)
+      adapter.new_column(field, default, type, null, table_name, default_function, collation, comment)
     end
   end
 
@@ -202,7 +209,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
 
     let(:array_of_rows) { [%w[1 body], %w[2 body]] }
     let(:mysql2_result) do
-      instance_double(Mysql2::Result, to_a: array_of_rows)
+      instance_double(Mysql2::Result, to_a: array_of_rows, fields: [:id, :body])
     end
 
     before do

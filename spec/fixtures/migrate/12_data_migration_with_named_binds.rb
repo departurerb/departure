@@ -1,4 +1,4 @@
-class DataMigrationWithNamedBinds < ActiveRecord::Migration[5.0]
+class DataMigrationWithNamedBinds < ActiveRecord::Migration[5.1]
   class Comment < ActiveRecord::Base; end
 
   def up

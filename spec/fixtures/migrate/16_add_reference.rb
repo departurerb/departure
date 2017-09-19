@@ -1,4 +1,4 @@
-class AddReference < ActiveRecord::Migration[5.0]
+class AddReference < ActiveRecord::Migration[5.1]
   def change
     add_reference(:comments, :user)
   end

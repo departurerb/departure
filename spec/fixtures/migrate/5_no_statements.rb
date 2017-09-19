@@ -1,4 +1,4 @@
-class NoStatements < ActiveRecord::Migration[5.0]
+class NoStatements < ActiveRecord::Migration[5.1]
   def up
     Lhm.change_table :comments, { stride: 5000, throttle: 150 } do |c|
     end

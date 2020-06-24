@@ -33,6 +33,22 @@ module Departure
   # Hooks Percona Migrator into Rails migrations by replacing the configured
   # database adapter
   def self.load
+    ActiveRecord::Migration.instance_eval do
+      def migrate_offline
+        self.class_eval do
+          def migrate(direction)
+            reconnect_with_default
+
+            original_migrate(direction)
+          end
+
+          def reconnect_with_default
+            Departure::ConnectionBase.establish_connection
+          end
+        end
+      end
+    end
+
     ActiveRecord::Migration.class_eval do
       alias_method :original_migrate, :migrate
 

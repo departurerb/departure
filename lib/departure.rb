@@ -37,15 +37,19 @@ module Departure
       def migrate_offline
         self.class_eval do
           def migrate(direction)
-            reconnect_with_mysql2
+            reconnect_with_mysql2 unless connected_with_mysql2?
 
             original_migrate(direction)
           end
 
           def reconnect_with_mysql2
             connection_config = ActiveRecord::Base
-              .connection_config.merge(adapter: "mysql2")
+              .connection_config.merge(adapter: 'mysql2')
             ActiveRecord::Base.establish_connection(connection_config)
+          end
+
+          def connected_with_mysql2?
+            ActiveRecord::Base.connection.adapter_name.downcase == 'mysql2'
           end
         end
       end

@@ -105,17 +105,20 @@ describe Departure, integration: true do
         ActiveRecord::Migrator.new(direction, migration_fixtures, ActiveRecord::SchemaMigration, 1).migrate
       end
     end
-
     context 'when migrate_offline is called' do
       before do
+        connection_config = {
+            'default_env' => {
+              'adapter' => 'mysql2',
+              'host' => db_config['hostname'],
+              'username' => db_config['username'],
+              'password' => db_config['password'],
+              'database' => db_config['database'],
+            }
+        }
+
+        ActiveRecord::Base.configurations = connection_config
         Departure.load
-        ActiveRecord::Base.establish_connection(
-            adapter: 'mysql2',
-            host: db_config['hostname'],
-            username: db_config['username'],
-            password: db_config['password'],
-            database: db_config['database']
-        )
       end
 
       let(:version) { 29 }

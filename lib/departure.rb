@@ -49,34 +49,35 @@ module Departure
       #
       # @param direction [Symbol] :up or :down
       def migrate(direction)
-        if try :migrate_offline?
-          reconnect_with_mysql2 unless connected_with_mysql2?
-        else
-          reconnect_with_percona
-          include_foreigner if defined?(Foreigner)
-          ::Lhm.migration = self
-        end
+        establish_adapter_connection
 
         original_migrate(direction)
       end
 
-      def reconnect_with_mysql2
-        connection_config = ActiveRecord::Base
-                                .connection_config.merge(adapter: 'mysql2')
-        ActiveRecord::Base.establish_connection(connection_config)
+      def establish_adapter_connection
+        try(:migrate_offline?) ? use_mysql2_adapter : use_percona_adapter
       end
+    end
 
-      def connected_with_mysql2?
-        ActiveRecord::Base.connection.adapter_name.downcase == 'mysql2'
-      end
+    add_percona_helpers
+    add_mysql2_helpers
+  end
 
+  def self.add_percona_helpers
+    ActiveRecord::Migration.class_eval do
       # Includes the Foreigner's Mysql2Adapter implemention in
       # DepartureAdapter to support foreign keys
       def include_foreigner
         Foreigner::Adapter.safe_include(
-          :DepartureAdapter,
-          Foreigner::ConnectionAdapters::Mysql2Adapter
+            :DepartureAdapter,
+            Foreigner::ConnectionAdapters::Mysql2Adapter
         )
+      end
+
+      def use_percona_adapter
+        reconnect_with_percona
+        include_foreigner if defined?(Foreigner)
+        ::Lhm.migration = self
       end
 
       # Make all connections in the connection pool to use PerconaAdapter
@@ -85,6 +86,27 @@ module Departure
         connection_config = ActiveRecord::Base
           .connection_config.merge(adapter: 'percona')
         Departure::ConnectionBase.establish_connection(connection_config)
+      end
+
+    end
+  end
+
+  def self.add_mysql2_helpers
+    ActiveRecord::Migration.class_eval do
+      def use_mysql2_adapter
+        reconnect_with_mysql2 unless connected_with_mysql2?
+      end
+
+      # Make all connections in the connection pool to use Mysql2 adapter
+      # instead of the percona adapter.
+      def reconnect_with_mysql2
+        connection_config = ActiveRecord::Base
+          .connection_config.merge(adapter: 'mysql2')
+        ActiveRecord::Base.establish_connection(connection_config)
+      end
+
+      def connected_with_mysql2?
+        ActiveRecord::Base.connection.adapter_name.downcase == 'mysql2'
       end
     end
   end

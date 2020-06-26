@@ -33,41 +33,41 @@ module Departure
   # Hooks Percona Migrator into Rails migrations by replacing the configured
   # database adapter
   def self.load
-    ActiveRecord::Migration.instance_eval do
-      def migrate_offline
-        self.class_eval do
-          def migrate(direction)
-            reconnect_with_mysql2 unless connected_with_mysql2?
+    ActiveRecord::Migration.class_eval do
+      alias_method :original_migrate, :migrate
 
-            original_migrate(direction)
-          end
-
-          def reconnect_with_mysql2
-            connection_config = ActiveRecord::Base
-              .connection_config.merge(adapter: 'mysql2')
-            ActiveRecord::Base.establish_connection(connection_config)
-          end
-
-          def connected_with_mysql2?
-            ActiveRecord::Base.connection.adapter_name.downcase == 'mysql2'
+      def self.migrate_offline
+        class_eval do
+          def migrate_offline?
+            true
           end
         end
       end
-    end
-
-    ActiveRecord::Migration.class_eval do
-      alias_method :original_migrate, :migrate
 
       # Replaces the current connection adapter with the PerconaAdapter and
       # patches LHM, then it continues with the regular migration process.
       #
       # @param direction [Symbol] :up or :down
       def migrate(direction)
-        reconnect_with_percona
-        include_foreigner if defined?(Foreigner)
+        if try :migrate_offline?
+          reconnect_with_mysql2 unless connected_with_mysql2?
+        else
+          reconnect_with_percona
+          include_foreigner if defined?(Foreigner)
+          ::Lhm.migration = self
+        end
 
-        ::Lhm.migration = self
         original_migrate(direction)
+      end
+
+      def reconnect_with_mysql2
+        connection_config = ActiveRecord::Base
+                                .connection_config.merge(adapter: 'mysql2')
+        ActiveRecord::Base.establish_connection(connection_config)
+      end
+
+      def connected_with_mysql2?
+        ActiveRecord::Base.connection.adapter_name.downcase == 'mysql2'
       end
 
       # Includes the Foreigner's Mysql2Adapter implemention in

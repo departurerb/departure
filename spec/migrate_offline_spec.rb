@@ -2,25 +2,27 @@ require 'spec_helper'
 
 describe Departure, integration: true do
   let(:db_config) { Configuration.new }
+  let(:migration_paths) { [MIGRATION_FIXTURES] }
   let(:direction) { :up }
+  let(:connection_config) do
+    {
+      'default_env' => {
+        'adapter' => 'mysql2',
+        'host' => db_config['hostname'],
+        'username' => db_config['username'],
+        'password' => db_config['password'],
+        'database' => db_config['database'],
+      }
+    }
+  end
+
   Departure.load
 
   context 'when migrate_offline is called' do
     before do
-      connection_config = {
-          'default_env' => {
-              'adapter' => 'mysql2',
-              'host' => db_config['hostname'],
-              'username' => db_config['username'],
-              'password' => db_config['password'],
-              'database' => db_config['database'],
-          }
-      }
-
       ActiveRecord::Base.configurations = connection_config
     end
 
-    let(:migration_paths) { [MIGRATION_FIXTURES] }
 
     it 'runs with the mysql2 adapter' do
       ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, 29)

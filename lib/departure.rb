@@ -69,8 +69,8 @@ module Departure
       # DepartureAdapter to support foreign keys
       def include_foreigner
         Foreigner::Adapter.safe_include(
-            :DepartureAdapter,
-            Foreigner::ConnectionAdapters::Mysql2Adapter
+          :DepartureAdapter,
+          Foreigner::ConnectionAdapters::Mysql2Adapter
         )
       end
 
@@ -87,7 +87,6 @@ module Departure
           .connection_config.merge(adapter: 'percona')
         Departure::ConnectionBase.establish_connection(connection_config)
       end
-
     end
   end
 

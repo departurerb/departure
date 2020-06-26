@@ -170,6 +170,22 @@ When any errors occur, an `ActiveRecord::StatementInvalid` exception is
 raised and the migration is aborted, as all other ActiveRecord connection
 adapters.
 
+### Running Migrations Without Percona
+
+To run a migration without the percona adapter simply include `migrate_offline` in the migration file.
+
+```ruby
+class AddViewCountToComments < ActiveRecord::Migration
+  migrate_offline
+
+  def change
+    change_table :comments do |t|
+      t.column :view_count, :integer
+    end
+  end
+end
+```
+
 ## Trouleshooting
 
 ### Error creating new table: DBD::mysql::db do failed: Can't write; duplicate key in table (TABLE_NAME)

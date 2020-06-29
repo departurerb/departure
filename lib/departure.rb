@@ -101,7 +101,7 @@ module Departure
       def reconnect_with_mysql2
         connection_config = ActiveRecord::Base
           .connection_config.merge(adapter: 'mysql2')
-        ActiveRecord::Base.establish_connection(connection_config)
+        Departure::ConnectionOfflineBase.establish_connection(connection_config)
       end
 
       def connected_with_mysql2?

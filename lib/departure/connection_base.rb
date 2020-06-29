@@ -6,4 +6,7 @@ module Departure
       end
     end
   end
+
+  class ConnectionOfflineBase < ConnectionBase
+  end
 end

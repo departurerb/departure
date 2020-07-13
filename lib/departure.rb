@@ -36,12 +36,12 @@ module Departure
     ActiveRecord::Migration.class_eval do
       alias_method :original_migrate, :migrate
 
+      def self.migrate_offline?
+        @migrate_offline == true
+      end
+
       def self.migrate_offline
-        class_eval do
-          def migrate_offline?
-            true
-          end
-        end
+        @migrate_offline = true
       end
 
       # Replaces the current connection adapter with the PerconaAdapter and
@@ -55,7 +55,7 @@ module Departure
       end
 
       def establish_adapter_connection
-        try(:migrate_offline?) ? use_mysql2_adapter : use_percona_adapter
+        self.class.migrate_offline? ? use_mysql2_adapter : use_percona_adapter
       end
     end
 

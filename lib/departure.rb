@@ -40,7 +40,7 @@ module Departure
         @migrate_offline == true
       end
 
-      def self.migrate_offline
+      def self.migrate_offline!
         @migrate_offline = true
       end
 

@@ -172,11 +172,11 @@ adapters.
 
 ### Running Migrations Without Percona
 
-To run a migration without the percona adapter simply include `migrate_offline` in the migration file.
+To run a migration without the percona adapter simply include `migrate_offline!` in the migration file.
 
 ```ruby
 class AddViewCountToComments < ActiveRecord::Migration
-  migrate_offline
+  migrate_offline!
 
   def change
     change_table :comments do |t|

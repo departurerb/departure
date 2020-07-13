@@ -18,11 +18,11 @@ describe Departure, integration: true do
 
   Departure.load
 
-  context 'when migrate_offline is called' do
+  context 'when migrate_offline! is called' do
     before do
       ActiveRecord::Base.configurations = connection_config
     end
-    
+
     it 'runs with the mysql2 adapter' do
       ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, 29)
       expect(ActiveRecord::Base.connection_pool.spec.config[:adapter])

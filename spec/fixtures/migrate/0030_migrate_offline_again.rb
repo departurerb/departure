@@ -1,5 +1,5 @@
 class MigrateOfflineAgain < ActiveRecord::Migration[5.1]
-  migrate_offline
+  migrate_offline!
 
   def change
     change_table :comments do |t|

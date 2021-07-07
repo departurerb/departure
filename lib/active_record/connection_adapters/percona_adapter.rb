@@ -142,14 +142,14 @@ module ActiveRecord
       #
       # @param table_name [String, Symbol]
       # @param options [Hash] optional
-      def remove_index(table_name, *args, **options)
-        column_name = args.first
-        if column_name
+      def remove_index(table_name, column_name = nil, **options)
+        if ActiveRecord::VERSION::STRING >= '6.1'
           return if options[:if_exists] && !index_exists?(table_name, column_name, **options)
           index_name = index_name_for_remove(table_name, column_name, **options)
         else
           index_name = index_name_for_remove(table_name, options)
         end
+
         execute "ALTER TABLE #{quote_table_name(table_name)} DROP INDEX #{quote_column_name(index_name)}"
       end
 

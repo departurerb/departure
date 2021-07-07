@@ -156,6 +156,11 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
           .with(table_name, options)
           .and_return('index_name')
         )
+        allow(adapter).to(
+          receive(:index_name_for_remove)
+          .with(table_name, nil, options)
+          .and_return('index_name')
+        )
       end
 
       it 'passes the built SQL to #execute' do

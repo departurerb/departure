@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Departure::Command do
-  describe '#run' do
+  shared_examples_for '#run' do
     let(:command) { 'pt-online-schema-change command' }
     let(:error_log_path) { 'departure_error.log' }
     let(:logger) do
@@ -9,7 +9,6 @@ describe Departure::Command do
         Departure::Logger, write: true, say: true, write_no_newline: true
       )
     end
-    let(:redirect_stderr) { true }
 
     let(:runner) { described_class.new(command, error_log_path, logger, redirect_stderr) }
 
@@ -30,7 +29,6 @@ describe Departure::Command do
     end
     let(:stdout) { temp_file.open }
     let(:wait_thread) { instance_double(Thread, value: status) }
-    let(:expected_command) { "#{command} 2> #{error_log_path}" }
 
     before do
       allow(Open3).to(
@@ -87,7 +85,7 @@ describe Departure::Command do
 
         it 'raises a Departure::Error' do
           expect { runner.run }
-            .to raise_exception(Departure::Error, "ROTO\n")
+            .to raise_exception(Departure::Error, redirect_stderr ? "ROTO\n" : "")
         end
       end
 
@@ -111,5 +109,19 @@ describe Departure::Command do
         end
       end
     end
+  end
+
+  context 'redirect_stderr = true' do
+    let(:redirect_stderr) { true }
+    let(:expected_command) { "#{command} 2> #{error_log_path}" }
+
+    it_should_behave_like '#run'
+  end
+
+  context 'redirect_stderr = false' do
+    let(:redirect_stderr) { false }
+    let(:expected_command) { "#{command} 2>&1" }
+
+    it_should_behave_like '#run'
   end
 end

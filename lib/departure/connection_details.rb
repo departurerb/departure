@@ -15,7 +15,7 @@ module Departure
     #
     # @return [String]
     def to_s
-      @to_s ||= "#{host_argument} -P #{port} -u #{user} #{password_argument}"
+      @to_s ||= "#{base_connection} -u #{user} #{password_argument}"
     end
 
     # TODO: Doesn't the abstract adapter already handle this somehow?
@@ -40,6 +40,19 @@ module Departure
       end
     end
 
+    private
+
+    attr_reader :connection_data
+
+    # Returns conditionaly socket or host configuration
+    #
+    # @return [String]
+    def base_connection
+      return "#{socket_argumet}" if socket.present?
+
+      "#{host_argument} -P #{port}"
+    end
+
     # Returns the host fragment of the details string, adds ssl options if needed
     #
     # @return [String]
@@ -51,9 +64,13 @@ module Departure
       "-h \"#{host_string}\""
     end
 
-    private
-
-    attr_reader :connection_data
+    # Returns the socket fragment
+    # FIXME: SSL connection
+    #
+    # @return [String]
+    def socket_argumet
+      "-S #{socket}"
+    end
 
     # Returns the database host name, defaulting to localhost. If PERCONA_DB_HOST
     # is passed its value will be used instead
@@ -77,6 +94,14 @@ module Departure
     # @return [String]
     def password
       ENV.fetch('PERCONA_DB_PASSWORD', connection_data[:password])
+    end
+
+    # Returns the database socket path. If PERCONA_SOCKET is passed its value
+    # will be used instead
+    #
+    # @return [String]
+    def socket
+      ENV.fetch('PERCONA_SOCKET', connection_data[:socket])
     end
 
     # Returns the database's port.

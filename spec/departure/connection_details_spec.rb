@@ -94,16 +94,16 @@ describe Departure::ConnectionDetails do
       it { is_expected.to include('--password password') }
     end
 
-    context 'when specifying PERCONA_SOCKET' do
-      let(:env_var) { { PERCONA_SOCKET: '/tmp/database.sock' } }
+    context 'when specifying PERCONA_DB_SOCKET' do
+      let(:env_var) { { PERCONA_DB_SOCKET: '/tmp/database.sock' } }
 
       it { is_expected.to include('-S /tmp/database.sock') }
       it { is_expected.to_not include('-h ') }
       it { is_expected.to_not include('-P ') }
     end
 
-    context 'when specifying PERCONA_SOCKET and PERCONA_HOST' do
-      let(:env_var) { { PERCONA_SOCKET: '/tmp/database.sock', PERCONA_HOST: '127.0.0.1' } }
+    context 'when specifying PERCONA_DB_SOCKET and PERCONA_HOST' do
+      let(:env_var) { { PERCONA_DB_SOCKET: '/tmp/database.sock', PERCONA_HOST: '127.0.0.1' } }
 
       it { is_expected.to include('-S /tmp/database.sock') }
       it { is_expected.to_not include('-h ') }

@@ -96,12 +96,12 @@ module Departure
       ENV.fetch('PERCONA_DB_PASSWORD', connection_data[:password])
     end
 
-    # Returns the database socket path. If PERCONA_SOCKET is passed its value
+    # Returns the database socket path. If PERCONA_DB_SOCKET is passed its value
     # will be used instead
     #
     # @return [String]
     def socket
-      ENV.fetch('PERCONA_SOCKET', connection_data[:socket])
+      ENV.fetch('PERCONA_DB_SOCKET', connection_data[:socket])
     end
 
     # Returns the database's port.

@@ -5,7 +5,7 @@ module Departure
     DEFAULT_PORT = 3306
     # Constructor
     #
-    # @param [Hash] connection parametes as used in #establish_conneciton
+    # @param connection_data [Hash] connection parameters as used in #establish_conneciton
     def initialize(connection_data)
       @connection_data = connection_data
     end
@@ -44,11 +44,11 @@ module Departure
 
     attr_reader :connection_data
 
-    # Returns conditionaly socket or host configuration
+    # Returns conditionally host or socket configuration
     #
     # @return [String]
     def base_connection
-      return "#{socket_argumet}" if socket.present?
+      return socket_argument if socket.present?
 
       "#{host_argument} -P #{port}"
     end
@@ -64,11 +64,11 @@ module Departure
       "-h \"#{host_string}\""
     end
 
-    # Returns the socket fragment
+    # Returns the socket fragment of the details string
     # FIXME: SSL connection
     #
     # @return [String]
-    def socket_argumet
+    def socket_argument
       "-S #{socket}"
     end
 

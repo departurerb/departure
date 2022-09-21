@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
+- Support for connection to MySQL server over socket
 
 ## [6.4.0] - 2020-06-23
 

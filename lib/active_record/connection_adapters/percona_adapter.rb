@@ -43,6 +43,8 @@ module ActiveRecord
 
   module ConnectionAdapters
     class DepartureAdapter < AbstractMysqlAdapter
+      TYPE_MAP = Type::TypeMap.new.tap { |m| initialize_type_map(m) }
+
       class Column < ActiveRecord::ConnectionAdapters::MySQL::Column
         def adapter
           DepartureAdapter

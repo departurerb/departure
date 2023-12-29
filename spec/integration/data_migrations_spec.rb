@@ -3,7 +3,10 @@ require 'spec_helper'
 describe Departure, integration: true do
   class Comment < ActiveRecord::Base; end
 
-  let(:migration_fixtures) { [MIGRATION_FIXTURES] }
+  let(:migration_context) do
+    ActiveRecord::MigrationContext.new([MIGRATION_FIXTURES], ActiveRecord::SchemaMigration)
+  end
+
   let(:direction) { :up }
 
   before do
@@ -25,21 +28,15 @@ describe Departure, integration: true do
     let(:version) { 9 }
 
     it 'updates all the required data' do
-      ActiveRecord::MigrationContext.new(migration_fixtures, ActiveRecord::SchemaMigration).run(
-        direction,
-        version
-      )
+      migration_context.run(direction, version)
 
       expect(Comment.pluck(:read)).to match_array([true, true])
     end
 
     it 'marks the migration as up' do
-      ActiveRecord::MigrationContext.new(migration_fixtures, ActiveRecord::SchemaMigration).run(
-        direction,
-        version
-      )
+      migration_context.run(direction, version)
 
-      expect(ActiveRecord::Migrator.current_version).to eq(version)
+      expect(migration_context.current_version).to eq(version)
     end
   end
 
@@ -47,10 +44,7 @@ describe Departure, integration: true do
     let(:version) { 30 }
 
     it 'updates all the required data' do
-      ActiveRecord::MigrationContext.new(migration_fixtures, ActiveRecord::SchemaMigration).run(
-        direction,
-        version
-      )
+      migration_context.run(direction, version)
 
       expect(Comment.pluck(:author, :read)).to match_array([
         [nil, false],
@@ -61,12 +55,9 @@ describe Departure, integration: true do
     end
 
     it 'marks the migration as up' do
-      ActiveRecord::MigrationContext.new(migration_fixtures, ActiveRecord::SchemaMigration).run(
-        direction,
-        version
-      )
+      migration_context.run(direction, version)
 
-      expect(ActiveRecord::Migrator.current_version).to eq(version)
+      expect(migration_context.current_version).to eq(version)
     end
   end
 
@@ -74,21 +65,15 @@ describe Departure, integration: true do
     let(:version) { 10 }
 
     it 'updates all the required data' do
-      ActiveRecord::MigrationContext.new(migration_fixtures, ActiveRecord::SchemaMigration).run(
-        direction,
-        version
-      )
+      migration_context.run(direction, version)
 
       expect(Comment.pluck(:read)).to match_array([true, true])
     end
 
     it 'marks the migration as up' do
-      ActiveRecord::MigrationContext.new(migration_fixtures, ActiveRecord::SchemaMigration).run(
-        direction,
-        version
-      )
+      migration_context.run(direction, version)
 
-      expect(ActiveRecord::Migrator.current_version).to eq(version)
+      expect(migration_context.current_version).to eq(version)
     end
   end
 
@@ -96,21 +81,15 @@ describe Departure, integration: true do
     let(:version) { 11 }
 
     it 'updates all the required data' do
-      ActiveRecord::MigrationContext.new(migration_fixtures, ActiveRecord::SchemaMigration).run(
-        direction,
-        version
-      )
+      migration_context.run(direction, version)
 
       expect(Comment.pluck(:read)).to match_array([true, true])
     end
 
     it 'marks the migration as up' do
-      ActiveRecord::MigrationContext.new(migration_fixtures, ActiveRecord::SchemaMigration).run(
-        direction,
-        version
-      )
+      migration_context.run(direction, version)
 
-      expect(ActiveRecord::Migrator.current_version).to eq(version)
+      expect(migration_context.current_version).to eq(version)
     end
   end
 
@@ -118,21 +97,15 @@ describe Departure, integration: true do
     let(:version) { 12 }
 
     it 'updates all the required data' do
-      ActiveRecord::MigrationContext.new(migration_fixtures, ActiveRecord::SchemaMigration).run(
-        direction,
-        version
-      )
+      migration_context.run(direction, version)
 
       expect(Comment.pluck(:read)).to match_array([true, true])
     end
 
     it 'marks the migration as up' do
-      ActiveRecord::MigrationContext.new(migration_fixtures, ActiveRecord::SchemaMigration).run(
-        direction,
-        version
-      )
+      migration_context.run(direction, version)
 
-      expect(ActiveRecord::Migrator.current_version).to eq(version)
+      expect(migration_context.current_version).to eq(version)
     end
   end
 end

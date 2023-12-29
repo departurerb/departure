@@ -92,7 +92,7 @@ module ActiveRecord
       end
       alias exec_update exec_delete
 
-      def exec_insert(sql, name, binds, pk = nil, sequence_name = nil, returning: nil) # rubocop:disable Lint/UnusedMethodArgument, Metrics/LineLength
+      def exec_insert(sql, name, binds, pk = nil, sequence_name = nil, returning: nil) # rubocop:disable Lint/UnusedMethodArgument, Metrics/LineLength, Metrics/ParameterLists
         execute(to_sql(sql, binds), name)
       end
 
@@ -101,7 +101,7 @@ module ActiveRecord
         fields = result.fields if defined?(result.fields)
         ActiveRecord::Result.new(fields, result.to_a)
       end
-      alias :exec_query :internal_exec_query
+      alias exec_query internal_exec_query
 
       # Executes a SELECT query and returns an array of rows. Each row is an
       # array of field values.
@@ -212,8 +212,7 @@ module ActiveRecord
         end
       end
 
-      def reconnect
-      end
+      def reconnect; end
     end
   end
 end

@@ -200,6 +200,10 @@ module ActiveRecord
 
       attr_reader :mysql_adapter
 
+      def self.less_than_active_record_7_1?
+        ActiveRecord.version < Gem::Version.create("7.1.0")
+      end
+
       def raw_execute(sql, name, async: false, allow_retry: false, materialize_transactions: true)
         log(sql, name, async: async) do
           with_raw_connection(allow_retry: allow_retry, materialize_transactions: materialize_transactions) do |conn|
@@ -210,7 +214,7 @@ module ActiveRecord
             result
           end
         end
-      end
+      end unless less_than_active_record_7_1?
 
       def reconnect; end
     end

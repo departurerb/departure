@@ -149,11 +149,11 @@ It's strongly recommended to name it after this gems name, such as
 
 ### Disable on per-migration basis
 
-Departure gem is enabled by default. 
+Departure gem is enabled by default.
 In order to disable it on a particular migration the method `disable_departure!` should be used.
 
 ```ruby
-class UseDepartureMigration < ActiveRecord::Migration[5.2]
+class UseDepartureMigration < ActiveRecord::Migration[6.0]
   disable_departure!
 
   def up
@@ -170,7 +170,7 @@ If you wish to only have Departure enabled per-migration, set `config.enabled_by
 Then, add a `uses_departure!` statement in migrations where Departure should be used:
 
 ```ruby
-class UseDepartureMigration < ActiveRecord::Migration[5.2]
+class UseDepartureMigration < ActiveRecord::Migration[6.0]
   uses_departure!
 
   def up
@@ -226,8 +226,7 @@ git commits and tags, and push the `.gem` file to
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at
-https://github.com/departurerb/departure. They need to be opened against
-`master` or `v3.2` only if the changes fix a bug in Rails 3.2 apps.
+https://github.com/departurerb/departure.
 
 Please note that this project is released with a Contributor Code of Conduct. By
 participating in this project you agree to abide by its terms.
@@ -245,4 +244,3 @@ License](http://opensource.org/licenses/MIT).
 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/departurerb/departure?style=for-the-badge)
 ![GitHub issues](https://img.shields.io/github/issues/departurerb/departure?style=for-the-badge)
-

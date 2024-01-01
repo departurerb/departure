@@ -1,4 +1,7 @@
 ---
+AllCops:
+  TargetRubyVersion: 3.0
+
 Metrics/AbcSize:
   Enabled: false
 
@@ -44,6 +47,9 @@ Style/CommandLiteral:
 Style/Documentation:
   Enabled: false
 
+Style/FrozenStringLiteralComment:
+  Enabled: false # We never ended up being forced to do this for Ruby 3.x
+
 Style/MultilineBlockChain:
   Exclude:
     - 'spec/integration_spec.rb'
@@ -57,4 +63,3 @@ Style/SymbolArray:
 Style/UnneededPercentQ:
   Exclude:
     - 'departure.gemspec'
-

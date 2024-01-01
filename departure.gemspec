@@ -23,6 +23,8 @@ Gem::Specification.new do |spec|
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.require_paths = ['lib']
 
+  spec.required_ruby_version = '>= 3.0.0'
+
   spec.add_runtime_dependency 'railties', *Array(RAILS_DEPENDENCY_VERSION)
   spec.add_runtime_dependency 'activerecord', *Array(RAILS_DEPENDENCY_VERSION)
   spec.add_runtime_dependency 'mysql2', '>= 0.4.0', '<= 0.5.5'

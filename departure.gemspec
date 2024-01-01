@@ -5,7 +5,7 @@ require 'departure/version'
 
 # This environment variable is set on CI to facilitate testing with multiple
 # versions of Rails.
-RAILS_DEPENDENCY_VERSION = ENV.fetch('RAILS_VERSION', ['>= 5.2.0', '!= 7.0.0', '< 7.1'])
+RAILS_DEPENDENCY_VERSION = ENV.fetch('RAILS_VERSION', ['>= 6.1.0', '!= 7.0.0', '< 7.1'])
 
 Gem::Specification.new do |spec|
   spec.name          = 'departure'
@@ -23,8 +23,9 @@ Gem::Specification.new do |spec|
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.require_paths = ['lib']
 
-  spec.required_ruby_version = '> 2.4.0'
+  spec.required_ruby_version = '>= 3.0.0'
 
+  spec.add_runtime_dependency 'railties', *Array(RAILS_DEPENDENCY_VERSION)
   spec.add_runtime_dependency 'activerecord', *Array(RAILS_DEPENDENCY_VERSION)
   spec.add_runtime_dependency 'mysql2', '>= 0.4.0', '<= 0.5.5'
   spec.add_runtime_dependency 'railties', *Array(RAILS_DEPENDENCY_VERSION)

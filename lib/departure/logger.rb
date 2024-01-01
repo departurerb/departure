@@ -13,7 +13,7 @@ module Departure
     #
     # @param message [String]
     # @param subitem [Boolean] whether to show message as a nested log item
-    def say(message, subitem = false)
+    def say(message, subitem: false)
       write "#{subitem ? '   ->' : '--'} #{message}"
     end
 

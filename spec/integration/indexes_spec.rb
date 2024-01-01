@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe Departure, integration: true do
-  class Comment < ActiveRecord::Base; end
-
   let(:migration_fixtures) do
     ActiveRecord::MigrationContext.new([MIGRATION_FIXTURES], ActiveRecord::SchemaMigration).migrations
   end
@@ -106,10 +104,12 @@ describe Departure, integration: true do
 
       it 'executes the percona command' do
         if ActiveRecord::Base.connection.send(:supports_rename_index?)
-          expect_percona_command('RENAME INDEX `index_comments_on_some_id_field` TO `new_index_comments_on_some_id_field`')
+          expect_percona_command(
+            'RENAME INDEX `index_comments_on_some_id_field` TO `new_index_comments_on_some_id_field`'
+          )
         else
-         expect_percona_command('ADD INDEX `new_index_comments_on_some_id_field` (`some_id_field`)')
-         expect_percona_command('DROP INDEX `index_comments_on_some_id_field`')
+          expect_percona_command('ADD INDEX `new_index_comments_on_some_id_field` (`some_id_field`)')
+          expect_percona_command('DROP INDEX `index_comments_on_some_id_field`')
         end
 
         ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, version)
@@ -130,7 +130,7 @@ describe Departure, integration: true do
       let(:direction) { :up }
 
       before do
-        ActiveRecord::Migrator.new(:up, migration_fixtures, ActiveRecord::SchemaMigration,1).migrate
+        ActiveRecord::Migrator.new(:up, migration_fixtures, ActiveRecord::SchemaMigration, 1).migrate
       end
 
       it 'executes the percona command' do
@@ -174,11 +174,11 @@ describe Departure, integration: true do
 
   def expect_percona_command(command)
     # Add addional escaping to backticks here to keep the spec more readable.
-    command = command.gsub(/`/, '\\\`')
+    command = command.gsub('`', '\\\`')
 
-    expect(Open3).
-      to receive(:popen3).
-      with(a_string_matching(/\Apt-online-schema-change .+--alter "#{Regexp.escape(command)}"/)).
-      and_call_original
+    expect(Open3)
+      .to receive(:popen3)
+      .with(a_string_matching(/\Apt-online-schema-change .+--alter "#{Regexp.escape(command)}"/))
+      .and_call_original
   end
 end

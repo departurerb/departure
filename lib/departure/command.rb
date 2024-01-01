@@ -44,11 +44,11 @@ module Departure
       Open3.popen3(full_command) do |_stdin, stdout, _stderr, waith_thr|
         begin
           loop do
-            IO.select([stdout])
+            stdout.wait_readable
             data = stdout.read_nonblock(8192)
             logger.write_no_newline(data)
           end
-        rescue EOFError # rubocop:disable Lint/HandleExceptions
+        rescue EOFError
           # noop
         ensure
           @status = waith_thr.value
@@ -89,7 +89,7 @@ module Departure
     # Logs when the execution started
     def log_started
       logger.write("\n")
-      logger.say("Running #{command_line}\n\n", true)
+      logger.say("Running #{command_line}\n\n", subitem: true)
     end
 
     # Prints a line break to keep the logs separate from the execution time

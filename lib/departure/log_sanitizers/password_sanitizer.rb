@@ -11,6 +11,7 @@ module Departure
 
       def execute(log_statement)
         return log_statement if password_argument.blank?
+
         log_statement.gsub(password_argument, PASSWORD_REPLACEMENT)
       end
 

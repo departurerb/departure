@@ -17,14 +17,14 @@ describe Departure::Logger do
     context 'when the subitem option is specified as false' do
       it 'prints the message to the stdout' do
         expect(logger).to receive(:puts).with("-- #{message}")
-        logger.say(message, false)
+        logger.say(message, subitem: false)
       end
     end
 
     context 'when the subitem option is specified as true' do
       it 'prints the message to the stdout' do
         expect(logger).to receive(:puts).with("   -> #{message}")
-        logger.say(message, true)
+        logger.say(message, subitem: true)
       end
     end
 

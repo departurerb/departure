@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe Departure, integration: true do
-  class Comment < ActiveRecord::Base; end
-
   let(:migration_fixtures) do
     ActiveRecord::MigrationContext.new([MIGRATION_FIXTURES], ActiveRecord::SchemaMigration).migrations
   end
@@ -50,21 +48,21 @@ describe Departure, integration: true do
     end
 
     it 'when foreign key has a custom name' do
-      ActiveRecord::Base.connection.add_foreign_key(:comments, :products, name: "fk_123456")
+      ActiveRecord::Base.connection.add_foreign_key(:comments, :products, name: 'fk_123456')
 
       ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, version)
       expect(:comments).not_to have_foreign_key_on('product_id')
     end
 
     it 'when foreign key has a custom name prefixed with _' do
-      ActiveRecord::Base.connection.add_foreign_key(:comments, :products, name: "_fk_123456")
+      ActiveRecord::Base.connection.add_foreign_key(:comments, :products, name: '_fk_123456')
 
       ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, version)
       expect(:comments).not_to have_foreign_key_on('product_id')
     end
 
     it 'when foreign key has a custom name prefixed with __ (double _)' do
-      ActiveRecord::Base.connection.add_foreign_key(:comments, :products, name: "__fk_123456")
+      ActiveRecord::Base.connection.add_foreign_key(:comments, :products, name: '__fk_123456')
 
       ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, version)
       expect(:comments).not_to have_foreign_key_on('product_id')

@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe Departure, integration: true do
-  class Comment < ActiveRecord::Base; end
-
   let(:migration_fixtures) { [MIGRATION_FIXTURES] }
   let(:direction) { :up }
 
@@ -53,11 +51,11 @@ describe Departure, integration: true do
       )
 
       expect(Comment.pluck(:author, :read)).to match_array([
-        [nil, false],
-        [nil, false],
-        ["John", true],
-        ["Smith", false],
-      ])
+                                                             [nil, false],
+                                                             [nil, false],
+                                                             ['John', true],
+                                                             ['Smith', false]
+                                                           ])
     end
 
     it 'marks the migration as up' do

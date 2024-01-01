@@ -1,6 +1,4 @@
-# coding: utf-8
-
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 require 'departure/version'
@@ -20,16 +18,14 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/departurerb/departure'
   spec.license       = 'MIT'
 
+  spec.metadata['rubygems_mfa_required'] = 'true'
+
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.require_paths = ['lib']
 
-  spec.add_runtime_dependency 'railties', *Array(RAILS_DEPENDENCY_VERSION)
+  spec.required_ruby_version = '> 2.4.0'
+
   spec.add_runtime_dependency 'activerecord', *Array(RAILS_DEPENDENCY_VERSION)
   spec.add_runtime_dependency 'mysql2', '>= 0.4.0', '<= 0.5.5'
-
-  spec.add_development_dependency 'rake', '>= 10.0'
-  spec.add_development_dependency 'rspec', '~> 3.4', '>= 3.4.0'
-  spec.add_development_dependency 'rspec-its', '~> 1.2'
-  spec.add_development_dependency 'pry-byebug'
-  spec.add_development_dependency 'climate_control', '~> 0.0.3'
+  spec.add_runtime_dependency 'railties', *Array(RAILS_DEPENDENCY_VERSION)
 end

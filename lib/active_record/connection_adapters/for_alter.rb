@@ -3,11 +3,11 @@ require 'active_record/connection_adapters/mysql/schema_statements'
 module ForAlterStatements
   class << self
     def included(_)
-      STDERR.puts 'Including for_alter statements'
+      warn 'Including for_alter statements'
     end
   end
 
-  def bulk_change_table(table_name, operations) #:nodoc:
+  def bulk_change_table(table_name, operations) # :nodoc:
     sqls = operations.flat_map do |command, args|
       table = args.shift
       arguments = args
@@ -15,6 +15,7 @@ module ForAlterStatements
       method = :"#{command}_for_alter"
 
       raise "Unknown method called : #{method}(#{arguments.inspect})" unless respond_to?(method, true)
+
       public_send(method, table, *arguments)
     end.join(', ')
 
@@ -97,7 +98,7 @@ module ForAlterStatements
     "DROP COLUMN #{quote_column_name(column_name)}"
   end
 
-  def remove_columns_for_alter(table_name, *column_names, **options)
+  def remove_columns_for_alter(table_name, *column_names, **_options)
     column_names.map { |column_name| remove_column_for_alter(table_name, column_name) }
   end
 end

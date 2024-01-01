@@ -7,7 +7,7 @@ class Configuration
   attr_reader :config
 
   def initialize
-    @config = YAML.load(ERB.new(File.read(CONFIG_PATH)).result).freeze
+    @config = YAML.safe_load(ERB.new(File.read(CONFIG_PATH)).result).freeze
   end
 
   def [](key)

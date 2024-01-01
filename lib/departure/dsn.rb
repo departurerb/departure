@@ -15,7 +15,7 @@ module Departure
     # Returns the pt-online-schema-change DSN string. See
     # https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change.html#dsn-options
     def to_s
-      "D=#{database},t=#{table_name}#{suffix.nil? ? nil : ',' + suffix}"
+      "D=#{database},t=#{table_name}#{suffix.nil? ? nil : ",#{suffix}"}"
     end
 
     private

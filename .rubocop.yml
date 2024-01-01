@@ -1,4 +1,12 @@
 ---
+require:
+  - rubocop-performance
+  - rubocop-rake
+
+AllCops:
+  TargetRubyVersion: 2.4
+  NewCops: enable
+
 Metrics/AbcSize:
   Enabled: false
 
@@ -14,12 +22,6 @@ Metrics/BlockNesting:
 Metrics/ClassLength:
   Max: 250
 
-Metrics/LineLength:
-  Max: 120
-  Exclude:
-    - 'departure.gemspec'
-    - 'test_database.rb'
-
 Metrics/MethodLength:
   Max: 30
 
@@ -32,11 +34,6 @@ Metrics/ParameterLists:
 Performance/Casecmp:
   Enabled: false
 
-Style/BracesAroundHashParameters:
-  Exclude:
-    - 'spec/fixtures/migrate/**.rb'
-    - 'spec/integration/**.rb'
-
 Style/CommandLiteral:
   Exclude:
     - 'test_database.rb'
@@ -44,17 +41,25 @@ Style/CommandLiteral:
 Style/Documentation:
   Enabled: false
 
+Style/FrozenStringLiteralComment:
+  Enabled: false # We never ended up being forced to do this for Ruby 3.x
+
 Style/MultilineBlockChain:
   Exclude:
     - 'spec/integration_spec.rb'
 
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - 'departure.gemspec'
+    - 'test_database.rb'
+
 Layout/MultilineMethodCallIndentation:
   Enabled: false
 
-Style/SymbolArray:
-  Enabled: false
-
-Style/UnneededPercentQ:
+Style/RedundantPercentQ:
   Exclude:
     - 'departure.gemspec'
 
+Style/SymbolArray:
+  Enabled: false

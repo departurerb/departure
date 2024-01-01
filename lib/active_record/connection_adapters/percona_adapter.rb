@@ -64,9 +64,7 @@ module ActiveRecord
 
       extend Forwardable
 
-      unless method_defined?(:change_column_for_alter)
-        include ForAlterStatements
-      end
+      include ForAlterStatements unless method_defined?(:change_column_for_alter)
 
       ADAPTER_NAME = 'Percona'.freeze
 
@@ -90,7 +88,7 @@ module ActiveRecord
       end
       alias exec_update exec_delete
 
-      def exec_insert(sql, name, binds, pk = nil, sequence_name = nil) # rubocop:disable Lint/UnusedMethodArgument, Metrics/LineLength
+      def exec_insert(sql, name, binds, pk = nil, sequence_name = nil) # rubocop:disable Lint/UnusedMethodArgument, Naming/MethodParameterName
         execute(to_sql(sql, binds), name)
       end
 
@@ -153,6 +151,7 @@ module ActiveRecord
       def remove_index(table_name, column_name = nil, **options)
         if ActiveRecord::VERSION::STRING >= '6.1'
           return if options[:if_exists] && !index_exists?(table_name, column_name, **options)
+
           index_name = index_name_for_remove(table_name, column_name, options)
         else
           index_name = index_name_for_remove(table_name, options)

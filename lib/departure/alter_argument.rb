@@ -4,7 +4,7 @@ module Departure
   # Represents the '--alter' argument of Percona's pt-online-schema-change
   # See https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change.html
   class AlterArgument
-    ALTER_TABLE_REGEX = /\AALTER TABLE [^\s]*[\n]* /
+    ALTER_TABLE_REGEX = /\AALTER TABLE [^\s]*\n* /.freeze
 
     attr_reader :table_name
 
@@ -17,11 +17,12 @@ module Departure
 
       match = statement.match(ALTER_TABLE_REGEX)
       raise InvalidAlterStatement unless match
+
       # Separates the ALTER TABLE from the table_name
       #
       # Removes the grave marks, if they are there, so we can get the table_name
       @table_name = String(match)
-                      .split(' ')[2]
+                      .split[2]
                       .delete('`')
     end
 
@@ -42,7 +43,7 @@ module Departure
       @parsed_statement ||= statement
         .gsub(ALTER_TABLE_REGEX, '')
         .gsub('`', '\\\`')
-        .gsub(/\\n/, '')
+        .gsub('\n', '')
         .gsub('"', '\\\"')
     end
   end

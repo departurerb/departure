@@ -6,7 +6,7 @@ module Departure
     # Constructor
     #
     # @param arguments [String]
-    def initialize(arguments = ENV['PERCONA_ARGS'])
+    def initialize(arguments = ENV.fetch('PERCONA_ARGS', nil))
       @arguments = arguments
     end
 

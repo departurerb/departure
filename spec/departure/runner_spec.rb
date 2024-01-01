@@ -12,13 +12,13 @@ describe Departure::Runner do
     instance_double(
       Departure::Configuration,
       error_log_path: 'departure_error.log',
-      redirect_stderr: true,
+      redirect_stderr: true
     )
   end
 
   let(:runner) { described_class.new(logger, cli_generator, mysql_adapter, config) }
 
-  describe '#query' do
+  describe '#query' do # rubocop:disable Lint/EmptyBlock
   end
 
   describe '#affected_rows' do

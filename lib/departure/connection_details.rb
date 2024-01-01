@@ -58,9 +58,7 @@ module Departure
     # @return [String]
     def host_argument
       host_string = host
-      if ssl_ca.present?
-        host_string += ";mysql_ssl=1;mysql_ssl_client_ca=#{ssl_ca}"
-      end
+      host_string += ";mysql_ssl=1;mysql_ssl_client_ca=#{ssl_ca}" if ssl_ca.present?
       "-h \"#{host_string}\""
     end
 

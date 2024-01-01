@@ -26,8 +26,8 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
     let(:collation) { double(:collation) }
 
     let(:column) do
-      if ActiveRecord::VERSION::STRING >= "6.1"
-        described_class.new("field", "default", mysql_metadata, null, collation: "collation")
+      if ActiveRecord::VERSION::STRING >= '6.1'
+        described_class.new('field', 'default', mysql_metadata, null, collation: 'collation')
       elsif ActiveRecord::VERSION::MAJOR == 6
         described_class.new(field, default, mysql_metadata, null, collation: collation)
       else
@@ -108,7 +108,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
       let(:table_name) { :foo }
       let(:column_name) { :bar_id }
       let(:index_name) { 'index_name' }
-      let(:options) { {type: 'index_type'} }
+      let(:options) { { type: 'index_type' } }
       let(:index_type) { options[:type].upcase }
       let(:sql) { 'ADD index_type INDEX `index_name` (bar_id)' }
       let(:index_options) do
@@ -125,7 +125,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
             false
           ]
         else
-          [index_name, index_type, "#{column_name}"]
+          [index_name, index_type, column_name.to_s]
         end
       end
 

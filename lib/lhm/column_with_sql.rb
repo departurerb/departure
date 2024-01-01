@@ -72,7 +72,7 @@ module Lhm
     #
     # @return [String, NilClass]
     def default_value
-      match = if definition =~ /timestamp|datetime/i
+      match = if /timestamp|datetime/i.match?(definition)
                 /default '?(.+[^'])'?/i.match(definition)
               else
                 /default '?(\w+)'?/i.match(definition)
@@ -80,7 +80,7 @@ module Lhm
 
       return unless match
 
-      match[1].downcase != 'null' ? match[1] : nil
+      match[1].downcase == 'null' ? nil : match[1]
     end
 
     # Checks whether the column accepts NULL as specified in the definition
@@ -90,7 +90,7 @@ module Lhm
       match = /((\w*) NULL)/i.match(definition)
       return true unless match
 
-      match[2].downcase == 'not' ? false : true
+      match[2].downcase != 'not'
     end
   end
 end

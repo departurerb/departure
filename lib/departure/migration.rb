@@ -74,6 +74,7 @@ module Departure
     # instead of the current adapter.
     def reconnect_with_percona
       return if connection_config[:adapter] == 'percona'
+
       Departure::ConnectionBase.establish_connection(connection_config.merge(adapter: 'percona'))
     end
 
@@ -81,23 +82,24 @@ module Departure
     # enabled in a previous migration.
     def reconnect_without_percona
       return unless connection_config[:adapter] == 'percona'
+
       Departure::OriginalAdapterConnection.establish_connection(connection_config.merge(adapter: original_adapter))
     end
 
     private
 
-    # Capture the type of the adapter configured by the app if not already set.
-    def connection_config
-      configuration_hash.tap do |config|
-        self.class.original_adapter ||= config[:adapter]
-      end
-    end
-
-    private def configuration_hash
+    def configuration_hash
       if ActiveRecord::VERSION::STRING >= '6.1'
         ActiveRecord::Base.connection_db_config.configuration_hash
       else
         ActiveRecord::Base.connection_config
+      end
+    end
+
+    # Capture the type of the adapter configured by the app if not already set.
+    def connection_config
+      configuration_hash.tap do |config|
+        self.class.original_adapter ||= config[:adapter]
       end
     end
   end

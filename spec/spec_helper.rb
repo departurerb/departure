@@ -2,7 +2,7 @@ require 'bundler'
 require 'simplecov'
 SimpleCov.start
 
-$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift File.expand_path('../lib', __dir__)
 
 Bundler.require(:default, :development)
 
@@ -20,7 +20,7 @@ require 'support/table_methods'
 db_config = Configuration.new
 
 # Disables/enables the queries log you see in your rails server in dev mode
-fd = ENV['VERBOSE'] ? STDOUT : '/dev/null'
+fd = ENV['VERBOSE'] ? $stdout : '/dev/null'
 ActiveRecord::Base.logger = Logger.new(fd)
 
 ActiveRecord::Base.establish_connection(
@@ -31,9 +31,11 @@ ActiveRecord::Base.establish_connection(
   database: db_config['database']
 )
 
-MIGRATION_FIXTURES = File.expand_path('../fixtures/migrate/', __FILE__)
+MIGRATION_FIXTURES = File.expand_path('fixtures/migrate', __dir__)
 
 test_database = TestDatabase.new(db_config)
+
+class Comment < ActiveRecord::Base; end
 
 RSpec.configure do |config|
   config.include TableMethods
@@ -42,7 +44,7 @@ RSpec.configure do |config|
   ActiveRecord::Migration.verbose = false
 
   # Needs an empty block to initialize the config with the default values
-  Departure.configure do |_config|
+  Departure.configure do |_config| # rubocop:disable Lint/EmptyBlock
   end
 
   # Cleans up the database before each example, so the current example doesn't
@@ -69,13 +71,13 @@ module Rails5Compatibility
   end
 
   module MigrationContext
-    def initialize(migrations_paths, schema_migration = nil)
+    def initialize(migrations_paths, _schema_migration = nil)
       super(migrations_paths)
     end
   end
 end
 
 if ActiveRecord::VERSION::MAJOR < 6
-  ActiveRecord::Migrator.send :prepend, Rails5Compatibility::Migrator
-  ActiveRecord::MigrationContext.send :prepend, Rails5Compatibility::MigrationContext
+  ActiveRecord::Migrator.prepend Rails5Compatibility::Migrator
+  ActiveRecord::MigrationContext.prepend Rails5Compatibility::MigrationContext
 end

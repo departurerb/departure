@@ -3,8 +3,6 @@ require 'fixtures/migrate/0022_add_timestamp_on_comments'
 
 # TODO: Handle #change_table syntax
 describe Departure, integration: true do
-  class Comment < ActiveRecord::Base; end
-
   let(:migration_paths) { [MIGRATION_FIXTURES] }
   let(:migration_context) { ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration) }
   let(:migration_fixtures) { migration_context.migrations }

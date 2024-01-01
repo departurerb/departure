@@ -53,7 +53,7 @@ describe Departure::Command do
       runner.run
       expect(logger).to have_received(:say).with(
         "Running pt-online-schema-change command\n\n",
-        true
+        subitem: true
       )
     end
 

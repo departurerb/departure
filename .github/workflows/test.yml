@@ -43,3 +43,4 @@ jobs:
         run: sudo systemctl start mysql.service
       - run: bin/setup
       - run: bundle exec rake
+      - run: bundle exec rubocop --parallel

@@ -10,4 +10,5 @@ gem 'rspec-its', '~> 1.2'
 
 gem 'codeclimate-test-reporter', '~> 1.0.3', group: :test, require: nil
 gem 'rubocop', '~> 1.56.3', require: false
+gem 'rubocop-performance'
 gem 'rubocop-rake'

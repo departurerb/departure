@@ -1,5 +1,6 @@
 ---
 require:
+  - rubocop-performance
   - rubocop-rake
 
 AllCops:
@@ -29,6 +30,9 @@ Metrics/ModuleLength:
 
 Metrics/ParameterLists:
   Max: 5
+
+Performance/Casecmp:
+  Enabled: false
 
 Style/CommandLiteral:
   Exclude:

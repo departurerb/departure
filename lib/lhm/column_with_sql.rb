@@ -72,7 +72,7 @@ module Lhm
     #
     # @return [String, NilClass]
     def default_value
-      match = if definition =~ /timestamp|datetime/i
+      match = if definition.match?(/timestamp|datetime/i)
                 /default '?(.+[^'])'?/i.match(definition)
               else
                 /default '?(\w+)'?/i.match(definition)

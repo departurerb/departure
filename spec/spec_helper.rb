@@ -59,28 +59,13 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 end
 
-# This shim is for Rails 5.2 compatibility in the test
+# This shim is for Rails 7.1 compatibility in the test
 module Rails5Compatibility
-  module Migrator
-    def initialize(direction, migrations, schema_migration_or_target_version = nil, target_version = nil)
-      if schema_migration_or_target_version == ActiveRecord::SchemaMigration
-        super(direction, migrations, target_version)
-      else
-        super(direction, migrations, schema_migration_or_target_version)
-      end
-    end
-  end
-
   module MigrationContext
     def initialize(migrations_paths, schema_migration = nil)
       super(migrations_paths)
     end
   end
-end
-
-if ActiveRecord::VERSION::MAJOR < 6
-  ActiveRecord::Migrator.send :prepend, Rails5Compatibility::Migrator
-  ActiveRecord::MigrationContext.send :prepend, Rails5Compatibility::MigrationContext
 end
 
 if ActiveRecord::VERSION::STRING >= '7.1'

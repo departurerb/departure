@@ -153,7 +153,7 @@ Departure gem is enabled by default.
 In order to disable it on a particular migration the method `disable_departure!` should be used.
 
 ```ruby
-class UseDepartureMigration < ActiveRecord::Migration[6.0]
+class UseDepartureMigration < ActiveRecord::Migration[7.1]
   disable_departure!
 
   def up
@@ -170,7 +170,7 @@ If you wish to only have Departure enabled per-migration, set `config.enabled_by
 Then, add a `uses_departure!` statement in migrations where Departure should be used:
 
 ```ruby
-class UseDepartureMigration < ActiveRecord::Migration[6.0]
+class UseDepartureMigration < ActiveRecord::Migration[7.1]
   uses_departure!
 
   def up

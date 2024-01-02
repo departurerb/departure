@@ -48,7 +48,10 @@ RSpec.configure do |config|
   # Cleans up the database before each example, so the current example doesn't
   # see the state of the previous one
   config.before(:each) do |example|
-    test_database.setup if example.metadata[:integration]
+    if example.metadata[:integration]
+      test_database.setup
+      ActiveRecord::Base.connection_pool.disconnect!
+    end
   end
 
   config.order = :random

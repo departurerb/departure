@@ -43,6 +43,8 @@ module ActiveRecord
 
   module ConnectionAdapters
     class DepartureAdapter < AbstractMysqlAdapter
+      TYPE_MAP = Type::TypeMap.new.tap { |m| initialize_type_map(m) } if defined?(initialize_type_map)
+
       class Column < ActiveRecord::ConnectionAdapters::MySQL::Column
         def adapter
           DepartureAdapter
@@ -86,19 +88,20 @@ module ActiveRecord
 
       def exec_delete(sql, name, binds)
         execute(to_sql(sql, binds), name)
-        @connection.affected_rows
+        mysql_adapter.raw_connection.affected_rows
       end
       alias exec_update exec_delete
 
-      def exec_insert(sql, name, binds, pk = nil, sequence_name = nil) # rubocop:disable Lint/UnusedMethodArgument, Metrics/LineLength
+      def exec_insert(sql, name, binds, pk = nil, sequence_name = nil, returning: nil) # rubocop:disable Lint/UnusedMethodArgument, Metrics/LineLength, Metrics/ParameterLists
         execute(to_sql(sql, binds), name)
       end
 
-      def exec_query(sql, name = 'SQL', _binds = [], **_kwargs)
+      def internal_exec_query(sql, name = 'SQL', _binds = [], **_kwargs) # :nodoc:
         result = execute(sql, name)
         fields = result.fields if defined?(result.fields)
         ActiveRecord::Result.new(fields, result.to_a)
       end
+      alias exec_query internal_exec_query
 
       # Executes a SELECT query and returns an array of rows. Each row is an
       # array of field values.
@@ -196,6 +199,22 @@ module ActiveRecord
       private
 
       attr_reader :mysql_adapter
+
+      if ActiveRecord.version >= Gem::Version.create('7.1.0')
+        def raw_execute(sql, name, async: false, allow_retry: false, materialize_transactions: true)
+          log(sql, name, async: async) do
+            with_raw_connection(allow_retry: allow_retry, materialize_transactions: materialize_transactions) do |conn|
+              sync_timezone_changes(conn)
+              result = conn.query(sql)
+              verified!
+              handle_warnings(sql)
+              result
+            end
+          end
+        end
+      end
+
+      def reconnect; end
     end
   end
 end

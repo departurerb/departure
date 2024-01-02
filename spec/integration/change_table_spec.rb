@@ -3,11 +3,10 @@ require 'spec_helper'
 describe Departure, integration: true do
   class Comment < ActiveRecord::Base; end
 
-  let(:migration_fixtures) do
-    ActiveRecord::MigrationContext.new([MIGRATION_FIXTURES], ActiveRecord::SchemaMigration).migrations.select do |m|
-      m.version == version
-    end
+  let(:migration_context) do
+    ActiveRecord::MigrationContext.new([MIGRATION_FIXTURES], ActiveRecord::SchemaMigration)
   end
+
   let(:direction) { :up }
 
   context 'change_table' do
@@ -19,7 +18,7 @@ describe Departure, integration: true do
 
     context 'creating column' do
       before(:each) do
-        ActiveRecord::Migrator.new(direction, migration_fixtures, ActiveRecord::SchemaMigration, version).migrate
+        migration_context.run(direction, version)
       end
 
       it 'adds the column in the DB table' do
@@ -38,7 +37,7 @@ describe Departure, integration: true do
       end
 
       it 'marks the migration as up' do
-        expect(ActiveRecord::Migrator.current_version).to eq(version)
+        expect(migration_context.current_version).to eq(version)
       end
 
       it 'changes column' do

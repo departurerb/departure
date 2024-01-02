@@ -181,12 +181,13 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
 
   describe '#exec_delete' do
     let(:sql) { 'DELETE FROM comments WHERE id = 1' }
+    let(:affected_rows) { 1 }
     let(:name) { nil }
     let(:binds) { nil }
 
     before do
-      allow(runner).to receive(:query).with(sql)
-      allow(runner).to receive(:affected_rows).and_return(1)
+      allow(runner).to receive(:query).with(anything)
+      allow(mysql_client).to receive(:affected_rows).and_return(affected_rows)
     end
 
     it 'executes the sql' do
@@ -195,7 +196,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
     end
 
     it 'returns the number of affected rows' do
-      expect(adapter.exec_delete(sql, name, binds)).to eq(1)
+      expect(adapter.exec_delete(sql, name, binds)).to eq(affected_rows)
     end
   end
 

@@ -23,6 +23,14 @@ jobs:
           - 7.0.1
           - 7.1.2
         exclude: # These Rails versions are too new for the respective Ruby versions, or vice-versa
+          - ruby: 2.4
+            rails: 6.0.0
+          - ruby: 2.4
+            rails: 6.1.0
+          - ruby: 2.4
+            rails: 7.0.1
+          - ruby: 2.4
+            rails: 7.1.2
           - ruby: 2.5
             rails: 7.0.1
           - ruby: 2.5
@@ -31,6 +39,22 @@ jobs:
             rails: 7.0.1
           - ruby: 2.6
             rails: 7.1.2
+          - ruby: 3.0
+            rails: 5.2.0
+          - ruby: 3.0
+            rails: 6.0.0
+          - ruby: 3.1
+            rails: 5.2.0
+          - ruby: 3.1
+            rails: 6.0.0
+          - ruby: 3.2
+            rails: 5.2.0
+          - ruby: 3.2
+            rails: 6.0.0
+          - ruby: 3.3
+            rails: 5.2.0
+          - ruby: 3.3
+            rails: 6.0.0
     env:
       PERCONA_DB_USER: root
       PERCONA_DB_PASSWORD: root

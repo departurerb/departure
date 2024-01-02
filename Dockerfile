@@ -14,11 +14,11 @@ RUN apt-get update && apt-get install -y \
 RUN mkdir -p /app /app/lib/departure
 WORKDIR /app
 
-# Copy the Gemfile as well as the Gemfile.lock and install 
-# the RubyGems. This is a separate step so the dependencies 
-# will be cached unless changes to one of those two files 
+# Copy the Gemfile as well as the Gemfile.lock and install
+# the RubyGems. This is a separate step so the dependencies
+# will be cached unless changes to one of those two files
 # are made.
-COPY departure.gemspec Gemfile ./ 
+COPY departure.gemspec Gemfile ./
 COPY lib/departure/version.rb ./lib/departure/
 
 RUN gem install bundler && bundle install --jobs 20 --retry 5

@@ -149,7 +149,7 @@ It's strongly recommended to name it after this gems name, such as
 
 ### Disable on per-migration basis
 
-Departure gem is enabled by default. 
+Departure gem is enabled by default.
 In order to disable it on a particular migration the method `disable_departure!` should be used.
 
 ```ruby
@@ -245,4 +245,3 @@ License](http://opensource.org/licenses/MIT).
 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/departurerb/departure?style=for-the-badge)
 ![GitHub issues](https://img.shields.io/github/issues/departurerb/departure?style=for-the-badge)
-

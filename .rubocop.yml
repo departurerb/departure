@@ -63,4 +63,3 @@ Style/SymbolArray:
 Style/UnneededPercentQ:
   Exclude:
     - 'departure.gemspec'
-

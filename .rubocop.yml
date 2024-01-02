@@ -1,9 +1,20 @@
 ---
+require:
+  - rubocop-performance
+  - rubocop-rake
+
 inherit_from:
   - .rubocop_todo.yml
 
 AllCops:
   TargetRubyVersion: 3.0
+  NewCops: enable
+
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - 'departure.gemspec'
+    - 'test_database.rb'
 
 Metrics/AbcSize:
   Enabled: false
@@ -20,12 +31,6 @@ Metrics/BlockNesting:
 Metrics/ClassLength:
   Max: 250
 
-Metrics/LineLength:
-  Max: 120
-  Exclude:
-    - 'departure.gemspec'
-    - 'test_database.rb'
-
 Metrics/MethodLength:
   Max: 30
 
@@ -37,12 +42,6 @@ Metrics/ParameterLists:
 
 Performance/Casecmp:
   Enabled: false
-
-Style/BracesAroundHashParameters:
-  Exclude:
-    - 'spec/fixtures/migrate/**.rb'
-    - 'spec/integration/**.rb'
-    - 'spec/lhm/adapter/**.rb'
 
 Style/CommandLiteral:
   Exclude:
@@ -61,9 +60,9 @@ Style/MultilineBlockChain:
 Layout/MultilineMethodCallIndentation:
   Enabled: false
 
-Style/SymbolArray:
-  Enabled: false
-
-Style/UnneededPercentQ:
+Style/RedundantPercentQ:
   Exclude:
     - 'departure.gemspec'
+
+Style/SymbolArray:
+  Enabled: false

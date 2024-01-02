@@ -52,7 +52,7 @@ module ActiveRecord
       end
 
       class SchemaCreation < ActiveRecord::ConnectionAdapters::MySQL::SchemaCreation
-        def visit_DropForeignKey(name) # rubocop:disable Style/MethodName
+        def visit_DropForeignKey(name) # rubocop:disable Naming/MethodName
           fk_name =
             if name =~ /^__(.+)/
               Regexp.last_match(1)
@@ -92,7 +92,7 @@ module ActiveRecord
       end
       alias exec_update exec_delete
 
-      def exec_insert(sql, name, binds, pk = nil, sequence_name = nil, returning: nil) # rubocop:disable Lint/UnusedMethodArgument, Metrics/LineLength, Metrics/ParameterLists
+      def exec_insert(sql, name, binds, pk = nil, sequence_name = nil, returning: nil) # rubocop:disable Lint/UnusedMethodArgument, Layout/LineLength, Metrics/ParameterLists
         execute(to_sql(sql, binds), name)
       end
 
@@ -188,7 +188,7 @@ module ActiveRecord
 
       # This is a method defined in Rails 6.0, and we have no control over the
       # naming of this method.
-      def get_full_version # rubocop:disable Style/AccessorMethodName
+      def get_full_version # rubocop:disable Naming/AccessorMethodName
         mysql_adapter.raw_connection.server_info[:version]
       end
 

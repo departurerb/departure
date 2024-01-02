@@ -1,4 +1,7 @@
 ---
+inherit_from:
+  - .rubocop_todo.yml
+
 AllCops:
   TargetRubyVersion: 3.0
 
@@ -39,6 +42,7 @@ Style/BracesAroundHashParameters:
   Exclude:
     - 'spec/fixtures/migrate/**.rb'
     - 'spec/integration/**.rb'
+    - 'spec/lhm/adapter/**.rb'
 
 Style/CommandLiteral:
   Exclude:

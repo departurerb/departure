@@ -67,7 +67,7 @@ describe Departure, integration: true do
 
       it 'executes the percona command' do
         if ActiveRecord::Base.connection.send(:supports_rename_index?)
-          expect_percona_command('RENAME INDEX `index_comments_on_some_id_field` TO `new_index_comments_on_some_id_field`')
+          expect_percona_command('RENAME INDEX `index_comments_on_some_id_field` TO `new_index_comments_on_some_id_field`') # rubocop:disable Metrics/LineLength
         else
          expect_percona_command('ADD INDEX `new_index_comments_on_some_id_field` (`some_id_field`)')
          expect_percona_command('DROP INDEX `index_comments_on_some_id_field`')

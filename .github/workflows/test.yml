@@ -11,10 +11,12 @@ jobs:
           - 3.0
           - 3.1
           - 3.2
+          - 3.3
         rails:
-          - 6.1.7.6
-          - 7.0.8
+          - 6.1.0
+          - 7.0.1
           - 7.1.2
+        exclude: [] # These Rails versions are too new for the respective Ruby versions, or vice-versa
     env:
       PERCONA_DB_USER: root
       PERCONA_DB_PASSWORD: root
@@ -36,3 +38,23 @@ jobs:
         run: sudo systemctl start mysql.service
       - run: bin/setup
       - run: bundle exec rake
+  lint:
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby:
+          - 3.3
+        rails:
+          - 7.1.0
+    env:
+      PERCONA_DB_USER: root
+      PERCONA_DB_PASSWORD: root
+      RAILS_VERSION: "~> ${{ matrix.rails }}"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - run: bundle exec rubocop --parallel

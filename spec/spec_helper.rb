@@ -60,7 +60,7 @@ RSpec.configure do |config|
 end
 
 # This shim is for Rails 7.1 compatibility in the test
-module Rails5Compatibility
+module Rails7Compatibility
   module MigrationContext
     def initialize(migrations_paths, schema_migration = nil)
       super(migrations_paths)
@@ -69,5 +69,5 @@ module Rails5Compatibility
 end
 
 if ActiveRecord::VERSION::STRING >= '7.1'
-  ActiveRecord::MigrationContext.send :prepend, Rails5Compatibility::MigrationContext
+  ActiveRecord::MigrationContext.send :prepend, Rails7Compatibility::MigrationContext
 end

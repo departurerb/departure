@@ -1,5 +1,7 @@
 module Departure
   class Configuration
+    SUPPORTED_ADAPTERS = %i[trilogy mysql2].freeze
+
     attr_accessor :tmp_path, :global_percona_args, :enabled_by_default, :redirect_stderr
     attr_reader :adapter
 
@@ -14,6 +16,14 @@ module Departure
 
     def error_log_path
       File.join(tmp_path, error_log_filename)
+    end
+
+    def adapter=(name)
+      if SUPPORTED_ADAPTERS.include?(name)
+        @adapter = name
+      else
+        raise ArgumentError, "Supported Departure adapters are #{SUPPORTED_ADAPTERS.inspect}"
+      end
     end
 
     private

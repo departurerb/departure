@@ -3,7 +3,6 @@ PATH
   specs:
     departure (6.6.0)
       activerecord (>= 6.0.0, < 7.2.0, != 7.0.0)
-      mysql2 (>= 0.4.0, <= 0.5.5)
       railties (>= 6.0.0, < 7.2.0, != 7.0.0)
 
 GEM
@@ -55,6 +54,9 @@ GEM
     activerecord (6.1.7.6)
       activemodel (= 6.1.7.6)
       activesupport (= 6.1.7.6)
+    activerecord-trilogy-adapter (3.1.2)
+      activerecord (>= 6.0.a, < 7.1.a)
+      trilogy (>= 2.4.0)
     activestorage (6.1.7.6)
       actionpack (= 6.1.7.6)
       activejob (= 6.1.7.6)
@@ -212,6 +214,7 @@ GEM
       sprockets (>= 3.0.0)
     thor (1.3.0)
     timeout (0.4.1)
+    trilogy (2.7.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.5.0)
@@ -225,10 +228,12 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  activerecord-trilogy-adapter (>= 3.1.2)
   appraisal (~> 2.4.1)
   climate_control (~> 0.0.3)
   codeclimate-test-reporter (~> 1.0.3)
   departure!
+  mysql2 (>= 0.4.0, <= 0.5.5)
   pry-byebug
   rails (= 6.1.7.6)
   rake (>= 10.0)
@@ -236,6 +241,7 @@ DEPENDENCIES
   rspec-its (~> 1.2)
   rubocop (~> 1.60.2)
   rubocop-performance (~> 1.20.2)
+  trilogy (>= 2.7.0)
 
 BUNDLED WITH
    2.4.22

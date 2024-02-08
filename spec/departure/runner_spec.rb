@@ -1,8 +1,8 @@
 require 'spec_helper'
 require 'tempfile'
 
-require "active_record/connection_adapters/mysql2_adapter"
-require "active_record/connection_adapters/trilogy_adapter"
+require 'active_record/connection_adapters/mysql2_adapter'
+require 'active_record/connection_adapters/trilogy_adapter'
 
 describe Departure::Runner do
   shared_examples_for Departure::Runner do |adapter|

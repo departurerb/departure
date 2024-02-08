@@ -19,11 +19,11 @@ module Departure
     end
 
     def adapter=(name)
-      if SUPPORTED_ADAPTERS.include?(name)
-        @adapter = name
-      else
+      unless SUPPORTED_ADAPTERS.include?(name)
         raise ArgumentError, "Supported Departure adapters are #{SUPPORTED_ADAPTERS.inspect}"
       end
+
+      @adapter = name
     end
 
     private

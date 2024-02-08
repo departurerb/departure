@@ -63,6 +63,9 @@ module Departure
 
     # Includes the Foreigner's Mysql2Adapter implemention in
     # DepartureAdapter to support foreign keys
+    #
+    # Warning: Foreigner only works with MySQL2, and therefore
+    #          trilogy is not supported
     def include_foreigner
       Foreigner::Adapter.safe_include(
         :DepartureAdapter,

@@ -14,7 +14,7 @@ module ActiveRecord
         config = config.dup if config.frozen?
         config[:username] = 'root'
       end
-      mysql2_connection = mysql2_connection(config)
+      connection = send("#{Departure.configuration.adapter}_connection", config)
 
       connection_details = Departure::ConnectionDetails.new(config)
       verbose = ActiveRecord::Migration.verbose
@@ -27,10 +27,10 @@ module ActiveRecord
       runner = Departure::Runner.new(
         percona_logger,
         cli_generator,
-        mysql2_connection
+        connection
       )
 
-      connection_options = { mysql_adapter: mysql2_connection }
+      connection_options = { mysql_adapter: connection }
 
       ConnectionAdapters::DepartureAdapter.new(
         runner,

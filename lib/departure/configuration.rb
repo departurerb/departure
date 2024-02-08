@@ -1,6 +1,7 @@
 module Departure
   class Configuration
     attr_accessor :tmp_path, :global_percona_args, :enabled_by_default, :redirect_stderr
+    attr_reader :adapter
 
     def initialize
       @tmp_path = '.'.freeze
@@ -8,6 +9,7 @@ module Departure
       @global_percona_args = nil
       @enabled_by_default = true
       @redirect_stderr = true
+      @adapter = :mysql2
     end
 
     def error_log_path

@@ -1,6 +1,5 @@
 require 'active_record/connection_adapters/abstract_mysql_adapter'
 require 'active_record/connection_adapters/statement_pool'
-require 'active_record/connection_adapters/mysql2_adapter'
 require 'active_support/core_ext/string/filters'
 require 'departure'
 require 'forwardable'

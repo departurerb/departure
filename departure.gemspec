@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'railties', '>= 6.0.0', '!= 7.0.0', '< 7.2.0'
   spec.add_runtime_dependency 'activerecord', '>= 6.0.0', '!= 7.0.0', '< 7.2.0'
-  spec.add_runtime_dependency 'mysql2', '>= 0.4.0', '<= 0.5.5'
+  spec.add_runtime_dependency 'mysql2', '>= 0.4.0', '<= 0.5.6'
 
   spec.add_development_dependency 'appraisal', '~> 2.4.1'
   spec.add_development_dependency 'rake', '>= 10.0'

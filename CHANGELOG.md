@@ -6,6 +6,9 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
 
+## [6.7.0] - 2024-02-20
+
+- Flex mysql2 dependency to < 0.6 and bump version to 0.5.6
 - Drop support for older than the latest EOL Ruby (2.7) and Rails (6.0)
 
 ## [6.6.0] - 2024-01-02

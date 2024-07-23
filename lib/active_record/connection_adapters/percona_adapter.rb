@@ -14,12 +14,7 @@ module ActiveRecord
         config[:username] = 'root'
       end
       adapter = config[:original_adapter]
-      connection = if Departure::SUPPORTED_ADAPTERS.include?(adapter)
-                     send("#{adapter}_connection", config)
-                   else
-                     raise ArgumentError, "Unsupported adater #{adapter}. Supported Departure " \
-                                          "adapters are #{Departure::SUPPORTED_ADAPTERS.inspect}"
-                   end
+      connection = send(Departure.connection_method(adapter), config)
 
       connection_details = Departure::ConnectionDetails.new(config)
       verbose = ActiveRecord::Migration.verbose
@@ -28,19 +23,12 @@ module ActiveRecord
       ]
       percona_logger = Departure::LoggerFactory.build(sanitizers: sanitizers, verbose: verbose)
       cli_generator = Departure::CliGenerator.new(connection_details)
-
-      runner = Departure::Runner.new(
-        percona_logger,
-        cli_generator,
-        connection
-      )
-
-      connection_options = { mysql_adapter: connection }
+      runner = Departure::Runner.new(percona_logger, cli_generator, connection)
 
       ConnectionAdapters::DepartureAdapter.new(
         runner,
         logger,
-        connection_options,
+        { mysql_adapter: connection },
         config
       )
     end

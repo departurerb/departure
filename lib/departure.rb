@@ -32,6 +32,18 @@ module Departure
 
   class << self
     attr_accessor :configuration
+
+    def connection_method(adapter)
+      return "#{adapter}_connection" if Departure::SUPPORTED_ADAPTERS.include?(adapter)
+
+      if adapter.blank?
+        raise ArgumentError, 'You must supply the original_adapter when connecting ' \
+                            "using the percona adapter. Supported adapters: #{SUPPORTED_ADAPTERS}"
+      end
+
+      raise ArgumentError, "Unsupported adater #{adapter}. Supported Departure " \
+                            "adapters are #{Departure::SUPPORTED_ADAPTERS.inspect}"
+    end
   end
 
   def self.configure

@@ -67,10 +67,12 @@ describe Departure, integration: true do
       before do
         ActiveRecord::Base.establish_connection(
           adapter: 'percona',
+          original_adapter: db_config['original_adapter'],
           host: db_config['hostname'],
           username: db_config['username'],
           password: db_config['password'],
-          database: db_config['database']
+          database: db_config['database'],
+          ssl_mode: 'required'
         )
       end
 
@@ -84,9 +86,11 @@ describe Departure, integration: true do
       before do
         ActiveRecord::Base.establish_connection(
           adapter: 'percona',
+          original_adapter: db_config['original_adapter'],
           host: db_config['hostname'],
           password: db_config['password'],
-          database: db_config['database']
+          database: db_config['database'],
+          ssl_mode: 'required'
         )
       end
 

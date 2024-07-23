@@ -63,6 +63,9 @@ module Departure
 
     # Includes the Foreigner's Mysql2Adapter implemention in
     # DepartureAdapter to support foreign keys
+    #
+    # Warning: Foreigner only works with MySQL2, and therefore
+    #          trilogy is not supported
     def include_foreigner
       Foreigner::Adapter.safe_include(
         :DepartureAdapter,
@@ -74,7 +77,8 @@ module Departure
     # instead of the current adapter.
     def reconnect_with_percona
       return if connection_config[:adapter] == 'percona'
-      Departure::ConnectionBase.establish_connection(connection_config.merge(adapter: 'percona'))
+      Departure::ConnectionBase.establish_connection(connection_config.merge(adapter: 'percona',
+                                                                             original_adapter: original_adapter))
     end
 
     # Reconnect without percona adapter when Departure is disabled but was

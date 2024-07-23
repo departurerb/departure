@@ -1,6 +1,5 @@
 require 'active_record/connection_adapters/abstract_mysql_adapter'
 require 'active_record/connection_adapters/statement_pool'
-require 'active_record/connection_adapters/mysql2_adapter'
 require 'active_support/core_ext/string/filters'
 require 'departure'
 require 'forwardable'
@@ -14,7 +13,8 @@ module ActiveRecord
         config = config.dup if config.frozen?
         config[:username] = 'root'
       end
-      mysql2_connection = mysql2_connection(config)
+      adapter = config[:original_adapter]
+      connection = send(Departure.connection_method(adapter), config)
 
       connection_details = Departure::ConnectionDetails.new(config)
       verbose = ActiveRecord::Migration.verbose
@@ -23,19 +23,12 @@ module ActiveRecord
       ]
       percona_logger = Departure::LoggerFactory.build(sanitizers: sanitizers, verbose: verbose)
       cli_generator = Departure::CliGenerator.new(connection_details)
-
-      runner = Departure::Runner.new(
-        percona_logger,
-        cli_generator,
-        mysql2_connection
-      )
-
-      connection_options = { mysql_adapter: mysql2_connection }
+      runner = Departure::Runner.new(percona_logger, cli_generator, connection)
 
       ConnectionAdapters::DepartureAdapter.new(
         runner,
         logger,
-        connection_options,
+        { mysql_adapter: connection },
         config
       )
     end

@@ -14,6 +14,7 @@ Metrics/AbcSize:
 Metrics/BlockLength:
   Max: 20
   Exclude:
+    - 'departure.gemspec'
     - 'spec/*'
     - 'spec/**/*'
 

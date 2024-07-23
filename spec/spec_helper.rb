@@ -20,16 +20,24 @@ require 'support/table_methods'
 
 db_config = Configuration.new
 
+begin
+  require 'activerecord-trilogy-adapter'
+rescue StandardError
+  puts "'activerecord-trilogy-adapter' not loaded for #{Rails.version}"
+end
+
 # Disables/enables the queries log you see in your rails server in dev mode
 fd = ENV['VERBOSE'] ? STDOUT : '/dev/null'
 ActiveRecord::Base.logger = Logger.new(fd)
 
 ActiveRecord::Base.establish_connection(
   adapter: 'percona',
+  original_adapter: db_config['original_adapter'],
   host: db_config['hostname'],
   username: db_config['username'],
   password: db_config['password'],
-  database: db_config['database']
+  database: db_config['database'],
+  ssl_mode: 'required'
 )
 
 MIGRATION_FIXTURES = File.expand_path('../fixtures/migrate/', __FILE__)

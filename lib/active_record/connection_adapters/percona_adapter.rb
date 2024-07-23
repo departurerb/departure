@@ -13,7 +13,12 @@ module ActiveRecord
         config = config.dup if config.frozen?
         config[:username] = 'root'
       end
-      connection = send("#{Departure.configuration.adapter}_connection", config)
+      adapter = config[:adapter]
+      connection = if Departure::SUPPORTED_ADAPTERS.include?(adapter)
+                     send("#{adapter}_connection", config)
+                   else
+                     raise ArgumentError, "Supported Departure adapters are #{Departure::SUPPORTED_ADAPTERS.inspect}"
+                   end
 
       connection_details = Departure::ConnectionDetails.new(config)
       verbose = ActiveRecord::Migration.verbose

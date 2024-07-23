@@ -28,6 +28,8 @@ ActiveSupport.on_load(:active_record) do
 end
 
 module Departure
+  SUPPORTED_ADAPTERS = %i[trilogy mysql2].freeze
+
   class << self
     attr_accessor :configuration
   end

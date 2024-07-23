@@ -20,6 +20,8 @@ require 'support/table_methods'
 
 db_config = Configuration.new
 
+require "active_record/connection_adapters/#{db_config['original_adapter']}_adapter"
+
 # Disables/enables the queries log you see in your rails server in dev mode
 fd = ENV['VERBOSE'] ? STDOUT : '/dev/null'
 ActiveRecord::Base.logger = Logger.new(fd)

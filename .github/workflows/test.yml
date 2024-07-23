@@ -19,15 +19,6 @@ jobs:
           - gemfiles/rails_6_1.gemfile
           - gemfiles/rails_7_0.gemfile
           - gemfiles/rails_7_1.gemfile
-        include:
-          - ruby: 2.7
-            gemfile: gemfiles/ruby_2.7_rails_6_0.gemfile
-          - ruby: 2.7
-            gemfile: gemfiles/ruby_2.7_rails_6_1.gemfile
-          - ruby: 2.7
-            gemfile: gemfiles/ruby_2.7_rails_7_0.gemfile
-          - ruby: 2.7
-            gemfile: gemfiles/ruby_2.7_rails_7_1.gemfile
     env:
       PERCONA_DB_USER: root
       PERCONA_DB_PASSWORD: root
@@ -56,12 +47,12 @@ jobs:
     env:
       PERCONA_DB_USER: root
       PERCONA_DB_PASSWORD: root
-      BUNDLE_GEMFILE: gemfiles/ruby_2.7_rails_6_0.gemfile
+      BUNDLE_GEMFILE: gemfiles/rails_6_1.gemfile
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7
+          ruby-version: 3.0
           bundler-cache: true
       - run: bundle exec rubocop --parallel

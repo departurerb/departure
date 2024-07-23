@@ -17,7 +17,8 @@ module ActiveRecord
       connection = if Departure::SUPPORTED_ADAPTERS.include?(adapter)
                      send("#{adapter}_connection", config)
                    else
-                     raise ArgumentError, "Supported Departure adapters are #{Departure::SUPPORTED_ADAPTERS.inspect}"
+                     raise ArgumentError, "Unsupported adater #{adapter}. Supported Departure " \
+                                          "adapters are #{Departure::SUPPORTED_ADAPTERS.inspect}"
                    end
 
       connection_details = Departure::ConnectionDetails.new(config)

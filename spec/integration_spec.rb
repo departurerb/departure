@@ -72,7 +72,7 @@ describe Departure, integration: true do
           username: db_config['username'],
           password: db_config['password'],
           database: db_config['database'],
-          ssl_mode: "required"
+          ssl_mode: 'required'
         )
       end
 
@@ -90,7 +90,7 @@ describe Departure, integration: true do
           host: db_config['hostname'],
           password: db_config['password'],
           database: db_config['database'],
-          ssl_mode: "required"
+          ssl_mode: 'required'
         )
       end
 

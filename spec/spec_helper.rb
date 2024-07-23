@@ -32,7 +32,8 @@ ActiveRecord::Base.establish_connection(
   host: db_config['hostname'],
   username: db_config['username'],
   password: db_config['password'],
-  database: db_config['database']
+  database: db_config['database'],
+  ssl_mode: "required"
 )
 
 MIGRATION_FIXTURES = File.expand_path('../fixtures/migrate/', __FILE__)

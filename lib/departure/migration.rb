@@ -77,7 +77,8 @@ module Departure
     # instead of the current adapter.
     def reconnect_with_percona
       return if connection_config[:adapter] == 'percona'
-      Departure::ConnectionBase.establish_connection(connection_config.merge(adapter: 'percona'))
+      Departure::ConnectionBase.establish_connection(connection_config.merge(adapter: 'percona',
+                                                                             original_adapter: original_adapter))
     end
 
     # Reconnect without percona adapter when Departure is disabled but was

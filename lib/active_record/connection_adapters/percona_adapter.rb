@@ -13,7 +13,7 @@ module ActiveRecord
         config = config.dup if config.frozen?
         config[:username] = 'root'
       end
-      adapter = config[:adapter]
+      adapter = config[:original_adapter]
       connection = if Departure::SUPPORTED_ADAPTERS.include?(adapter)
                      send("#{adapter}_connection", config)
                    else

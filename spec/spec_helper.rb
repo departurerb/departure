@@ -20,7 +20,11 @@ require 'support/table_methods'
 
 db_config = Configuration.new
 
-require "active_record/connection_adapters/#{db_config['original_adapter']}_adapter"
+begin
+  require 'activerecord-trilogy-adapter'
+rescue StandardError
+  puts "'activerecord-trilogy-adapter' not loaded for #{Rails.version}"
+end
 
 # Disables/enables the queries log you see in your rails server in dev mode
 fd = ENV['VERBOSE'] ? STDOUT : '/dev/null'
@@ -33,7 +37,7 @@ ActiveRecord::Base.establish_connection(
   username: db_config['username'],
   password: db_config['password'],
   database: db_config['database'],
-  ssl_mode: "required"
+  ssl_mode: 'required'
 )
 
 MIGRATION_FIXTURES = File.expand_path('../fixtures/migrate/', __FILE__)

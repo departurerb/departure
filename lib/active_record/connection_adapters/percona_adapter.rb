@@ -14,34 +14,43 @@ module ActiveRecord
         config = config.dup if config.frozen?
         config[:username] = 'root'
       end
-      mysql2_connection = mysql2_connection(config)
 
-      connection_details = Departure::ConnectionDetails.new(config)
-      verbose = ActiveRecord::Migration.verbose
-      sanitizers = [
-        Departure::LogSanitizers::PasswordSanitizer.new(connection_details)
-      ]
-      percona_logger = Departure::LoggerFactory.build(sanitizers: sanitizers, verbose: verbose)
-      cli_generator = Departure::CliGenerator.new(connection_details)
+      if ActiveRecord::VERSION::MAJOR >= 7 && ActiveRecord::VERSION::MINOR >= 2
+        ConnectionAdapters::DepartureAdapter.new(config)
+      else
+        mysql2_adapter = mysql2_connection(config)
 
-      runner = Departure::Runner.new(
-        percona_logger,
-        cli_generator,
-        mysql2_connection
-      )
+        connection_details = Departure::ConnectionDetails.new(config)
+        verbose = ActiveRecord::Migration.verbose
+        sanitizers = [
+          Departure::LogSanitizers::PasswordSanitizer.new(connection_details)
+        ]
+        percona_logger = Departure::LoggerFactory.build(sanitizers: sanitizers, verbose: verbose)
+        cli_generator = Departure::CliGenerator.new(connection_details)
 
-      connection_options = { mysql_adapter: mysql2_connection }
+        runner = Departure::Runner.new(
+          percona_logger,
+          cli_generator,
+          mysql2_adapter
+        )
 
-      ConnectionAdapters::DepartureAdapter.new(
-        runner,
-        logger,
-        connection_options,
-        config
-      )
+        connection_options = { mysql_adapter: mysql2_adapter }
+
+        ConnectionAdapters::DepartureAdapter.new(
+          runner,
+          logger,
+          connection_options,
+          config
+        )
+      end
     end
   end
 
   module ConnectionAdapters
+    if ActiveRecord::VERSION::MAJOR >= 7 && ActiveRecord::VERSION::MINOR >= 2
+      register "percona", "ActiveRecord::ConnectionAdapters::DepartureAdapter", "active_record/connection_adapters/percona_adapter"
+    end
+
     class DepartureAdapter < AbstractMysqlAdapter
       TYPE_MAP = Type::TypeMap.new.tap { |m| initialize_type_map(m) } if defined?(initialize_type_map)
 
@@ -74,10 +83,48 @@ module ActiveRecord
 
       def_delegators :mysql_adapter, :each_hash, :set_field_encoding
 
-      def initialize(connection, _logger, connection_options, _config)
-        @mysql_adapter = connection_options[:mysql_adapter]
-        super
-        @prepared_statements = false
+      if ActiveRecord::VERSION::MAJOR >= 7 && ActiveRecord::VERSION::MINOR >= 2
+        class << self
+          def new_client(config)
+            mysql2_adapter = ConnectionAdapters::Mysql2Adapter.new(config.merge(adapter: "mysql2"))
+
+            connection_details = Departure::ConnectionDetails.new(config)
+            verbose = ActiveRecord::Migration.verbose
+            sanitizers = [
+              Departure::LogSanitizers::PasswordSanitizer.new(connection_details)
+            ]
+            percona_logger = Departure::LoggerFactory.build(sanitizers: sanitizers, verbose: verbose)
+            cli_generator = Departure::CliGenerator.new(connection_details)
+
+            Departure::Runner.new(
+              percona_logger,
+              cli_generator,
+              mysql2_adapter
+            )
+          end
+        end
+
+        def initialize(...)
+          super
+
+          @mysql_adapter = ConnectionAdapters::Mysql2Adapter.new(@config.merge(adapter: "mysql2"))
+
+          @config[:flags] ||= 0
+
+          if @config[:flags].kind_of? Array
+            @config[:flags].push "FOUND_ROWS"
+          else
+            @config[:flags] |= ::Mysql2::Client::FOUND_ROWS
+          end
+
+          @connection_parameters ||= @config
+        end
+      else
+        def initialize(connection, logger, connection_options, config)
+          @mysql_adapter = connection_options[:mysql_adapter]
+          super
+          @prepared_statements = false
+        end
       end
 
       def write_query?(sql) # :nodoc:
@@ -181,6 +228,8 @@ module ActiveRecord
       def full_version
         if ActiveRecord::VERSION::MAJOR < 6
           get_full_version
+        elsif ActiveRecord::VERSION::MAJOR >= 7 && ActiveRecord::VERSION::MINOR >= 2
+          database_version.full_version_string
         else
           schema_cache.database_version.full_version_string
         end
@@ -200,21 +249,37 @@ module ActiveRecord
 
       attr_reader :mysql_adapter
 
-      if ActiveRecord.version >= Gem::Version.create('7.1.0')
+      if ActiveRecord::VERSION::MAJOR >= 7 && ActiveRecord::VERSION::MINOR >= 1
         def raw_execute(sql, name, async: false, allow_retry: false, materialize_transactions: true)
-          log(sql, name, async: async) do
+          log(sql, name, async: async) do |notification_payload|
             with_raw_connection(allow_retry: allow_retry, materialize_transactions: materialize_transactions) do |conn|
               sync_timezone_changes(conn)
               result = conn.query(sql)
-              verified!
+              conn.abandon_results! if ActiveRecord::VERSION::MINOR >= 2
+              verified! if ActiveRecord.version >= Gem::Version.create('7.1.2')
               handle_warnings(sql)
+              notification_payload[:row_count] = result&.size || 0 if ActiveRecord::VERSION::MINOR >= 2
               result
             end
           end
         end
-      end
 
-      def reconnect; end
+        if ActiveRecord::VERSION::MINOR >= 2
+          def connect
+            @raw_connection = self.class.new_client(@connection_parameters)
+          rescue ConnectionNotEstablished => ex
+            raise ex.set_pool(@pool)
+          end
+
+          def reconnect
+            @raw_connection&.close
+            @raw_connection = nil
+            connect
+          end
+        else
+          def reconnect; end
+        end
+      end
     end
   end
 end

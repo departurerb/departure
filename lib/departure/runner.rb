@@ -26,6 +26,7 @@ module Departure
       if alter_statement?(sql)
         command_line = cli_generator.parse_statement(sql)
         execute(command_line)
+        affected_rows
       else
         mysql_adapter.execute(sql)
       end
@@ -37,6 +38,16 @@ module Departure
     # @return [Integer]
     def affected_rows
       mysql_adapter.raw_connection.affected_rows
+    end
+
+    if ActiveRecord::VERSION::MAJOR >= 7 && ActiveRecord::VERSION::MINOR >= 2
+      def escape(str)
+        mysql_adapter.raw_connection.escape(str)
+      end
+
+      def abandon_results!
+        mysql_adapter.raw_connection.abandon_results!
+      end
     end
 
     # TODO: rename it so we don't confuse it with AR's #execute

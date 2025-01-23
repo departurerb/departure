@@ -22,7 +22,7 @@ db_config = Configuration.new
 
 begin
   require 'activerecord-trilogy-adapter'
-rescue StandardError
+rescue LoadError => e
   puts "'activerecord-trilogy-adapter' not loaded for #{Rails.version}"
 end
 

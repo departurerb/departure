@@ -127,7 +127,7 @@ GEM
     mini_mime (1.1.5)
     minitest (5.24.1)
     mutex_m (0.2.0)
-    mysql2 (0.5.6)
+    mysql2 (0.5.5)
     net-imap (0.4.12)
       date
       net-protocol
@@ -138,6 +138,8 @@ GEM
     net-smtp (0.5.0)
       net-protocol
     nio4r (2.7.3)
+    nokogiri (1.16.6-aarch64-linux)
+      racc (~> 1.4)
     nokogiri (1.16.6-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.16.6-x86_64-linux)
@@ -254,6 +256,7 @@ GEM
     zeitwerk (2.6.16)
 
 PLATFORMS
+  aarch64-linux
   arm64-darwin-23
   x86_64-linux
 
@@ -273,4 +276,4 @@ DEPENDENCIES
   trilogy (>= 2.7.0)
 
 BUNDLED WITH
-   2.4.22
+   2.5.23

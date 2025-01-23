@@ -83,7 +83,11 @@ module Departure
     #
     # @return [String]
     def error_message
-      File.read(error_log_path)
+      if redirect_stderr
+        File.read(error_log_path)
+      else
+        ''
+      end
     end
 
     # Logs when the execution started

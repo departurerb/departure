@@ -1,10 +1,11 @@
 PATH
   remote: .
   specs:
-    departure (6.7.0)
+    departure (6.8.0)
       activerecord (>= 6.0.0, < 7.2.0, != 7.0.0)
       mysql2 (>= 0.4.0, < 0.6.0)
       railties (>= 6.0.0, < 7.2.0, != 7.0.0)
+      trilogy (>= 2.4.0)
 
 GEM
   remote: https://rubygems.org/
@@ -69,8 +70,8 @@ GEM
     irb (1.11.2)
       rdoc
       reline (>= 0.4.2)
-    json (2.7.1)
-    language_server-protocol (3.17.0.3)
+    json (2.9.1)
+    language_server-protocol (3.17.0.4)
     loofah (2.22.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -78,12 +79,14 @@ GEM
     minitest (5.22.2)
     mutex_m (0.2.0)
     mysql2 (0.5.6)
+    nokogiri (1.16.2-aarch64-linux)
+      racc (~> 1.4)
     nokogiri (1.16.2-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.16.2-x86_64-linux)
       racc (~> 1.4)
-    parallel (1.24.0)
-    parser (3.3.0.5)
+    parallel (1.26.3)
+    parser (3.3.7.0)
       ast (~> 2.4.1)
       racc
     pry (0.14.2)
@@ -94,7 +97,7 @@ GEM
       pry (>= 0.13, < 0.15)
     psych (5.1.2)
       stringio
-    racc (1.7.3)
+    racc (1.8.1)
     rack (3.0.9)
     rack-session (2.0.0)
       rack (>= 3.0.0)
@@ -122,10 +125,9 @@ GEM
     rake (13.1.0)
     rdoc (6.6.2)
       psych (>= 4.0.0)
-    regexp_parser (2.9.0)
+    regexp_parser (2.10.0)
     reline (0.4.2)
       io-console (~> 0.5)
-    rexml (3.2.6)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
@@ -142,22 +144,21 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.0)
-    rubocop (1.60.2)
+    rubocop (1.71.2)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
       parallel (~> 1.10)
       parser (>= 3.3.0.2)
       rainbow (>= 2.2.2, < 4.0)
-      regexp_parser (>= 1.8, < 3.0)
-      rexml (>= 3.2.5, < 4.0)
-      rubocop-ast (>= 1.30.0, < 2.0)
+      regexp_parser (>= 2.9.3, < 3.0)
+      rubocop-ast (>= 1.38.0, < 2.0)
       ruby-progressbar (~> 1.7)
-      unicode-display_width (>= 2.4.0, < 3.0)
-    rubocop-ast (1.30.0)
-      parser (>= 3.2.1.0)
-    rubocop-performance (1.20.2)
+      unicode-display_width (>= 2.4.0, < 4.0)
+    rubocop-ast (1.38.0)
+      parser (>= 3.3.1.0)
+    rubocop-performance (1.23.1)
       rubocop (>= 1.48.1, < 2.0)
-      rubocop-ast (>= 1.30.0, < 2.0)
+      rubocop-ast (>= 1.31.1, < 2.0)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     simplecov (0.13.0)
@@ -168,13 +169,15 @@ GEM
     stringio (3.1.0)
     thor (1.3.0)
     timeout (0.4.1)
+    trilogy (2.9.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    unicode-display_width (2.5.0)
+    unicode-display_width (2.6.0)
     webrick (1.8.1)
     zeitwerk (2.6.13)
 
 PLATFORMS
+  aarch64-linux
   arm64-darwin-21
   arm64-darwin-22
   arm64-darwin-23
@@ -190,8 +193,8 @@ DEPENDENCIES
   rake (>= 10.0)
   rspec (~> 3.4, >= 3.4.0)
   rspec-its (~> 1.2)
-  rubocop (~> 1.60.2)
-  rubocop-performance (~> 1.20.2)
+  rubocop (~> 1.71.0)
+  rubocop-performance (~> 1.23.0)
 
 BUNDLED WITH
-   2.4.22
+   2.5.23

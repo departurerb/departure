@@ -1,9 +1,7 @@
 require 'active_record/connection_adapters/abstract_mysql_adapter'
 require 'active_record/connection_adapters/statement_pool'
-require 'active_record/connection_adapters/mysql2_adapter'
 require 'active_support/core_ext/string/filters'
 require 'departure'
-require 'forwardable'
 
 module ActiveRecord
   module ConnectionHandling
@@ -14,7 +12,8 @@ module ActiveRecord
         config = config.dup if config.frozen?
         config[:username] = 'root'
       end
-      mysql2_connection = mysql2_connection(config)
+      adapter = config[:original_adapter]
+      connection = send(Departure.connection_method(adapter), config)
 
       connection_details = Departure::ConnectionDetails.new(config)
       verbose = ActiveRecord::Migration.verbose
@@ -27,10 +26,10 @@ module ActiveRecord
       runner = Departure::Runner.new(
         percona_logger,
         cli_generator,
-        mysql2_connection
+        connection
       )
 
-      connection_options = { mysql_adapter: mysql2_connection }
+      connection_options = { mysql_adapter: connection }
 
       ConnectionAdapters::DepartureAdapter.new(
         runner,
@@ -64,20 +63,23 @@ module ActiveRecord
         end
       end
 
-      extend Forwardable
-
       unless method_defined?(:change_column_for_alter)
         include ForAlterStatements
       end
 
       ADAPTER_NAME = 'Percona'.freeze
 
-      def_delegators :mysql_adapter, :each_hash, :set_field_encoding
-
-      def initialize(connection, _logger, connection_options, _config)
+      def initialize(connection, _logger, connection_options, config)
         @mysql_adapter = connection_options[:mysql_adapter]
         super
         @prepared_statements = false
+
+        case config[:original_adapter].to_s
+        when 'mysql2'
+          extend Departure::AdapterExtensions::Mysql2
+        when 'trilogy'
+          extend Departure::AdapterExtensions::Trilogy
+        end
       end
 
       def write_query?(sql) # :nodoc:
@@ -95,13 +97,6 @@ module ActiveRecord
       def exec_insert(sql, name, binds, pk = nil, sequence_name = nil, returning: nil) # rubocop:disable Lint/UnusedMethodArgument, Metrics/LineLength, Metrics/ParameterLists
         execute(to_sql(sql, binds), name)
       end
-
-      def internal_exec_query(sql, name = 'SQL', _binds = [], **_kwargs) # :nodoc:
-        result = execute(sql, name)
-        fields = result.fields if defined?(result.fields)
-        ActiveRecord::Result.new(fields, result.to_a)
-      end
-      alias exec_query internal_exec_query
 
       # Executes a SELECT query and returns an array of rows. Each row is an
       # array of field values.
@@ -184,16 +179,6 @@ module ActiveRecord
         else
           schema_cache.database_version.full_version_string
         end
-      end
-
-      # This is a method defined in Rails 6.0, and we have no control over the
-      # naming of this method.
-      def get_full_version # rubocop:disable Style/AccessorMethodName
-        mysql_adapter.raw_connection.server_info[:version]
-      end
-
-      def last_inserted_id(result)
-        mysql_adapter.send(:last_inserted_id, result)
       end
 
       private

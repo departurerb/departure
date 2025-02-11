@@ -1,4 +1,3 @@
-require 'byebug'
 require 'spec_helper'
 
 describe Lhm::Adapter, '#remove_column' do

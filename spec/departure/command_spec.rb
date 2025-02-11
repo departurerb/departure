@@ -85,7 +85,7 @@ describe Departure::Command do
 
         it 'raises a Departure::Error' do
           expect { runner.run }
-            .to raise_exception(Departure::Error, redirect_stderr ? "ROTO\n" : "")
+            .to raise_exception(Departure::Error, redirect_stderr ? "ROTO\n" : '')
         end
       end
 

@@ -5,9 +5,7 @@ describe Departure::Runner do
   let(:command_line) { 'pt-online-schema-change command' }
   let(:logger) { instance_double(Departure::Logger) }
   let(:cli_generator) { instance_double(Departure::CliGenerator) }
-  let(:mysql_adapter) do
-    instance_double(ActiveRecord::ConnectionAdapters::Mysql2Adapter)
-  end
+  let(:mysql_adapter) { instance_double(mysql_adapter_class) }
   let(:config) do
     instance_double(
       Departure::Configuration,

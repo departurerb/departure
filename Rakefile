@@ -2,6 +2,7 @@ require 'bundler/gem_tasks'
 require 'rspec/core/rake_task'
 
 require './configuration'
+require 'departure'
 require './test_database'
 
 RSpec::Core::RakeTask.new(:spec)

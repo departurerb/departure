@@ -1,5 +1,5 @@
 FROM ruby:3.0
-MAINTAINER muffinista@gmail.com
+# MAINTAINER muffinista@gmail.com
 
 # Install apt based dependencies required to run Rails as
 # well as RubyGems. As the Ruby image itself is based on a

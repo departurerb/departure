@@ -6,6 +6,10 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
 
+## [6.8.0] - 2025-01-30
+
+- Support for trilogy MySQL adapter
+
 ## [6.7.0] - 2024-02-20
 
 - Flex mysql2 dependency to < 0.6 and bump version to 0.5.6

@@ -194,7 +194,7 @@ There, the methods that require `ALTER TABLE` SQL statements, like `add_column`,
 are overriden to get executed with
 [Departure::Runner](https://github.com/departurerb/departure/blob/master/lib/departure/runner.rb),
 which deals with the `pt-online-schema-change` binary. All the others, like
-`create_table`, are delegated to the ActiveRecord's built in Mysql2Adapter and
+`create_table`, are delegated to the ActiveRecord's built in Mysql2Adapter or TrilogyAdapter and
 so they follow the regular path.
 
 [Departure::Runner](https://github.com/departurerb/departure/blob/master/lib/departure/runner.rb)
@@ -211,6 +211,18 @@ adapters.
 There is a [known bug](https://bugs.launchpad.net/percona-toolkit/+bug/1498128) in percona-toolkit version 2.2.15
 that prevents schema changes when a table has constraints. You should upgrade to a version later than 2.2.17 to fix the issue.
 
+## Environment setup
+
+Please have in mind that you may want to have docker and docker-compose installed in your
+development environment. To do so you can follow the instructions from the official Dockerdocs: https://docs.docker.com/compose/install/
+
+Once you are ready you can run the following commands to setup your environment
+
+```
+docker-compose build
+docker-compose up -d
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run
@@ -222,6 +234,37 @@ release a new version, update the version number in `version.rb`, and then run
 `bundle exec rake release`, which will create a git tag for the version, push
 git commits and tags, and push the `.gem` file to
 [rubygems.org](https://rubygems.org).
+
+## Testing
+
+Open a terminal or an IDE mounted into the following container: `departure/rails-1`.
+Inside that container the repo will be located at the following path: `/app`
+
+```
+cd /app
+
+# Gather all the gems that uses departure
+bundle install
+# Gather all the gems depending on the many rails versions we're testing
+bundle exec appraisal install
+
+# Creates the initial database (we can run the command from any of the Appraisal variants)
+bundle exec appraisal rails-7-1 bin/setup
+
+# Run rspec for any of the Appraisal variants
+# For mysql2 adapter:
+PERCONA_DB_ADAPTER=mysql2 bundle exec appraisal rails-6-1 bundle exec rspec
+PERCONA_DB_ADAPTER=mysql2 bundle exec appraisal rails-7-0 bundle exec rspec
+PERCONA_DB_ADAPTER=mysql2 bundle exec appraisal rails-7-1 bundle exec rspec
+
+# For trilogy adapter:
+PERCONA_DB_ADAPTER=trilogy bundle exec appraisal rails-6-1 bundle exec rspec
+PERCONA_DB_ADAPTER=trilogy bundle exec appraisal rails-7-0 bundle exec rspec
+PERCONA_DB_ADAPTER=trilogy bundle exec appraisal rails-7-1 bundle exec rspec
+
+# Fix any offended cops with:
+bundle exec rubocop -a
+```
 
 ## Contributing
 

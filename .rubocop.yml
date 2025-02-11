@@ -12,7 +12,7 @@ Metrics/AbcSize:
   Enabled: false
 
 Metrics/BlockLength:
-  Max: 20
+  Max: 30
   Exclude:
     - 'spec/*'
     - 'spec/**/*'

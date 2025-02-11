@@ -8,7 +8,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
       if defined?(ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter::MysqlString)
         ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter::MysqlString.new
       else
-        ActiveRecord::Type.lookup(:string, adapter: :mysql2)
+        ActiveRecord::Type.lookup(:string, adapter: original_adapter.to_sym)
       end
     end
     let(:metadata) do
@@ -45,9 +45,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
     end
   end
 
-  let(:mysql_adapter) do
-    instance_double(ActiveRecord::ConnectionAdapters::Mysql2Adapter)
-  end
+  let(:mysql_adapter) { build_mysql_adapter }
 
   let(:logger) { double(:logger, puts: true) }
   let(:connection_options) { { mysql_adapter: mysql_adapter } }
@@ -60,13 +58,15 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
     )
   end
 
-  let(:config) { { prepared_statements: '', runner: runner } }
+  let(:db_config) { Configuration.new }
+
+  let(:config) { { prepared_statements: '', runner: runner, original_adapter: db_config['original_adapter'] } }
 
   let(:adapter) do
     described_class.new(runner, logger, connection_options, config)
   end
 
-  let(:mysql_client) { double(:mysql_client) }
+  let(:mysql_client) { build_mysql_client }
 
   before do
     allow(mysql_client).to receive(:server_info).and_return(version: '5.7.19')
@@ -223,10 +223,10 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
       )
     end
 
-    context 'when the adapter returns results' do
+    context 'when the adapter returns results', adapter: :mysql2 do
       let(:result_set) { double(fields: [:id], to_a: [1]) }
 
-      it 'executes the sql' do
+      it 'executes the sql', adapter: :mysql2 do
         expect(adapter).to(
           receive(:execute).with(sql, name)
         ).and_return(result_set)
@@ -242,7 +242,27 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
       end
     end
 
-    context 'when the adapter returns nil' do
+    context 'when the adapter returns results', adapter: :trilogy do
+      let(:result_set) { double(fields: [:id], to_a: [1]) }
+
+      it 'executes the sql' do
+        expect(mysql_adapter).to(
+          receive(:exec_query).with(sql, name, binds)
+        ).and_return(result_set)
+
+        adapter.exec_query(sql, name, binds)
+      end
+
+      it 'returns an ActiveRecord::Result' do
+        allow(mysql_adapter).to receive(:exec_query).and_return(result_set)
+
+        result = adapter.exec_query(sql, name, binds)
+        expect(result.fields).to eq([:id])
+        expect(result.to_a).to eq([1])
+      end
+    end
+
+    context 'when the adapter returns an emptyset', adapter: :mysql2 do
       let(:result_set) { nil }
 
       it 'executes the sql' do
@@ -260,9 +280,29 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
         adapter.exec_query(sql, name, binds)
       end
     end
+
+    context 'when the adapter returns an emptyset', adapter: :trilogy do
+      let(:result_set) { double(fields: [], to_a: []) }
+
+      it 'executes the sql' do
+        expect(mysql_adapter).to(
+          receive(:exec_query).with(sql, name, binds)
+        ).and_return(result_set)
+
+        adapter.exec_query(sql, name, binds)
+      end
+
+      it 'returns an ActiveRecord::Result' do
+        allow(mysql_adapter).to receive(:exec_query).and_return(result_set)
+
+        result = adapter.exec_query(sql, name, binds)
+        expect(result.fields).to eq([])
+        expect(result.to_a).to eq([])
+      end
+    end
   end
 
-  describe '#last_inserted_id' do
+  describe '#last_inserted_id', adapter: :mysql2 do
     let(:result) { double(:result) }
 
     it 'delegates to the mysql adapter' do
@@ -273,48 +313,67 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
     end
   end
 
+  describe '#last_inserted_id', adapter: :trilogy do
+    let(:result) { double(:result) }
+
+    it 'delegates to the mysql adapter' do
+      expect(mysql_adapter.raw_connection).to receive(:last_insert_id)
+      adapter.last_inserted_id(result)
+    end
+  end
+
   describe '#select_rows' do
-    subject { adapter.select_rows(sql, name) }
+    subject { adapter.select_rows(sql, name, binds) }
 
     let(:sql) { 'SELECT id, body FROM comments' }
     let(:name) { nil }
+    let(:binds) { nil }
 
-    let(:array_of_rows) { [%w[1 body], %w[2 body]] }
-    let(:mysql2_result) do
-      instance_double(Mysql2::Result, to_a: array_of_rows, fields: [:id, :body])
+    let(:array_of_rows) { [%w[1 value1], %w[2 value2]] }
+    let(:adapter_result) { build_mysql_adapter_result(rows: array_of_rows, fields: [:id, :body]) }
+
+    context "with mysql2 adapter", adapter: :mysql2 do
+      before do
+        allow(adapter).to(
+          receive(:execute).with(sql, name)
+        ).and_return(adapter_result)
+      end
+
+      it { is_expected.to match_array(array_of_rows) }
     end
 
-    before do
-      allow(adapter).to(
-        receive(:execute).with(sql, name)
-      ).and_return(mysql2_result)
-    end
+    context "with trilogy adapter", adapter: :trilogy do
+      before do
+        allow(mysql_adapter).to(
+          receive(:select_all).with(sql, name, binds)
+        ).and_return(adapter_result)
+      end
 
-    it { is_expected.to match_array(array_of_rows) }
+      it { is_expected.to match_array(array_of_rows) }
+    end
   end
 
   describe '#select' do
-    subject { adapter.select(sql, name) }
+    subject { adapter.select(sql, name, binds) }
 
     let(:sql) { 'SELECT id, body FROM comments' }
     let(:name) { nil }
+    let(:binds) { nil }
 
-    let(:array_of_rows) { [%w[1 body], %w[2 body]] }
-    let(:mysql2_result) do
-      instance_double(Mysql2::Result, fields: %w[id body], to_a: array_of_rows)
-    end
+    let(:array_of_rows) { [%w[1 value1], %w[2 value2]] }
+    let(:adapter_result) { ActiveRecord::Result.new(%w[id body], array_of_rows) }
 
     before do
       allow(adapter).to(
-        receive(:execute).with(sql, name)
-      ).and_return(mysql2_result)
+        receive(:exec_query).with(sql, name, binds)
+      ).and_return(adapter_result)
     end
 
     it do
       is_expected.to match_array(
         [
-          { 'id' => '1', 'body' => 'body' },
-          { 'id' => '2', 'body' => 'body' }
+          { 'id' => '1', 'body' => 'value1' },
+          { 'id' => '2', 'body' => 'value2' }
         ]
       )
     end

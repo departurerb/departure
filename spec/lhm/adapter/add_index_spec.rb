@@ -1,4 +1,3 @@
-require 'byebug'
 require 'spec_helper'
 
 describe Lhm::Adapter, '#add_index' do

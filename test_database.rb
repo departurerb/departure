@@ -1,5 +1,12 @@
 require 'active_record'
+
+#### Adapters require statements
+# -> mysql2
 require 'active_record/connection_adapters/mysql2_adapter'
+# -> trilogy
+require 'trilogy_adapter/connection' unless ActiveRecord::VERSION::STRING >= '7.1'
+require 'active_record/connection_adapters/trilogy_adapter'
+#####
 
 # Setups the test database with the schema_migrations table that ActiveRecord
 # requires for the migrations, plus a table for the Comment model used throught
@@ -12,6 +19,7 @@ class TestDatabase
   def initialize(config)
     @config = config
     @database = config['database']
+    @original_adapter = config['original_adapter']
   end
 
   # Creates the test database, the schema_migrations and the comments tables.
@@ -70,11 +78,24 @@ class TestDatabase
   end
 
   def conn
-    @conn ||= ActiveRecord::Base.mysql2_connection(
+    prepare_for_adapter_connection unless @conn
+
+    @conn ||= ActiveRecord::Base.send(
+      Departure.connection_method(@original_adapter),
       host: @config['hostname'],
       username: @config['username'],
       password: @config['password'],
       reconnect: true
     )
+  end
+
+  def prepare_for_adapter_connection
+    case @original_adapter.to_s
+    when 'mysql2'
+      # Nothing to do here, active_record already knows the mysql2 adapter
+    when 'trilogy'
+      # Necessary for enhancing ActiveRecord to recognize the Trilogy adapter
+      ActiveRecord::Base.extend(TrilogyAdapter::Connection) if defined?(TrilogyAdapter::Connection)
+    end
   end
 end

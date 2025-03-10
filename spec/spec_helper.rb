@@ -32,7 +32,7 @@ ActiveRecord::Base.establish_connection(
   database: db_config['database']
 )
 
-MIGRATION_FIXTURES = File.expand_path('../fixtures/migrate/', __FILE__)
+MIGRATION_FIXTURES = File.expand_path('../dummy/db/migrate/', __FILE__)
 
 test_database = TestDatabase.new(db_config)
 

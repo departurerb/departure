@@ -12,11 +12,10 @@ default: &default
   password: <%= ENV['PERCONA_DB_PASSWORD'] || 'password' %>
   hostname: <%= ENV['PERCONA_DB_HOST'] || 'localhost' %>
   socket: <%= ENV['PERCONA_DB_SOCKET'] || '' %>
+  database: <%= ENV['PERCONA_DB_NAME'] || 'departure_test' %>
 
 development:
   <<: *default
-  database: <%= ENV['PERCONA_DB_NAME'] || 'departure_development' %>
 
 test:
   <<: *default
-  database: <%= ENV['PERCONA_DB_NAME'] || 'departure_test' %>

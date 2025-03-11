@@ -6,6 +6,10 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
 
+- Drop Ruby 3.0 support in specs
+- Create dummy application in specs, migrate fixtures to that application
+- Create a `bin/rails` command that loads the database from the dummy application
+
 ## [6.7.0] - 2024-02-20
 
 - Flex mysql2 dependency to < 0.6 and bump version to 0.5.6

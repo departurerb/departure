@@ -5,7 +5,7 @@
 #   gem 'sqlite3'
 #
 default: &default
-  adapter: percona
+  adapter: <%= ENV.fetch("DB_ADAPTER") { "mysql2" } %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
   username: <%= ENV['PERCONA_DB_USER'] || 'root' %>
@@ -15,15 +15,8 @@ default: &default
 
 development:
   <<: *default
-  username: <%= ENV['PERCONA_DB_USER'] || 'root' %>
-  password: <%= ENV['PERCONA_DB_PASSWORD'] || 'password' %>
   database: <%= ENV['PERCONA_DB_NAME'] || 'departure_development' %>
-  hostname: <%= ENV['PERCONA_DB_HOST'] || 'localhost' %>
-  socket: <%= ENV['PERCONA_DB_SOCKET'] || '' %>
 
-# Warning: The database defined as "test" will be erased and
-# re-generated from your development database when you run "rake".
-# Do not set this db to the same as development or production.
 test:
   <<: *default
   database: <%= ENV['PERCONA_DB_NAME'] || 'departure_test' %>

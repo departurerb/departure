@@ -4,6 +4,10 @@ module Departure
   # It executes pt-online-schema-change commands in a new process and gets its
   # output and status
   class Runner
+    extend Forwardable
+
+    def_delegators :raw_connection, :execute, :escape, :close
+
     # Constructor
     #
     # @param logger [#say, #write]
@@ -14,8 +18,16 @@ module Departure
       @logger = logger
       @cli_generator = cli_generator
       @mysql_adapter = mysql_adapter
-      @error_log_path = config.error_log_path
-      @redirect_stderr = config.redirect_stderr
+      @error_log_path = config&.error_log_path
+      @redirect_stderr = config&.redirect_stderr
+    end
+
+    def database_adapter
+      @mysql_adapter
+    end
+
+    def raw_connection
+      database_adapter.raw_connection
     end
 
     # Executes the passed sql statement using pt-online-schema-change for ALTER
@@ -27,7 +39,7 @@ module Departure
         command_line = cli_generator.parse_statement(sql)
         execute(command_line)
       else
-        mysql_adapter.execute(sql)
+        database_adapter.execute(sql)
       end
     end
 
@@ -36,7 +48,7 @@ module Departure
     #
     # @return [Integer]
     def affected_rows
-      mysql_adapter.raw_connection.affected_rows
+      raw_connection.affected_rows
     end
 
     # TODO: rename it so we don't confuse it with AR's #execute

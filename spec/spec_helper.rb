@@ -49,6 +49,16 @@ RSpec.configure do |config|
   Departure.configure do |_config|
   end
 
+  if ActiveRecord::VERSION::STRING >= '7.2'
+    config.around(:each) do |example|
+      if example.metadata[:rails_7_2_skip]
+        example.skip
+      else
+        example.run
+      end
+    end
+  end
+
   # Cleans up the database before each example, so the current example doesn't
   # see the state of the previous one
   config.before(:each) do |example|

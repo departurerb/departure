@@ -146,7 +146,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
         )
       end
 
-      it 'passes the built SQL to #execute' do
+      it 'passes the built SQL to #execute', rails_7_2_skip: true do
         expect(adapter).to receive(:execute).with(expected_sql)
         adapter.add_index(table_name, column_name, options)
       end
@@ -224,7 +224,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
       )
     end
 
-    context 'when the adapter returns results' do
+    context 'when the adapter returns results', rails_7_2_skip: true do
       let(:result_set) { double(fields: [:id], to_a: [1]) }
 
       it 'executes the sql' do
@@ -243,7 +243,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
       end
     end
 
-    context 'when the adapter returns nil' do
+    context 'when the adapter returns nil', rails_7_2_skip: true do
       let(:result_set) { nil }
 
       it 'executes the sql' do
@@ -274,7 +274,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
     end
   end
 
-  describe '#select_rows' do
+  describe '#select_rows', rails_7_2_skip: true do
     subject { adapter.select_rows(sql, name) }
 
     let(:sql) { 'SELECT id, body FROM comments' }

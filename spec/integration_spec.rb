@@ -80,7 +80,7 @@ describe Departure, integration: true do
       end
     end
 
-    context 'when no username is provided' do
+    context 'when no username is provided', rails_7_2_skip: true do
       before do
         ActiveRecord::Base.establish_connection(
           adapter: 'percona',

@@ -1,8 +1,8 @@
 require 'active_record/connection_adapters/abstract_mysql_adapter'
 require 'active_record/connection_adapters/statement_pool'
 require 'active_record/connection_adapters/mysql2_adapter'
+require 'active_record/connection_adapters/patch_connection_handling'
 require 'active_support/core_ext/string/filters'
-require_relative './patch_connection_handling'
 require 'departure'
 require 'forwardable'
 
@@ -87,7 +87,7 @@ module ActiveRecord
       def internal_exec_query(sql, name = 'SQL', _binds = [], **_kwargs) # :nodoc:
         result = execute(sql, name)
         fields = result.fields if defined?(result.fields)
-        ActiveRecord::Result.new(fields, result.to_a)
+        ActiveRecord::Result.new(fields || [], result.to_a)
       end
       alias exec_query internal_exec_query
 

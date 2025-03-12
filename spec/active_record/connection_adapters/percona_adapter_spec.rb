@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'active_record/connection_adapters/percona_adapter'
 
 describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
   describe ActiveRecord::ConnectionAdapters::DepartureAdapter::Column do

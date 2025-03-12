@@ -174,8 +174,8 @@ module ActiveRecord
 
       # Must return the MySQL error number from the exception, if the exception has an
       # error number.
-      def error_number(_exception) # :nodoc:
-        @raw_connection.database_adapter.error_number(_exception)
+      def error_number(exception)
+        @raw_connection.database_adapter.error_number(exception)
       end
 
       def raw_execute(sql, name, async: false, allow_retry: false, materialize_transactions: true)

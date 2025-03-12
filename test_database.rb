@@ -1,6 +1,6 @@
 require 'active_record'
 require 'active_record/connection_adapters/mysql2_adapter'
-require 'departure/rails_adapter'
+require 'departure'
 
 # Setups the test database with the schema_migrations table that ActiveRecord
 # requires for the migrations, plus a table for the Comment model used throught
@@ -71,11 +71,6 @@ class TestDatabase
   end
 
   def conn
-    @conn ||= Departure::RailsAdapter.for_current.create_mysql2_connection(
-      host: @config['hostname'],
-      username: @config['username'],
-      password: @config['password'],
-      reconnect: true
-    )
+    ActiveRecord::Base.connection
   end
 end

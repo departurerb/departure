@@ -62,8 +62,8 @@ module Departure
           )
         end
 
-        def create_mysql2_connection(config)
-          ActiveRecord::ConnectionAdapters::Mysql2Adapter.new(config)
+        def sql_column
+          ::ActiveRecord::ConnectionAdapters::DepartureAdapter::Column
         end
       end
     end
@@ -86,6 +86,10 @@ module Departure
 
         def create_connection_adapter(**config)
           ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter.new(config)
+        end
+
+        def sql_column
+          ::ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter::Column
         end
       end
     end

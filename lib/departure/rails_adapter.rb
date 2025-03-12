@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Departure
-  class RailsIntegrator
+  class RailsAdapter
     extend Forwardable
 
     class << self
@@ -14,15 +14,15 @@ module Departure
       end
 
       def for(ar_version)
-        if ar_version::MAJOR >= 7 && ar_version::MINOR >= 2
-          V7_2
-        else
-          BaseIntegration
-        end
+        raise 'Not supported yet' if ar_version::MAJOR >= 7 && ar_version::MINOR >= 2
+
+        # V7_2
+
+        BaseAdapter
       end
     end
 
-    class BaseIntegration
+    class BaseAdapter
       class << self
         def register_integrations
           require 'active_record/connection_adapters/percona_adapter'

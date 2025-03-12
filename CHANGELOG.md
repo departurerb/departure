@@ -9,6 +9,7 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 - Drop Ruby 3.0 support in specs
 - Create dummy application in specs, migrate fixtures to that application
 - Create a `bin/rails` command that loads the database from the dummy application
+- Create a RailsAdapter that will handle creating connections inside of different versions of rails
 
 ## [6.7.0] - 2024-02-20
 

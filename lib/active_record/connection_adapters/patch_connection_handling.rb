@@ -12,7 +12,7 @@ module ActiveRecord
         config[:username] = 'root'
       end
 
-      Departure::RailsIntegrator.for_current.create_connection_adapter(**config)
+      Departure::RailsAdapter.for_current.create_connection_adapter(**config)
     end
   end
 end

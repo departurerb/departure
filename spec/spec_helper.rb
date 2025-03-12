@@ -19,7 +19,7 @@ require 'support/matchers/have_foreign_key_on'
 require 'support/shared_examples/column_definition_method'
 require 'support/table_methods'
 
-Departure::RailsIntegrator.for_current.register_integrations
+Departure::RailsAdapter.for_current.register_integrations
 
 db_config = Configuration.new
 

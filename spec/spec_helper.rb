@@ -18,6 +18,7 @@ require 'support/matchers/have_index'
 require 'support/matchers/have_foreign_key_on'
 require 'support/shared_examples/column_definition_method'
 require 'support/table_methods'
+require 'support/version_compatibility'
 
 Departure::RailsAdapter.for_current.register_integrations
 
@@ -49,13 +50,11 @@ RSpec.configure do |config|
   Departure.configure do |_config|
   end
 
-  if ActiveRecord::VERSION::STRING >= '7.2'
-    config.around(:each) do |example|
-      if example.metadata[:rails_7_2_skip]
-        example.skip
-      else
-        example.run
-      end
+  config.define_derived_metadata(:activerecord_compatibility) do |meta|
+    unless VersionCompatibility.compatible?(ActiveRecord::VERSION::STRING, meta[:activerecord_compatibility])
+      meta[:skip] =
+        "Spec defines behavior not compatible with #{ActiveRecord::VERSION::STRING}\
+        , requires '#{meta[:activerecord_compatibility]}'"
     end
   end
 

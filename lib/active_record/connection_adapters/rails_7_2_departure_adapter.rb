@@ -76,7 +76,8 @@ module ActiveRecord
 
       def exec_delete(sql, name, binds)
         execute(to_sql(sql, binds), name)
-        raw_connection.affected_rows
+
+        @raw_connection.affected_rows
       end
       alias exec_update exec_delete
 
@@ -157,7 +158,9 @@ module ActiveRecord
       def get_full_version # rubocop:disable Style/AccessorMethodName
         return @get_full_version if defined? @get_full_version
 
-        @get_full_version = @raw_connection.database_adapter.get_database_version.full_version_string
+        with_raw_connection do |conn|
+          @get_full_version = conn.database_adapter.get_database_version.full_version_string
+        end
       end
 
       def last_inserted_id(result)

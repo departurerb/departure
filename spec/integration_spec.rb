@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'fixtures/migrate/0022_add_timestamp_on_comments'
+require_relative './dummy/db/migrate/0022_add_timestamp_on_comments'
 
 # TODO: Handle #change_table syntax
 describe Departure, integration: true do

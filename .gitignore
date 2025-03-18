@@ -11,3 +11,4 @@ tags
 departure_error.log
 .ruby-version
 .idea/
+spec/dummy/log/

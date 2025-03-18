@@ -72,7 +72,9 @@ describe ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter do
     allow(runner).to receive(:execute).with('percona command').and_return(true)
     allow(Departure::LoggerFactory).to receive(:build) { logger }
 
+    # rubocop:disable Layout/LineLength
     allow(ActiveRecord::ConnectionAdapters::Mysql2Adapter).to receive(:new).with(config.merge(internal_added_config)).and_return(mysql_adapter)
+    # rubocop:enable Layout/LineLength
 
     allow(Departure::CliGenerator).to(
       receive(:new).and_return(cli_generator)

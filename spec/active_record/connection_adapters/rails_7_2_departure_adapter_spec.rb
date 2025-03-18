@@ -221,8 +221,8 @@ describe ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter, activerecord
       )
     end
 
-    context 'when the adapter returns results', rails_7_2_skip: true do
-      let(:result_set) { double(fields: [:id], to_a: [1]) }
+    context 'when the adapter returns results' do
+      let(:result_set) { double(fields: ['id'], to_a: [1]) }
 
       it 'executes the sql' do
         expect(adapter).to(
@@ -240,7 +240,7 @@ describe ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter, activerecord
       end
     end
 
-    context 'when the adapter returns nil', rails_7_2_skip: true do
+    context 'when the adapter returns nil' do
       let(:result_set) { nil }
 
       it 'executes the sql' do
@@ -271,7 +271,7 @@ describe ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter, activerecord
     end
   end
 
-  describe '#select_rows', rails_7_2_skip: true do
+  describe '#select_rows' do
     subject { adapter.select_rows(sql, name) }
 
     let(:sql) { 'SELECT id, body FROM comments' }
@@ -279,7 +279,9 @@ describe ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter, activerecord
 
     let(:array_of_rows) { [%w[1 body], %w[2 body]] }
     let(:mysql2_result) do
-      instance_double(Mysql2::Result, to_a: array_of_rows, fields: [:id, :body])
+      # rubocop:disable Style/WordArray
+      instance_double(Mysql2::Result, to_a: array_of_rows, fields: ['id', 'body'])
+      # rubocop:enable Style/WordArray
     end
 
     before do

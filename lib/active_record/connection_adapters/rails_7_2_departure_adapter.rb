@@ -184,7 +184,6 @@ module ActiveRecord
           with_raw_connection(allow_retry: allow_retry, materialize_transactions: materialize_transactions) do |conn|
             sync_timezone_changes(conn)
             result = conn.query(sql)
-            # conn.abandon_results!
             verified! if allow_retry
             handle_warnings(sql)
             if result.is_a? Process::Status

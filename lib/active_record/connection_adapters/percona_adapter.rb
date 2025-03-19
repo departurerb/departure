@@ -5,7 +5,6 @@ require 'active_record/connection_adapters/patch_connection_handling'
 require 'active_support/core_ext/string/filters'
 require 'departure'
 require 'forwardable'
-require_relative './patch_connection_handling'
 
 module ActiveRecord
   module ConnectionAdapters

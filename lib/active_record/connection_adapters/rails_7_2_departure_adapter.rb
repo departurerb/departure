@@ -110,11 +110,9 @@ module ActiveRecord
         true
       end
 
-      # rubocop:disable Metrics/ParameterLists
-      def new_column(field, default, type_metadata, null, table_name, default_function, collation, comment)
-        Column.new(field, default, type_metadata, null, table_name, default_function, collation, comment)
+      def new_column(...)
+        Column.new(...)
       end
-      # rubocop:enable Metrics/ParameterLists
 
       # Adds a new index to the table
       #

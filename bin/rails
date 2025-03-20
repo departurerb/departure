@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+
+ENV['RAILS_ENV'] ||= 'development'
+
+APP_PATH = File.expand_path('../spec/dummy/config/application', __dir__)
+require_relative '../spec/dummy/config/boot'
+require 'rake'
+require 'departure'
+
+# Load the rails application
+require APP_PATH
+
+begin
+  Rails.application.load_tasks
+  Rake::Task['db:create'].invoke
+
+  ENV['SCHEMA'] = File.expand_path('../spec/dummy/db/base_schema.rb', __dir__)
+  Rake::Task['db:schema:load'].invoke
+rescue StandardError => e
+  puts "there was an error creating your database #{e}"
+  exit 1
+end
+
+require 'rails/commands'

@@ -1,0 +1,21 @@
+# SQLite. Versions 3.8.0 and up are supported.
+#   gem install sqlite3
+#
+#   Ensure the SQLite 3 gem is defined in your Gemfile
+#   gem 'sqlite3'
+#
+default: &default
+  adapter: <%= ENV.fetch("DB_ADAPTER") { "mysql2" } %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
+  username: <%= ENV['PERCONA_DB_USER'] || 'root' %>
+  password: <%= ENV['PERCONA_DB_PASSWORD'] || 'password' %>
+  hostname: <%= ENV['PERCONA_DB_HOST'] || 'localhost' %>
+  socket: <%= ENV['PERCONA_DB_SOCKET'] || '' %>
+  database: <%= ENV['PERCONA_DB_NAME'] || 'departure_test' %>
+
+development:
+  <<: *default
+
+test:
+  <<: *default

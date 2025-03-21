@@ -4,6 +4,8 @@ module Departure
       RELEASE_LOCK_FAILED_MESSAGE = "Failed to release advisory lock from ActiveRecordMigratorWithAdvisoryLockPatch"
 
       def with_advisory_lock
+        return super if Departure.configuration.disable_rails_advisory_lock_patch
+
         lock_id = generate_migrator_advisory_lock_id
         @__original_connection = connection
 

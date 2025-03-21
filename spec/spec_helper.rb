@@ -36,6 +36,18 @@ ActiveRecord::Base.establish_connection(
   database: db_config['database']
 )
 
+def establish_mysql_connection
+  db_config = Configuration.new
+
+  ActiveRecord::Base.establish_connection(
+    adapter: 'mysql2',
+    host: db_config['hostname'],
+    username: db_config['username'],
+    password: db_config['password'],
+    database: db_config['database']
+  )
+end
+
 MIGRATION_FIXTURES = File.expand_path('../dummy/db/migrate/', __FILE__)
 
 test_database = TestDatabase.new(db_config)

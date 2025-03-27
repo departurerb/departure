@@ -1,4 +1,4 @@
-MIGRATION_FIXTURES = File.expand_path('../../dummy/db/migrate/', __FILE__)
+MIGRATION_FIXTURES = File.expand_path('../dummy/db/migrate', __dir__)
 
 def establish_percona_connection
   ActiveRecord::Base.establish_connection(

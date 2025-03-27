@@ -27,7 +27,6 @@ db_config = Configuration.new
 fd = ENV['VERBOSE'] ? STDOUT : '/dev/null'
 ActiveRecord::Base.logger = Logger.new(fd)
 
-
 test_database = TestDatabase.new(db_config)
 
 Departure::RailsAdapter.for_current.register_integrations

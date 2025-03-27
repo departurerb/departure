@@ -134,7 +134,7 @@ describe Departure, integration: true do
 
       it 'raises and halts the execution' do
         expect do
-          run_a_migration(direction, version)
+          ActiveRecord::Migrator.run(direction, migration_fixtures, ActiveRecord::SchemaMigration, version)
         end.to raise_error do |exception|
           exception.cause == Departure::SignalError
         end

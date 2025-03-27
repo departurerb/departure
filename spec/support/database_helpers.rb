@@ -1,3 +1,5 @@
+MIGRATION_FIXTURES = File.expand_path('../../dummy/db/migrate/', __FILE__)
+
 def establish_percona_connection
   ActiveRecord::Base.establish_connection(
     adapter: 'percona',
@@ -32,7 +34,14 @@ def enable_departure_rails_advisory_lock_patch
   end
 end
 
+def migration_context
+  ActiveRecord::MigrationContext.new([MIGRATION_FIXTURES], ActiveRecord::SchemaMigration)
+end
+
 def run_a_migration(direction, target_version)
-  migration_context = ActiveRecord::MigrationContext.new([MIGRATION_FIXTURES], ActiveRecord::SchemaMigration)
   migration_context.run(direction, target_version)
+end
+
+def current_migration_version
+  migration_context.current_version
 end

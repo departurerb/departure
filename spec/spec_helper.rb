@@ -27,7 +27,6 @@ db_config = Configuration.new
 fd = ENV['VERBOSE'] ? STDOUT : '/dev/null'
 ActiveRecord::Base.logger = Logger.new(fd)
 
-MIGRATION_FIXTURES = File.expand_path('../dummy/db/migrate/', __FILE__)
 
 test_database = TestDatabase.new(db_config)
 

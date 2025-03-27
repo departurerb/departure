@@ -19,8 +19,7 @@ require 'support/matchers/have_foreign_key_on'
 require 'support/shared_examples/column_definition_method'
 require 'support/table_methods'
 require 'support/version_compatibility'
-
-Departure::RailsAdapter.for_current.register_integrations
+require 'support/database_helpers'
 
 db_config = Configuration.new
 
@@ -28,29 +27,11 @@ db_config = Configuration.new
 fd = ENV['VERBOSE'] ? STDOUT : '/dev/null'
 ActiveRecord::Base.logger = Logger.new(fd)
 
-ActiveRecord::Base.establish_connection(
-  adapter: 'percona',
-  host: db_config['hostname'],
-  username: db_config['username'],
-  password: db_config['password'],
-  database: db_config['database']
-)
-
-def establish_mysql_connection
-  db_config = Configuration.new
-
-  ActiveRecord::Base.establish_connection(
-    adapter: 'mysql2',
-    host: db_config['hostname'],
-    username: db_config['username'],
-    password: db_config['password'],
-    database: db_config['database']
-  )
-end
-
 MIGRATION_FIXTURES = File.expand_path('../dummy/db/migrate/', __FILE__)
 
 test_database = TestDatabase.new(db_config)
+
+Departure::RailsAdapter.for_current.register_integrations
 
 RSpec.configure do |config|
   config.include TableMethods
@@ -73,6 +54,8 @@ RSpec.configure do |config|
   # Cleans up the database before each example, so the current example doesn't
   # see the state of the previous one
   config.before(:each) do |example|
+    establish_mysql_connection
+
     test_database.setup if example.metadata[:integration]
   end
 

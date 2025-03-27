@@ -31,3 +31,8 @@ def enable_departure_rails_advisory_lock_patch
     config.disable_rails_advisory_lock_patch = false
   end
 end
+
+def run_a_migration(direction, target_version)
+  migration_context = ActiveRecord::MigrationContext.new([MIGRATION_FIXTURES], ActiveRecord::SchemaMigration)
+  migration_context.run(direction, target_version)
+end

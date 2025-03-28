@@ -5,10 +5,6 @@ require_relative './dummy/db/migrate/0022_add_timestamp_on_comments'
 describe Departure, integration: true do
   class Comment < ActiveRecord::Base; end
 
-  let(:migration_paths) { [MIGRATION_FIXTURES] }
-  let(:migration_context) { ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration) }
-  let(:migration_fixtures) { migration_context.migrations }
-
   let(:direction) { :up }
   let(:pool) { ActiveRecord::Base.connection_pool }
   let(:spec_config) do
@@ -34,7 +30,7 @@ describe Departure, integration: true do
 
       it "doesn't send the output to stdout" do
         expect do
-          migration_context.run(direction, 1)
+          run_a_migration(direction, 1)
         end.to_not output.to_stdout
       end
     end
@@ -49,7 +45,7 @@ describe Departure, integration: true do
 
       it 'sends the output to stdout' do
         expect do
-          migration_context.run(direction, 1)
+          run_a_migration(direction, 1)
         end.to output.to_stdout
       end
     end
@@ -59,7 +55,7 @@ describe Departure, integration: true do
     let(:db_config) { Configuration.new }
 
     it 'reconnects to the database using PerconaAdapter' do
-      migration_context.run(direction, 1)
+      run_a_migration(direction, 1)
       expect(spec_config[:adapter]).to eq('percona')
     end
 
@@ -75,7 +71,7 @@ describe Departure, integration: true do
       end
 
       it 'uses the provided username' do
-        migration_context.run(direction, 1)
+        run_a_migration(direction, 1)
         expect(spec_config[:username]).to eq('root')
       end
     end
@@ -91,7 +87,7 @@ describe Departure, integration: true do
       end
 
       it 'uses root' do
-        migration_context.run(direction, 1)
+        run_a_migration(direction, 1)
         expect(spec_config[:username]).to eq('root')
       end
     end
@@ -101,14 +97,14 @@ describe Departure, integration: true do
       xit 'patches it to use regular Rails migration methods' do
         expect(Departure::Lhm::Fake::Adapter)
           .to receive(:new).and_return(true)
-        migration_context.run(direction, 1)
+        run_a_migration(direction, 1)
       end
     end
 
     context 'when there is no LHM' do
       xit 'does not patch it' do
         expect(Departure::Lhm::Fake).not_to receive(:patching_lhm)
-        migration_context.run(direction, 1)
+        run_a_migration(direction, 1)
       end
     end
   end
@@ -121,7 +117,7 @@ describe Departure, integration: true do
 
       it 'raises and halts the execution' do
         expect do
-          ActiveRecord::Migrator.run(direction, migration_fixtures, ActiveRecord::SchemaMigration, version)
+          run_a_migration(direction, version)
         end.to raise_error do |exception|
           exception.cause == ActiveRecord::StatementInvalid
         end
@@ -152,7 +148,7 @@ describe Departure, integration: true do
     it 'raises and halts the execution' do
       expect do
         ClimateControl.modify PATH: '' do
-          ActiveRecord::Migrator.run(direction, migration_fixtures, ActiveRecord::SchemaMigration, version)
+          run_a_migration(direction, version)
         end
       end.to raise_error do |exception|
         exception.cause == Departure::CommandNotFoundError
@@ -174,7 +170,7 @@ describe Departure, integration: true do
           .and_return(command)
 
         ClimateControl.modify PERCONA_ARGS: '--chunk-time=1' do
-          migration_context.run(direction, 1)
+          run_a_migration(direction, 1)
         end
       end
     end
@@ -187,7 +183,7 @@ describe Departure, integration: true do
           .and_return(command)
 
         ClimateControl.modify PERCONA_ARGS: '--chunk-time=1 --max-lag=2' do
-          migration_context.run(direction, 1)
+          run_a_migration(direction, 1)
         end
       end
     end
@@ -200,7 +196,7 @@ describe Departure, integration: true do
           .and_return(command)
 
         ClimateControl.modify PERCONA_ARGS: '--alter-foreign-keys-method=drop_swap' do
-          migration_context.run(direction, 1)
+          run_a_migration(direction, 1)
         end
       end
     end
@@ -208,9 +204,10 @@ describe Departure, integration: true do
 
   context 'when there are migrations that do not use departure' do
     it 'uses Departure::OriginalConnectionAdapter' do
+      establish_percona_connection
       expect(Departure::OriginalAdapterConnection).to receive(:establish_connection)
 
-      migration_context.run(direction, 29) # DisableDeparture
+      run_a_migration(direction, 29) # DisableDeparture
     end
   end
 end

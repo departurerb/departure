@@ -147,6 +147,14 @@ end
 It's strongly recommended to name it after this gems name, such as
 `config/initializers/departure.rb`
 
+### Configuration Options
+
+All configuration options are configurable from the `Departure.configure` block example below
+
+|Option|Default|What it Controls|
+|---|---|---|
+|disable_rails_advisory_lock_patch|false|When truthy, disables a patch in at least rails 7.1 and 7.2 where rails throws ConcurrentMigrationErrors due to the inability to release the advisory lock in migrations|
+
 ### Disable on per-migration basis
 
 Departure gem is enabled by default.

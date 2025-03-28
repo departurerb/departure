@@ -1,6 +1,7 @@
 module Departure
   class Configuration
-    attr_accessor :tmp_path, :global_percona_args, :enabled_by_default, :redirect_stderr
+    attr_accessor :tmp_path, :global_percona_args, :enabled_by_default, :redirect_stderr,
+                  :disable_rails_advisory_lock_patch
 
     def initialize
       @tmp_path = '.'.freeze

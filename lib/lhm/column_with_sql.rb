@@ -6,13 +6,6 @@ module Lhm
   class ColumnWithSql
     extend Forwardable
 
-    # Returns the column's class to be used
-    #
-    # @return [Constant]
-    def self.column_factory
-      ::ActiveRecord::ConnectionAdapters::DepartureAdapter::Column
-    end
-
     # Constructor
     #
     # @param name [String, Symbol]
@@ -59,7 +52,7 @@ module Lhm
         limit: cast_type.limit
       )
       mysql_metadata = ActiveRecord::ConnectionAdapters::MySQL::TypeMetadata.new(metadata)
-      @column ||= self.class.column_factory.new(
+      @column ||= Departure::RailsAdapter.for_current.sql_column.new(
         name,
         default_value,
         mysql_metadata,

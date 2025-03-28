@@ -1,5 +1,5 @@
 require 'simplecov'
-# SimpleCov.start
+SimpleCov.start
 
 ENV['RAILS_ENV'] ||= 'development'
 
@@ -18,6 +18,7 @@ require 'support/matchers/have_index'
 require 'support/matchers/have_foreign_key_on'
 require 'support/shared_examples/column_definition_method'
 require 'support/table_methods'
+require 'support/version_compatibility'
 
 Departure::RailsAdapter.for_current.register_integrations
 
@@ -49,13 +50,18 @@ RSpec.configure do |config|
   Departure.configure do |_config|
   end
 
+  config.define_derived_metadata(:activerecord_compatibility) do |meta|
+    unless VersionCompatibility.compatible?(ActiveRecord::VERSION::STRING, meta[:activerecord_compatibility])
+      meta[:skip] =
+        "Spec defines behavior not compatible with #{ActiveRecord::VERSION::STRING}\
+        , requires '#{meta[:activerecord_compatibility]}'"
+    end
+  end
+
   # Cleans up the database before each example, so the current example doesn't
   # see the state of the previous one
   config.before(:each) do |example|
-    if example.metadata[:integration]
-      test_database.setup
-      ActiveRecord::Base.connection_pool.disconnect!
-    end
+    test_database.setup if example.metadata[:integration]
   end
 
   config.order = :random

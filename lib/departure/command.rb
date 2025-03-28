@@ -42,7 +42,7 @@ module Departure
     # execution status
     def run_in_process
       Open3.popen3(full_command) do |_stdin, stdout, _stderr, waith_thr|
-        begin
+        begin # rubocop:disable Style/RedundantBegin
           loop do
             IO.select([stdout])
             data = stdout.read_nonblock(8192)

@@ -14,11 +14,11 @@ module Departure
       end
 
       def for(ar_version)
-        raise 'Not supported yet' if ar_version::MAJOR >= 7 && ar_version::MINOR >= 2
-
-        # V7_2
-
-        BaseAdapter
+        if ar_version::MAJOR >= 7 && ar_version::MINOR >= 2
+          V7_2_Adapter
+        else
+          BaseAdapter
+        end
       end
     end
 
@@ -60,6 +60,36 @@ module Departure
             connection_options,
             config
           )
+        end
+
+        def sql_column
+          ::ActiveRecord::ConnectionAdapters::DepartureAdapter::Column
+        end
+      end
+    end
+
+    class V7_2_Adapter < BaseAdapter # rubocop:disable Naming/ClassAndModuleCamelCase
+      class << self
+        def register_integrations
+          require 'active_record/connection_adapters/rails_7_2_departure_adapter'
+
+          ActiveSupport.on_load(:active_record) do
+            ActiveRecord::Migration.class_eval do
+              include Departure::Migration
+            end
+          end
+
+          ActiveRecord::ConnectionAdapters.register 'percona',
+                                                    'ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter',
+                                                    'active_record/connection_adapters/rails_7_2_departure_adapter'
+        end
+
+        def create_connection_adapter(**config)
+          ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter.new(config)
+        end
+
+        def sql_column
+          ::ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter::Column
         end
       end
     end

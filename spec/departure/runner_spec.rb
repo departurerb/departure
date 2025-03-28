@@ -18,6 +18,10 @@ describe Departure::Runner do
 
   let(:runner) { described_class.new(logger, cli_generator, mysql_adapter, config) }
 
+  it 'exposed the database adapter' do
+    expect(runner.database_adapter).to eql(mysql_adapter)
+  end
+
   describe '#query' do
   end
 

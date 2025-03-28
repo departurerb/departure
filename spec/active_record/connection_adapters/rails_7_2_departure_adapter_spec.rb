@@ -1,8 +1,8 @@
 require 'spec_helper'
-require 'active_record/connection_adapters/percona_adapter'
+require 'active_record/connection_adapters/rails_7_2_departure_adapter'
 
-describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
-  describe ActiveRecord::ConnectionAdapters::DepartureAdapter::Column do
+describe ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter, activerecord_compatibility: '>= 7.2' do
+  describe ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter::Column do
     let(:field) { double(:field) }
     let(:default) { double(:default) }
     let(:cast_type) do
@@ -27,65 +27,65 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
     let(:collation) { double(:collation) }
 
     let(:column) do
-      if ActiveRecord::VERSION::STRING >= "6.1"
-        described_class.new("field", "default", mysql_metadata, null, collation: "collation")
-      elsif ActiveRecord::VERSION::MAJOR == 6
-        described_class.new(field, default, mysql_metadata, null, collation: collation)
-      else
-        described_class.new(field, default, mysql_metadata, type, null, collation)
-      end
+      described_class.new('field', 'default', mysql_metadata, null, collation: 'collation')
     end
 
     describe '#adapter' do
       subject { column.adapter }
       it do
         is_expected.to eq(
-          ActiveRecord::ConnectionAdapters::DepartureAdapter
+          ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter
         )
       end
     end
   end
 
+  let(:config) do
+    {
+      prepared_statements: '',
+      username: 'root',
+      password: 'password',
+      database: 'some_test_db'
+    }
+  end
+
+  let(:internal_added_config) do
+    {
+      adapter: 'mysql2',
+      flags: anything
+    }
+  end
+
+  let(:database_version) { double(full_version_string: '8.0.01') }
   let(:mysql_adapter) do
-    instance_double(ActiveRecord::ConnectionAdapters::Mysql2Adapter)
+    instance_double(ActiveRecord::ConnectionAdapters::Mysql2Adapter, get_database_version: database_version)
   end
-
   let(:logger) { double(:logger, puts: true) }
-  let(:connection_options) { { mysql_adapter: mysql_adapter } }
-
-  let(:runner) { instance_double(Departure::Runner) }
-  let(:cli_generator) do
-    instance_double(
-      Departure::CliGenerator,
-      generate: 'percona command'
-    )
-  end
-
-  let(:config) { { prepared_statements: '', runner: runner } }
-
-  let(:adapter) do
-    described_class.new(runner, logger, connection_options, config)
-  end
-
+  let(:runner) { instance_double(Departure::Runner, database_adapter: mysql_adapter) }
+  let(:cli_generator) { instance_double(Departure::CliGenerator, generate: 'percona command') }
+  let(:adapter) { described_class.new(config).tap { |adapter| adapter.send(:connect) } }
   let(:mysql_client) { double(:mysql_client) }
 
   before do
     allow(mysql_client).to receive(:server_info).and_return(version: '5.7.19')
     allow(mysql_adapter).to receive(:raw_connection).and_return(mysql_client)
-    allow(runner).to(
-      receive(:execute).with('percona command').and_return(true)
-    )
+    allow(runner).to receive(:execute).with('percona command').and_return(true)
+    allow(Departure::LoggerFactory).to receive(:build) { logger }
+
+    # rubocop:disable Layout/LineLength
+    allow(ActiveRecord::ConnectionAdapters::Mysql2Adapter).to receive(:new).with(config.merge(internal_added_config)).and_return(mysql_adapter)
+    # rubocop:enable Layout/LineLength
+
     allow(Departure::CliGenerator).to(
       receive(:new).and_return(cli_generator)
     )
     allow(Departure::Runner).to(
-      receive(:new).with(logger)
+      receive(:new).with(logger, cli_generator, mysql_adapter)
     ).and_return(runner)
   end
 
-  describe '#supports_migrations?' do
-    subject { adapter.supports_migrations? }
-    it { is_expected.to be true }
+  it '#supports_migrations?' do
+    expect(adapter.supports_migrations?).to eql(true)
   end
 
   describe '#new_column' do
@@ -99,7 +99,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
     let(:comment) { double(:comment) }
 
     it do
-      expect(ActiveRecord::ConnectionAdapters::DepartureAdapter::Column).to receive(:new)
+      expect(ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter::Column).to receive(:new)
       adapter.new_column(field, default, type, null, table_name, default_function, collation, comment)
     end
   end
@@ -109,33 +109,25 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
       let(:table_name) { :foo }
       let(:column_name) { :bar_id }
       let(:index_name) { 'index_name' }
-      let(:options) { {type: 'index_type'} }
+      let(:options) { { type: 'index_type' } }
       let(:index_type) { options[:type].upcase }
       let(:sql) { 'ADD index_type INDEX `index_name` (bar_id)' }
       let(:index_options) do
-        if ActiveRecord::VERSION::STRING >= '6.1'
-          [
-            ActiveRecord::ConnectionAdapters::IndexDefinition.new(
-              table_name,
-              index_name,
-              nil,
-              [column_name],
-              **options
-            ),
+        [
+          ActiveRecord::ConnectionAdapters::IndexDefinition.new(
+            table_name,
+            index_name,
             nil,
-            false
-          ]
-        else
-          [index_name, index_type, "#{column_name}"]
-        end
+            [column_name],
+            **options
+          ),
+          nil,
+          false
+        ]
       end
 
       let(:expected_sql) do
-        if ActiveRecord::VERSION::STRING >= '6.1'
-          "ALTER TABLE `#{table_name}` ADD #{index_type} INDEX `#{index_name}` (`#{column_name}`)"
-        else
-          "ALTER TABLE `#{table_name}` ADD #{index_type} INDEX `#{index_name}` (#{column_name})"
-        end
+        "ALTER TABLE `#{table_name}` ADD #{index_type} INDEX `#{index_name}` (`#{column_name}`)"
       end
 
       before do
@@ -146,7 +138,9 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
         )
       end
 
-      it 'passes the built SQL to #execute', activerecord_compatibility: "< 7.2" do
+      it 'passes the built SQL to #execute' do
+        allow(runner).to receive(:query).with(anything)
+        expect(runner).to receive(:close)
         expect(adapter).to receive(:execute).with(expected_sql)
         adapter.add_index(table_name, column_name, options)
       end
@@ -192,11 +186,14 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
     end
 
     it 'executes the sql' do
+      expect(runner).to receive(:affected_rows)
       expect(adapter).to(receive(:execute).with(sql, name))
       adapter.exec_delete(sql, name, binds)
     end
 
     it 'returns the number of affected rows' do
+      expect(runner).to receive(:close)
+      expect(runner).to receive(:affected_rows) { affected_rows }
       expect(adapter.exec_delete(sql, name, binds)).to eq(affected_rows)
     end
   end
@@ -224,8 +221,8 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
       )
     end
 
-    context 'when the adapter returns results', activerecord_compatibility: "< 7.2" do
-      let(:result_set) { double(fields: [:id], to_a: [1]) }
+    context 'when the adapter returns results' do
+      let(:result_set) { double(fields: ['id'], to_a: [1]) }
 
       it 'executes the sql' do
         expect(adapter).to(
@@ -243,7 +240,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
       end
     end
 
-    context 'when the adapter returns nil', activerecord_compatibility: "< 7.2" do
+    context 'when the adapter returns nil' do
       let(:result_set) { nil }
 
       it 'executes the sql' do
@@ -256,7 +253,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
 
       it 'returns an ActiveRecord::Result' do
         expect(ActiveRecord::Result).to(
-          receive(:new).with(nil, [])
+          receive(:new).with([], [])
         )
         adapter.exec_query(sql, name, binds)
       end
@@ -274,7 +271,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
     end
   end
 
-  describe '#select_rows', activerecord_compatibility: "< 7.2" do
+  describe '#select_rows' do
     subject { adapter.select_rows(sql, name) }
 
     let(:sql) { 'SELECT id, body FROM comments' }
@@ -282,7 +279,9 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
 
     let(:array_of_rows) { [%w[1 body], %w[2 body]] }
     let(:mysql2_result) do
-      instance_double(Mysql2::Result, to_a: array_of_rows, fields: [:id, :body])
+      # rubocop:disable Style/WordArray
+      instance_double(Mysql2::Result, to_a: array_of_rows, fields: ['id', 'body'])
+      # rubocop:enable Style/WordArray
     end
 
     before do

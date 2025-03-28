@@ -1,6 +1,8 @@
 MIGRATION_FIXTURES = File.expand_path('../dummy/db/migrate', __dir__)
 
 def establish_percona_connection
+  db_config = Configuration.new
+
   ActiveRecord::Base.establish_connection(
     adapter: 'percona',
     host: db_config['hostname'],

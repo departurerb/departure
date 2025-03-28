@@ -204,6 +204,7 @@ describe Departure, integration: true do
 
   context 'when there are migrations that do not use departure' do
     it 'uses Departure::OriginalConnectionAdapter' do
+      establish_percona_connection
       expect(Departure::OriginalAdapterConnection).to receive(:establish_connection)
 
       run_a_migration(direction, 29) # DisableDeparture

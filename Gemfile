@@ -9,3 +9,4 @@ gem 'logger'
 gem 'mutex_m', require: false
 gem 'rubocop', '~> 1.74.0', require: false
 gem 'rubocop-performance', '~> 1.20.2', require: false
+gem 'zeitwerk', '< 2.7.0'

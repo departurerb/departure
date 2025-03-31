@@ -3,10 +3,6 @@ require 'spec_helper'
 describe Departure, integration: true do
   class Comment < ActiveRecord::Base; end
 
-  let(:migration_context) do
-    ActiveRecord::MigrationContext.new([MIGRATION_FIXTURES], ActiveRecord::SchemaMigration)
-  end
-
   let(:direction) { :up }
 
   before do
@@ -28,15 +24,15 @@ describe Departure, integration: true do
     let(:version) { 9 }
 
     it 'updates all the required data' do
-      migration_context.run(direction, version)
+      run_a_migration(direction, version)
 
       expect(Comment.pluck(:read)).to match_array([true, true])
     end
 
     it 'marks the migration as up' do
-      migration_context.run(direction, version)
+      run_a_migration(direction, version)
 
-      expect(migration_context.current_version).to eq(version)
+      expect(current_migration_version).to eq(version)
     end
   end
 
@@ -44,7 +40,7 @@ describe Departure, integration: true do
     let(:version) { 30 }
 
     it 'updates all the required data' do
-      migration_context.run(direction, version)
+      run_a_migration(direction, version)
 
       expect(Comment.pluck(:author, :read)).to match_array([
         [nil, false],
@@ -55,9 +51,9 @@ describe Departure, integration: true do
     end
 
     it 'marks the migration as up' do
-      migration_context.run(direction, version)
+      run_a_migration(direction, version)
 
-      expect(migration_context.current_version).to eq(version)
+      expect(current_migration_version).to eq(version)
     end
   end
 
@@ -65,15 +61,15 @@ describe Departure, integration: true do
     let(:version) { 10 }
 
     it 'updates all the required data' do
-      migration_context.run(direction, version)
+      run_a_migration(direction, version)
 
       expect(Comment.pluck(:read)).to match_array([true, true])
     end
 
     it 'marks the migration as up' do
-      migration_context.run(direction, version)
+      run_a_migration(direction, version)
 
-      expect(migration_context.current_version).to eq(version)
+      expect(current_migration_version).to eq(version)
     end
   end
 
@@ -81,15 +77,15 @@ describe Departure, integration: true do
     let(:version) { 11 }
 
     it 'updates all the required data' do
-      migration_context.run(direction, version)
+      run_a_migration(direction, version)
 
       expect(Comment.pluck(:read)).to match_array([true, true])
     end
 
     it 'marks the migration as up' do
-      migration_context.run(direction, version)
+      run_a_migration(direction, version)
 
-      expect(migration_context.current_version).to eq(version)
+      expect(current_migration_version).to eq(version)
     end
   end
 
@@ -97,15 +93,15 @@ describe Departure, integration: true do
     let(:version) { 12 }
 
     it 'updates all the required data' do
-      migration_context.run(direction, version)
+      run_a_migration(direction, version)
 
       expect(Comment.pluck(:read)).to match_array([true, true])
     end
 
     it 'marks the migration as up' do
-      migration_context.run(direction, version)
+      run_a_migration(direction, version)
 
-      expect(migration_context.current_version).to eq(version)
+      expect(current_migration_version).to eq(version)
     end
   end
 end

@@ -11,6 +11,8 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 - Create a `bin/rails` command that loads the database from the dummy application
 - Create a RailsAdapter that will handle creating connections inside of different versions of rails
 - Implement a Rails72DeparatureAdapater that handles the differences between Rails 7.2 and other rails versions
+- Implement a ActiveRecordMigratorWithAdvisoryLock patch for ActiveRecord versions 7.1 and 7.2 to prevent ConcurrentMigrationErrors
+- Implement a configuration option `disable_rails_advisory_lock_patch` to disable the ActiveRecordMigratorWithAdvisoryLock patch in our gem
 
 ## [6.7.0] - 2024-02-20
 

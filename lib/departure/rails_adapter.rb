@@ -31,6 +31,12 @@ module Departure
             ActiveRecord::Migration.class_eval do
               include Departure::Migration
             end
+
+            if ActiveRecord::VERSION::MAJOR == 7 && ActiveRecord::VERSION::MINOR == 1
+              require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
+
+              ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
+            end
           end
         end
 
@@ -72,11 +78,14 @@ module Departure
       class << self
         def register_integrations
           require 'active_record/connection_adapters/rails_7_2_departure_adapter'
+          require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
 
           ActiveSupport.on_load(:active_record) do
             ActiveRecord::Migration.class_eval do
               include Departure::Migration
             end
+
+            ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
           end
 
           ActiveRecord::ConnectionAdapters.register 'percona',

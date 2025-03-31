@@ -6,6 +6,8 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
 
+## [6.8.0] - 2025-03-31
+
 - Drop Ruby 3.0 support in specs
 - Create dummy application in specs, migrate fixtures to that application
 - Create a `bin/rails` command that loads the database from the dummy application

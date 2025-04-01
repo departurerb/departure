@@ -99,20 +99,11 @@ module ActiveRecord
       # @param column_name [String, Symbol]
       # @param options [Hash] optional
       def add_index(table_name, column_name, options = {})
-        if ActiveRecord::VERSION::STRING >= '6.1'
-          index_definition, = add_index_options(table_name, column_name, **options)
-          execute <<-SQL.squish
-            ALTER TABLE #{quote_table_name(index_definition.table)}
-              ADD #{schema_creation.accept(index_definition)}
-          SQL
-        else
-          index_name, index_type, index_columns, index_options = add_index_options(table_name, column_name, **options)
-          execute <<-SQL.squish
-            ALTER TABLE #{quote_table_name(table_name)}
-              ADD #{index_type} INDEX
-              #{quote_column_name(index_name)} (#{index_columns})#{index_options}
-          SQL
-        end
+        index_definition, = add_index_options(table_name, column_name, **options)
+        execute <<-SQL.squish
+          ALTER TABLE #{quote_table_name(index_definition.table)}
+            ADD #{schema_creation.accept(index_definition)}
+        SQL
       end
 
       # Remove the given index from the table.
@@ -120,12 +111,8 @@ module ActiveRecord
       # @param table_name [String, Symbol]
       # @param options [Hash] optional
       def remove_index(table_name, column_name = nil, **options)
-        if ActiveRecord::VERSION::STRING >= '6.1'
-          return if options[:if_exists] && !index_exists?(table_name, column_name, **options)
-          index_name = index_name_for_remove(table_name, column_name, options)
-        else
-          index_name = index_name_for_remove(table_name, options)
-        end
+        return if options[:if_exists] && !index_exists?(table_name, column_name, **options)
+        index_name = index_name_for_remove(table_name, column_name, options)
 
         execute "ALTER TABLE #{quote_table_name(table_name)} DROP INDEX #{quote_column_name(index_name)}"
       end

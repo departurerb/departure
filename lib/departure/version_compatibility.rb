@@ -1,5 +1,5 @@
-module VersionCompatibility
-  def self.compatible?(version_string, compatibility_string)
+class VersionCompatibility
+  def self.matches?(version_string, compatibility_string)
     raise "Invalid Gem Version: '#{version_string}'" unless Gem::Version.correct?(version_string)
 
     requirement = Gem::Requirement.new(compatibility_string)

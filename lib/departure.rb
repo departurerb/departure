@@ -16,6 +16,7 @@ require 'departure/command'
 require 'departure/connection_base'
 require 'departure/migration'
 require 'departure/rails_adapter'
+require 'departure/version_compatibility'
 
 require 'departure/railtie' if defined?(Rails)
 

@@ -18,7 +18,6 @@ require 'support/matchers/have_index'
 require 'support/matchers/have_foreign_key_on'
 require 'support/shared_examples/column_definition_method'
 require 'support/table_methods'
-require 'support/version_compatibility'
 require 'support/database_helpers'
 
 db_config = Configuration.new
@@ -42,7 +41,7 @@ RSpec.configure do |config|
   end
 
   config.define_derived_metadata(:activerecord_compatibility) do |meta|
-    unless VersionCompatibility.compatible?(ActiveRecord::VERSION::STRING, meta[:activerecord_compatibility])
+    unless VersionCompatibility.matches?(ActiveRecord::VERSION::STRING, meta[:activerecord_compatibility])
       meta[:skip] =
         "Spec defines behavior not compatible with #{ActiveRecord::VERSION::STRING}\
         , requires '#{meta[:activerecord_compatibility]}'"

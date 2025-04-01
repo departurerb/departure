@@ -2,9 +2,9 @@ PATH
   remote: ..
   specs:
     departure (6.8.0)
-      activerecord (>= 6.0.0, != 7.0.0)
+      activerecord (>= 7.0.0, < 7.3.0, != 7.0.0)
       mysql2 (>= 0.4.0, < 0.6.0)
-      railties (>= 6.0.0, != 7.0.0)
+      railties (>= 7.0.0, < 7.3.0, != 7.0.0)
 
 GEM
   remote: https://rubygems.org/
@@ -86,7 +86,6 @@ GEM
       thor (>= 0.14.0)
     ast (2.4.3)
     base64 (0.2.0)
-    benchmark (0.4.0)
     bigdecimal (3.1.9)
     builder (3.3.0)
     byebug (12.0.0)
@@ -271,6 +270,7 @@ PLATFORMS
 DEPENDENCIES
   appraisal (~> 2.4.1)
   base64
+  bigdecimal
   climate_control (~> 0.0.3)
   codeclimate-test-reporter (~> 1.0.3)
   departure!

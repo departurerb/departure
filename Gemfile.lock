@@ -200,6 +200,7 @@ DEPENDENCIES
   rspec-its (~> 1.2)
   rubocop (~> 1.74.0)
   rubocop-performance (~> 1.20.2)
+  zeitwerk (< 2.7.0)
 
 BUNDLED WITH
    2.4.22

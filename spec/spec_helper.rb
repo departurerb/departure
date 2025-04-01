@@ -41,7 +41,7 @@ RSpec.configure do |config|
   end
 
   config.define_derived_metadata(:activerecord_compatibility) do |meta|
-    unless VersionCompatibility.matches?(ActiveRecord::VERSION::STRING, meta[:activerecord_compatibility])
+    unless Departure::RailsAdapter.version_matches?(ActiveRecord::VERSION::STRING, meta[:activerecord_compatibility])
       meta[:skip] =
         "Spec defines behavior not compatible with #{ActiveRecord::VERSION::STRING}\
         , requires '#{meta[:activerecord_compatibility]}'"

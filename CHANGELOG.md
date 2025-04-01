@@ -6,7 +6,7 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
 
-- Drop Ruby 3.1 support in specs.  EOL is 2025-03-31
+- Drop Ruby 3.1 support.  Add >= 3.2 ruby support in gemspec.  EOL for 3.1.0 was 2025-03-31
 
 ## [6.8.0] - 2025-03-31
 

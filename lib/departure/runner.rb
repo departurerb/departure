@@ -22,6 +22,14 @@ module Departure
       @redirect_stderr = config&.redirect_stderr
     end
 
+    def query_options
+      raw_connection.query_options
+    end
+
+    def abandon_results!
+      raw_connection.abandon_results!
+    end
+
     def database_adapter
       @mysql_adapter
     end

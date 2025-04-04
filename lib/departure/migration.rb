@@ -94,11 +94,7 @@ module Departure
     end
 
     private def configuration_hash
-      if ActiveRecord::VERSION::STRING >= '6.1'
-        ActiveRecord::Base.connection_db_config.configuration_hash
-      else
-        ActiveRecord::Base.connection_config
-      end
+      ActiveRecord::Base.connection_db_config.configuration_hash
     end
   end
 end

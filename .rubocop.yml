@@ -6,7 +6,7 @@ require:
   - rubocop-performance
 
 AllCops:
-  TargetRubyVersion: 3.1.x
+  TargetRubyVersion: 3.4.x
 
 Metrics/AbcSize:
   Enabled: false

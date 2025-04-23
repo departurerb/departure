@@ -52,9 +52,9 @@ module ForAlterStatements
   end
 
   def add_index_for_alter(table_name, column_name, options = {})
-   index_definition, = add_index_options(table_name, column_name, **options)
+    index_definition, = add_index_options(table_name, column_name, **options)
 
-   "ADD #{schema_creation.accept(index_definition)}"
+    "ADD #{schema_creation.accept(index_definition)}"
   end
 
   def remove_index_for_alter(table_name, column_name = nil, **options)

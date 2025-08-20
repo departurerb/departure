@@ -153,7 +153,7 @@ module ActiveRecord
 
       attr_reader :mysql_adapter
 
-      if ActiveRecord.version >= Gem::Version.create('7.1.0')
+      if Departure::RailsAdapter.version_matches?(ActiveRecord.version, '~> 7.1.0')
         def raw_execute(sql, name, async: false, allow_retry: false, materialize_transactions: true)
           log(sql, name, async: async) do
             with_raw_connection(allow_retry: allow_retry, materialize_transactions: materialize_transactions) do |conn|

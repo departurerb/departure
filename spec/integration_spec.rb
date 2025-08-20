@@ -8,7 +8,11 @@ describe Departure, integration: true do
   let(:direction) { :up }
   let(:pool) { ActiveRecord::Base.connection_pool }
   let(:spec_config) do
-    if ActiveRecord::VERSION::STRING >= '6.1'
+    ar_version = ActiveRecord::VERSION::STRING
+
+    if Departure::RailsAdapter.version_matches?(ar_version, '~> 8.0')
+      pool.connections.first.instance_variable_get(:@config)
+    elsif Departure::RailsAdapter.version_matches?(ar_version, '>= 6.1')
       pool.connection.instance_variable_get(:@config)
     else
       pool.spec.config

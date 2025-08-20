@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'active_record/connection_adapters/percona_adapter'
 
-describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
+describe ActiveRecord::ConnectionAdapters::DepartureAdapter, activerecord_compatibility: "< 7.2" do
   describe ActiveRecord::ConnectionAdapters::DepartureAdapter::Column do
     let(:field) { double(:field) }
     let(:default) { double(:default) }

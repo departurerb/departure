@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'active_record/connection_adapters/rails_7_2_departure_adapter'
 
-describe ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter, activerecord_compatibility: '>= 7.2' do
+describe ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter, activerecord_compatibility: '~> 7.2' do
   describe ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter::Column do
     let(:field) { double(:field) }
     let(:default) { double(:default) }

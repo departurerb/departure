@@ -11,13 +11,13 @@ module Departure
         @__original_connection = connection
 
         got_lock = @__original_connection.get_advisory_lock(lock_id)
-        raise ConcurrentMigrationError unless got_lock
+        raise ActiveRecord::ConcurrentMigrationError unless got_lock
 
         load_migrated # reload schema_migrations to be sure it wasn't changed by another process before we got the lock
         yield
       ensure
         if got_lock && !@__original_connection.release_advisory_lock(lock_id)
-          raise ConcurrentMigrationError, RELEASE_LOCK_FAILED_MESSAGE
+          raise ActiveRecord::ConcurrentMigrationError, RELEASE_LOCK_FAILED_MESSAGE
         end
       end
     end

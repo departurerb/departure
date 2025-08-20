@@ -11,5 +11,5 @@ appraise 'rails-7-2' do
 end
 
 appraise 'rails-8-0' do
-  gem 'rails', '8.0.2'
+  gem 'rails', '8.0.2.1'
 end

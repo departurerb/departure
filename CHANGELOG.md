@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
-## [Unreleased]
+## [7.0.0] - 2025-08-21
 
 - Drop Ruby 3.1 support.  Add >= 3.2 ruby support in gemspec.  EOL for 3.1.0 was 2025-03-31
 - Drop Rails 6.1 support.  Add >= 6.2 rails support in gemspec.  EOL for 6.1.0 was 2024-10-01

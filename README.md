@@ -221,6 +221,19 @@ that prevents schema changes when a table has constraints. You should upgrade to
 
 ## Development
 
+### Docker Compose
+
+You can bring up the docker-compose setup and bash into rails in order to not install dependencies on your system
+
+```
+docker compose up
+docker compose exec rails bash
+bundle install
+# off to the races
+```
+
+### Manual
+
 After checking out the repo, run `bin/setup` to install dependencies. Then, run
 `rake spec` to run the tests. You can also run `bin/console` for an interactive
 prompt that will allow you to experiment.

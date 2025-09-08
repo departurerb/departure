@@ -21,7 +21,9 @@ module Departure
       end
 
       def for(ar_version)
-        if ar_version::MAJOR == 8
+        if ar_version::MAJOR == 8 && ar_version::MINOR > 0
+          V8_1_Adapter
+        elsif ar_version::MAJOR == 8
           V8_0_Adapter
         elsif ar_version::MAJOR >= 7 && ar_version::MINOR >= 2
           V7_2_Adapter
@@ -139,6 +141,35 @@ module Departure
 
         def sql_column
           ::ActiveRecord::ConnectionAdapters::Rails80DepartureAdapter::Column
+        end
+      end
+    end
+
+    class V8_1_Adapter < BaseAdapter # rubocop:disable Naming/ClassAndModuleCamelCase
+      class << self
+        def register_integrations
+          require 'active_record/connection_adapters/rails_8_1_departure_adapter'
+          require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
+
+          ActiveSupport.on_load(:active_record) do
+            ActiveRecord::Migration.class_eval do
+              include Departure::Migration
+            end
+
+            ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
+          end
+
+          ActiveRecord::ConnectionAdapters.register 'percona',
+                                                    'ActiveRecord::ConnectionAdapters::Rails81DepartureAdapter',
+                                                    'active_record/connection_adapters/rails_8_1_departure_adapter'
+        end
+
+        def create_connection_adapter(**config)
+          ActiveRecord::ConnectionAdapters::Rails81DepartureAdapter.new(config)
+        end
+
+        def sql_column
+          ::ActiveRecord::ConnectionAdapters::Rails81DepartureAdapter::Column
         end
       end
     end

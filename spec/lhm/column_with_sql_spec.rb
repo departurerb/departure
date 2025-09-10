@@ -46,8 +46,8 @@ describe Lhm::ColumnWithSql do
 
         let(:definition) { 'MEDIUMINT DEFAULT 0' }
 
-        its([:default], activerecord_compatibility: '<= 8.0') { is_expected.to eq('0') }
-        its([:default], activerecord_compatibility: '> 8.0') { is_expected.to eq(0) }
+        its([:default], activerecord_compatibility: ['~> 8.0', '< 8.1.0.beta1']) { is_expected.to eq('0') }
+        its([:default], activerecord_compatibility: '= 8.1.0.beta1') { is_expected.to eq(0) }
       end
 
       context 'with NOT NULL' do
@@ -75,8 +75,8 @@ describe Lhm::ColumnWithSql do
         subject { column.attributes[1] }
 
         let(:definition) { 'TINYINT default 0' }
-        its([:default], activerecord_compatibility: '<= 8.0') { is_expected.to eq('0') }
-        its([:default], activerecord_compatibility: '> 8.0') { is_expected.to eq(0) }
+        its([:default], activerecord_compatibility: ['~> 8.0', '< 8.1.0.beta1']) { is_expected.to eq('0') }
+        its([:default], activerecord_compatibility: '= 8.1.0.beta1') { is_expected.to eq(0) }
       end
 
       context 'with NOT NULL' do
@@ -114,8 +114,8 @@ describe Lhm::ColumnWithSql do
         subject { column.attributes[1] }
 
         let(:definition) { 'FLOAT DEFAULT 0' }
-        its([:default], activerecord_compatibility: '<= 8.0') { is_expected.to eq('0') }
-        its([:default], activerecord_compatibility: '> 8.0') { is_expected.to eq(0.0) }
+        its([:default], activerecord_compatibility: ['~> 8.0', '< 8.1.0.beta1']) { is_expected.to eq('0') }
+        its([:default], activerecord_compatibility: '= 8.1.0.beta1') { is_expected.to eq(0.0) }
       end
 
       context 'with NOT NULL' do
@@ -269,8 +269,8 @@ describe Lhm::ColumnWithSql do
         subject { column.attributes[1] }
 
         let(:definition) { 'BOOLEAN DEFAULT FALSE' }
-        its([:default], activerecord_compatibility: '<= 8.0') { is_expected.to eq('FALSE') }
-        its([:default], activerecord_compatibility: '> 8.0') { is_expected.to eq(false) }
+        its([:default], activerecord_compatibility: ['~> 8.0', '< 8.1.0.beta1']) { is_expected.to eq('FALSE') }
+        its([:default], activerecord_compatibility: '= 8.1.0.beta1') { is_expected.to eq(false) }
       end
 
       context 'with NOT NULL' do

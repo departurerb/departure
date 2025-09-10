@@ -1,6 +1,30 @@
 require 'spec_helper'
 
 RSpec.describe Departure::RailsAdapter, integration: true do
+  describe '#for' do
+    def gem_version_for(string)
+      major, minor, patch, pre = string.split('.')
+
+      Class.new.tap do |klass|
+        klass.const_set :MAJOR, major.to_i
+        klass.const_set :MINOR, minor.to_i
+        klass.const_set :PATCH, patch.to_i
+
+        klass.const_set :PRE, pre if pre
+      end
+    end
+
+    it 'returns the correct adapater based on the gem version' do
+      expect(described_class.for(gem_version_for('8.1.0'))).to be(Departure::RailsAdapter::V8_1_Adapter)
+      expect(described_class.for(gem_version_for('8.1.0.beta1'))).to be(Departure::RailsAdapter::V8_1_Adapter)
+      expect(described_class.for(gem_version_for('8.0.1'))).to be(Departure::RailsAdapter::V8_0_Adapter)
+      expect(described_class.for(gem_version_for('8.0.0'))).to be(Departure::RailsAdapter::V8_0_Adapter)
+      expect(described_class.for(gem_version_for('7.2.0'))).to be(Departure::RailsAdapter::V7_2_Adapter)
+      expect(described_class.for(gem_version_for('7.1.0'))).to be(Departure::RailsAdapter::BaseAdapter)
+      expect(described_class.for(gem_version_for('6.1.0'))).to be(Departure::RailsAdapter::BaseAdapter)
+    end
+  end
+
   describe '#version_matches?' do
     context 'direct matches' do
       it 'returns true when compatible' do

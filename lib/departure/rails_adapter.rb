@@ -81,6 +81,8 @@ module Departure
           )
         end
 
+        # https://github.com/rails/rails/commit/9ad36e067222478090b36a985090475bb03e398c#diff-de807ece2205a84c0e3de66b0e5ab831325d567893b8b88ce0d6e9d498f923d1
+        # Rails Column arity changed to require cast_type in position 2 which required us introducing this indirection
         def new_sql_column(name:,
                            default_value:,
                            mysql_metadata:,
@@ -177,6 +179,8 @@ module Departure
         end
 
         # rubocop:disable Metrics/ParameterLists
+        # https://github.com/rails/rails/commit/9ad36e067222478090b36a985090475bb03e398c#diff-de807ece2205a84c0e3de66b0e5ab831325d567893b8b88ce0d6e9d498f923d1
+        # Rails Column arity changed to require cast_type in position 2 which required us introducing this indirection
         def new_sql_column(name:,
                            cast_type:,
                            default_value:,

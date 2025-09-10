@@ -21,7 +21,7 @@ module Departure
       end
 
       def for(ar_version)
-        if ar_version::MAJOR == 8 && ar_version::MINOR > 0
+        if ar_version::MAJOR == 8 && ar_version::MINOR.positive?
           V8_1_Adapter
         elsif ar_version::MAJOR == 8
           V8_0_Adapter
@@ -79,6 +79,14 @@ module Departure
             connection_options,
             config
           )
+        end
+
+        def new_sql_column(name:,
+                           default_value:,
+                           mysql_metadata:,
+                           null_value:,
+                           **_kwargs)
+          sql_column.new(name, default_value, mysql_metadata, null_value)
         end
 
         def sql_column
@@ -166,6 +174,17 @@ module Departure
 
         def create_connection_adapter(**config)
           ActiveRecord::ConnectionAdapters::Rails81DepartureAdapter.new(config)
+        end
+
+        # rubocop:disable Metrics/ParameterLists
+        def new_sql_column(name:,
+                           cast_type:,
+                           default_value:,
+                           mysql_metadata:,
+                           null_value:,
+                           **_kwargs)
+          # rubocop:enable Metrics/ParameterLists
+          sql_column.new(name, cast_type, default_value, mysql_metadata, null_value)
         end
 
         def sql_column

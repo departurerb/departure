@@ -169,7 +169,7 @@ module Departure
         end
 
         def sql_column
-          ::ActiveRecord::ConnectionAdapters::Rails81DepartureAdapter::Column
+          ::ActiveRecord::ConnectionAdapters::MySQL::Column
         end
       end
     end

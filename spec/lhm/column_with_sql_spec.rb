@@ -45,7 +45,9 @@ describe Lhm::ColumnWithSql do
         subject { column.attributes[1] }
 
         let(:definition) { 'MEDIUMINT DEFAULT 0' }
-        its([:default]) { is_expected.to eq('0') }
+
+        its([:default], activerecord_compatibility: '<= 8.0') { is_expected.to eq('0') }
+        its([:default], activerecord_compatibility: '> 8.0') { is_expected.to eq(0) }
       end
 
       context 'with NOT NULL' do
@@ -73,7 +75,8 @@ describe Lhm::ColumnWithSql do
         subject { column.attributes[1] }
 
         let(:definition) { 'TINYINT default 0' }
-        its([:default]) { is_expected.to eq('0') }
+        its([:default], activerecord_compatibility: '<= 8.0') { is_expected.to eq('0') }
+        its([:default], activerecord_compatibility: '> 8.0') { is_expected.to eq(0) }
       end
 
       context 'with NOT NULL' do
@@ -111,7 +114,8 @@ describe Lhm::ColumnWithSql do
         subject { column.attributes[1] }
 
         let(:definition) { 'FLOAT DEFAULT 0' }
-        its([:default]) { is_expected.to eq('0') }
+        its([:default], activerecord_compatibility: '<= 8.0') { is_expected.to eq('0') }
+        its([:default], activerecord_compatibility: '> 8.0') { is_expected.to eq(0.0) }
       end
 
       context 'with NOT NULL' do
@@ -265,7 +269,8 @@ describe Lhm::ColumnWithSql do
         subject { column.attributes[1] }
 
         let(:definition) { 'BOOLEAN DEFAULT FALSE' }
-        its([:default]) { is_expected.to eq('FALSE') }
+        its([:default], activerecord_compatibility: '<= 8.0') { is_expected.to eq('FALSE') }
+        its([:default], activerecord_compatibility: '> 8.0') { is_expected.to eq(false) }
       end
 
       context 'with NOT NULL' do

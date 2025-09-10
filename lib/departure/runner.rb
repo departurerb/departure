@@ -1,4 +1,5 @@
 require 'open3'
+
 require 'forwardable'
 
 module Departure
@@ -8,6 +9,7 @@ module Departure
     extend ::Forwardable
 
     def_delegators :raw_connection, :execute, :escape, :close, :affected_rows
+    delegate_missing_to :raw_connection
 
     # Constructor
     #

@@ -221,7 +221,9 @@ that prevents schema changes when a table has constraints. You should upgrade to
 
 ## Development
 
-### Docker Compose
+### Setup
+
+#### Docker Compose
 
 You can bring up the docker-compose setup and bash into rails in order to not install dependencies on your system
 
@@ -232,7 +234,7 @@ bundle install
 # off to the races
 ```
 
-### Manual
+#### Manual
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run
 `rake spec` to run the tests. You can also run `bin/console` for an interactive
@@ -243,6 +245,26 @@ release a new version, update the version number in `version.rb`, and then run
 `bundle exec rake release`, which will create a git tag for the version, push
 git commits and tags, and push the `.gem` file to
 [rubygems.org](https://rubygems.org).
+
+### Appraisal
+
+All versions of supported rails are defined in the Appraisal file
+
+#### Usage
+
+Say you want to run a specific test under a version of rails defined in Appraisal `rails-8-0`
+
+```
+bundle exec appraisal rails-8-0 bundle install
+bundle exec appraisal rails-8-0 bundle exec rspec spec/lhm/column_with_sql_spec.rb:50
+```
+
+#### Adding Versions
+
+ - Add the version to Appraisal
+ - Run `bundle exec appraisal generate`
+ - Run `bundle exec appraisal install`
+ - updates test.yml in the `gemfile:` section
 
 ## Contributing
 

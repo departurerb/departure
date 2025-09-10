@@ -177,6 +177,7 @@ module ActiveRecord
       #   @raw_connection.database_adapter.error_number(exception)
       # end
 
+      # rubocop:disable Layout/LineLength
       # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/ParameterLists
       # def raw_execute(sql, name = nil, binds = [], prepare: false, async: false, allow_retry: false, materialize_transactions: true, batch: false)
       #   type_casted_binds = type_casted_binds(binds)
@@ -187,6 +188,7 @@ module ActiveRecord
       #     end
       #   end
       # end
+      # rubocop:enable Layout/LineLength
 
       def perform_query(raw_connection, sql, binds, type_casted_binds, prepare:, notification_payload:, batch: false)
         reset_multi_statement = if batch && !multi_statements_enabled?

@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
+require 'forwardable'
+
 module Departure
   class RailsAdapter
-    extend Forwardable
+    extend ::Forwardable
 
     class << self
       def version_matches?(version_string, compatibility_string = current_version::STRING)

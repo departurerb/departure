@@ -1,10 +1,11 @@
 require 'open3'
+require 'forwardable'
 
 module Departure
   # It executes pt-online-schema-change commands in a new process and gets its
   # output and status
   class Runner
-    extend Forwardable
+    extend ::Forwardable
 
     def_delegators :raw_connection, :execute, :escape, :close, :affected_rows
 

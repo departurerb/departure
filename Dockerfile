@@ -1,4 +1,4 @@
-FROM ruby:3.0
+FROM ruby:3.4
 MAINTAINER muffinista@gmail.com
 
 # Install apt based dependencies required to run Rails as
@@ -14,17 +14,10 @@ RUN apt-get update && apt-get install -y \
 RUN mkdir -p /app /app/lib/departure
 WORKDIR /app
 
-# Copy the Gemfile as well as the Gemfile.lock and install
-# the RubyGems. This is a separate step so the dependencies
-# will be cached unless changes to one of those two files
-# are made.
-COPY departure.gemspec Gemfile ./
-COPY lib/departure/version.rb ./lib/departure/
+# Install bundler - dependencies will be installed via volume mount
+RUN gem install bundler
 
-RUN gem install bundler && bundle install --jobs 20 --retry 5
-
-# Copy the main application.
-COPY . ./
+# Project root will be mounted as volume for live development
 
 # The main command to run when the container starts. Also
 # tell the Rails dev server to bind to all interfaces by

@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'activerecord', '>= 7.0.1'
   spec.add_runtime_dependency 'mysql2', '>= 0.4.0', '< 0.6.0'
 
-  spec.add_development_dependency 'appraisal', '~> 2.4.1'
+  spec.add_development_dependency 'appraisal', '~> 2.5.0'
   spec.add_development_dependency 'rake', '>= 10.0'
   spec.add_development_dependency 'rspec', '~> 3.4', '>= 3.4.0'
   spec.add_development_dependency 'rspec-its', '~> 1.2'

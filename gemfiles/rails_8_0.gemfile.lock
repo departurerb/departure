@@ -1,7 +1,7 @@
 PATH
   remote: ..
   specs:
-    departure (6.8.0)
+    departure (7.0.0)
       activerecord (>= 7.0.1)
       mysql2 (>= 0.4.0, < 0.6.0)
       railties (>= 7.0.1)
@@ -80,7 +80,7 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
-    appraisal (2.4.1)
+    appraisal (2.5.0)
       bundler
       rake
       thor (>= 0.14.0)
@@ -259,14 +259,15 @@ GEM
       base64
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    zeitwerk (2.7.2)
+    zeitwerk (2.6.18)
 
 PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  appraisal (~> 2.4.1)
+  appraisal (~> 2.5.0)
   base64
+  bigdecimal
   climate_control (~> 0.0.3)
   codeclimate-test-reporter (~> 1.0.3)
   departure!
@@ -280,6 +281,7 @@ DEPENDENCIES
   rspec-its (~> 1.2)
   rubocop (~> 1.74.0)
   rubocop-performance (~> 1.20.2)
+  zeitwerk (< 2.7.0)
 
 BUNDLED WITH
    2.6.6

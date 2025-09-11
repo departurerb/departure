@@ -16,7 +16,11 @@ services:
       - db
     tty: true
     stdin_open: true
+    volumes:
+      - .:/app
+      - ./tmp/local_gems:/app/vendor/bundle
     environment:
+      BUNDLE_PATH: /app/vendor/bundle
       PERCONA_DB_USER: root
       PERCONA_DB_HOST: db
       PERCONA_DB_PASSWORD:

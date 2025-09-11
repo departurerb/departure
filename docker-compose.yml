@@ -16,6 +16,8 @@ services:
       - db
     tty: true
     stdin_open: true
+    volumes:
+      - .:/app
     environment:
       PERCONA_DB_USER: root
       PERCONA_DB_HOST: db

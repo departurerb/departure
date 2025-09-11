@@ -293,6 +293,9 @@ that prevents schema changes when a table has constraints. You should upgrade to
 
 You can bring up the docker-compose setup and bash into rails in order to not install dependencies on your system
 
+Gems are available on your local file system from tmp/local_gems directory.  We need this due to changes in 
+internals of ActiveRecord and needing to run things like pry to debug how they work.
+
 ```
 docker compose up
 docker compose exec rails bash

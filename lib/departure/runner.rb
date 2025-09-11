@@ -8,8 +8,9 @@ module Departure
   class Runner
     extend ::Forwardable
 
-    def_delegators :raw_connection, :execute, :escape, :close, :affected_rows
-    delegate_missing_to :raw_connection
+    # These are methods we know will be sent to the raw_connection
+    # other methods are forwarded to the raw_connection, database_adapter or supered
+    def_delegators :raw_connection, :server_info, :execute, :escape, :close, :affected_rows, :closed?
 
     # Constructor
     #
@@ -41,46 +42,52 @@ module Departure
       database_adapter.raw_connection
     end
 
-    # Executes the passed sql statement using pt-online-schema-change for ALTER
-    # TABLE statements, or the specified mysql adapter otherwise.
-    #
-    # @param sql [String]
-    def query(sql)
-      if alter_statement?(sql)
-        command_line = cli_generator.parse_statement(sql)
-        execute(command_line)
+    # Intercepts raw query calls to pass ALTER TABLE statements to pt-online-schema-change
+    # otherwise sends to
+    # eg: goes to pt-online-schema-change
+    #   query("ALTER TABLE `comments` ADD INDEX `index_comments_on_some_id_field` (`some_id_field`))
+    # eg: sends to database adapter
+    #   query("COMMIT") - query("SELECT * from 'comments'")
+    def query(raw_sql_string)
+      # binding.pry if sql.include? "index"
+      if alter_statement?(raw_sql_string)
+        command_line = cli_generator.parse_statement(raw_sql_string)
+        send_to_pt_online_schema_change(command_line)
       else
-        database_adapter.execute(sql)
+        database_adapter.execute(raw_sql_string)
       end
     end
 
-    # Returns the number of rows affected by the last UPDATE, DELETE or INSERT
-    # statements
-    #
-    # @return [Integer]
-    def affected_rows
-      raw_connection.affected_rows
-    end
-
-    # TODO: rename it so we don't confuse it with AR's #execute
-    # Runs and logs the given command
-    #
-    # @param command_line [String]
-    # @return [Boolean]
-    def execute(command_line)
-      Command.new(command_line, error_log_path, logger, redirect_stderr).run
+    # Runs raw_sql_string through pt-online-schema-change command line tool
+    def send_to_pt_online_schema_change(raw_sql_string)
+      Command.new(raw_sql_string, error_log_path, logger, redirect_stderr).run
     end
 
     private
 
     attr_reader :logger, :cli_generator, :mysql_adapter, :error_log_path, :redirect_stderr
 
+    # This runner forwards missing methods to both the raw_connection and database adapter
+    def method_missing(method_name, *args, &block)
+      if raw_connection.respond_to?(method_name)
+        raw_connection.send(method_name, *args, &block)
+      elsif database_adapter.respond_to?(method_name)
+        database_adapter.send(method_name, *args, &block)
+      else
+        super
+      end
+    end
+
+    def respond_to_missing?(method_name, include_private = false)
+      raw_connection.respond_to?(method_name) || database_adapter.respond_to?(method_name) || super
+    end
+
     # Checks whether the sql statement is an ALTER TABLE
     #
     # @param sql [String]
     # @return [Boolean]
-    def alter_statement?(sql)
-      sql =~ /\Aalter table/i
+    def alter_statement?(raw_sql_string)
+      raw_sql_string =~ /\Aalter table/i
     end
   end
 end

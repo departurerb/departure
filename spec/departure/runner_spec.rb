@@ -49,12 +49,12 @@ describe Departure::Runner do
     end
 
     it 'executes the pt-online-schema-change command' do
-      runner.execute(command_line)
+      runner.send_to_pt_online_schema_change(command_line)
       expect(cmd).to have_received(:run)
     end
 
     it 'returns the command status' do
-      expect(runner.execute(command_line)).to eq(status)
+      expect(runner.send_to_pt_online_schema_change(command_line)).to eq(status)
     end
   end
 end

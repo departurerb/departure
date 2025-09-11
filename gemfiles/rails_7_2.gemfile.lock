@@ -269,6 +269,7 @@ PLATFORMS
 DEPENDENCIES
   appraisal (~> 2.5.0)
   base64
+  bigdecimal
   climate_control (~> 0.0.3)
   codeclimate-test-reporter (~> 1.0.3)
   departure!

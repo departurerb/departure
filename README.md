@@ -248,7 +248,6 @@ adapters.
       Migration --> DSL
       DSL --> DepartureAdapter
       DepartureAdapter --> Runner
-      Runner --> |"ALTER TABLE statements"| CliGenerator
       Runner --> |"Non-ALTER statements"| MySQL
       CliGenerator --> Command
       Command --> PTOSC
@@ -259,7 +258,6 @@ adapters.
       LhmAdapter --> DSL
 
       %% Configuration Flow
-      Logger --> Command
       RailsAdapter --> |"Registers"| DepartureAdapter
 
       %% Decision Points

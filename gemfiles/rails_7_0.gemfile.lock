@@ -80,6 +80,7 @@ GEM
       thor (>= 0.14.0)
     ast (2.4.3)
     base64 (0.2.0)
+    bigdecimal (3.2.3)
     builder (3.3.0)
     byebug (12.0.0)
     climate_control (0.0.4)
@@ -236,6 +237,7 @@ PLATFORMS
 DEPENDENCIES
   appraisal (~> 2.5.0)
   base64
+  bigdecimal
   climate_control (~> 0.0.3)
   codeclimate-test-reporter (~> 1.0.3)
   departure!

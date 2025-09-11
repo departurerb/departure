@@ -1,4 +1,4 @@
-FROM ruby:3.0
+FROM ruby:3.4
 MAINTAINER muffinista@gmail.com
 
 # Install apt based dependencies required to run Rails as

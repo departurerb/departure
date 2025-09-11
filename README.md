@@ -213,6 +213,70 @@ When any errors occur, an `ActiveRecord::StatementInvalid` exception is
 raised and the migration is aborted, as all other ActiveRecord connection
 adapters.
 
+### Diagram
+
+```mermaid
+ flowchart TB
+      %% User Level
+      subgraph "Rails Application"
+          Migration["Rails Migration<br/>(ActiveRecord::Migration)"]
+          DSL["Migration DSL<br/>(add_column, create_table, etc.)"]
+      end
+
+      %% Core Departure Components
+      subgraph "Departure System"
+          RailsAdapter["RailsAdapter<br/>(Version Detection)"]
+          DepartureAdapter["Rails81DepartureAdapter<br/>(Connection Adapter)"]
+          Runner["Runner<br/>(Query Interceptor)"]
+          Command["Command<br/>(Process Executor)"]
+          CliGenerator["CliGenerator<br/>(Command Builder)"]
+      end
+
+      %% External Components
+      subgraph "External Tools"
+          PTOSC["pt-online-schema-change<br/>(Percona Toolkit)"]
+          MySQL["MySQL Database"]
+      end
+
+      %% LHM Integration
+      subgraph "LHM Integration"
+          LhmAdapter["Lhm::Adapter<br/>(DSL Translator)"]
+          LhmMigration["LHM Migration"]
+      end
+
+      %% Flow connections
+      Migration --> DSL
+      DSL --> DepartureAdapter
+      DepartureAdapter --> Runner
+      Runner --> |"Non-ALTER statements"| MySQL
+      CliGenerator --> Command
+      Command --> PTOSC
+      PTOSC --> MySQL
+
+      %% LHM Flow
+      LhmMigration --> LhmAdapter
+      LhmAdapter --> DSL
+
+      %% Configuration Flow
+      RailsAdapter --> |"Registers"| DepartureAdapter
+
+      %% Decision Points
+      Runner --> |"Check: ALTER TABLE?"| DecisionNode{{"ALTER TABLE<br/>Statement?"}}
+      DecisionNode --> |"Yes"| CliGenerator
+      DecisionNode --> |"No"| MySQL
+
+      %% Styling
+      classDef departure fill:#e1f5fe
+      classDef external fill:#fff3e0
+      classDef rails fill:#e8f5e8
+      classDef lhm fill:#fce4ec
+
+      class RailsAdapter,DepartureAdapter,Runner,Command,CliGenerator departure
+      class PTOSC,MySQL external
+      class Migration,DSL rails
+      class LhmAdapter,LhmMigration lhm
+```
+
 ## Trouleshooting
 
 ### Error creating new table: DBD::mysql::db do failed: Can't write; duplicate key in table (TABLE_NAME)
@@ -226,6 +290,9 @@ that prevents schema changes when a table has constraints. You should upgrade to
 #### Docker Compose
 
 You can bring up the docker-compose setup and bash into rails in order to not install dependencies on your system
+
+Gems are available on your local file system from tmp/local_gems directory.  We need this due to changes in 
+internals of ActiveRecord and needing to run things like pry to debug how they work.
 
 ```
 docker compose up
@@ -248,7 +315,7 @@ git commits and tags, and push the `.gem` file to
 
 ### Appraisal
 
-All versions of supported rails are defined in the Appraisal file
+All versions of supported rails are defined in the [Appraisals file](./Appraisals) in project root
 
 #### Usage
 
@@ -261,10 +328,10 @@ bundle exec appraisal rails-8-0 bundle exec rspec spec/lhm/column_with_sql_spec.
 
 #### Adding Versions
 
- - Add the version to Appraisal
- - Run `bundle exec appraisal generate`
- - Run `bundle exec appraisal install`
- - updates test.yml in the `gemfile:` section
+- Add the version to [Appraisals file](./Appraisals)
+- Run `bundle exec appraisal generate`
+- Run `bundle exec appraisal install`
+- updates ci [test.yml](./.github/workflows/test.yml) in the `gemfile:` section
 
 ## Contributing
 

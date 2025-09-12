@@ -40,43 +40,27 @@ module ActiveRecord
       ADAPTER_NAME = 'Percona'.freeze
 
       def self.new_client(config)
-        connection_details = Departure::ConnectionDetails.new(config)
-        verbose = ActiveRecord::Migration.verbose
-        sanitizers = [
-          Departure::LogSanitizers::PasswordSanitizer.new(connection_details)
-        ]
-        percona_logger = Departure::LoggerFactory.build(sanitizers: sanitizers, verbose: verbose)
-        cli_generator = Departure::CliGenerator.new(connection_details)
-
-        mysql_adapter = ActiveRecord::ConnectionAdapters::Mysql2Adapter.new(config.merge(adapter: 'mysql2'))
-
-        Departure::DbClient.new(
-          percona_logger,
-          cli_generator,
-          mysql_adapter
-        )
+        Departure::DbClient.new(config)
       end
 
-      # add_index is modified from the underlying mysql adapter implementation to ensure we add ALTER TABLE to it
-      def add_index(table_name, column_name, options = {})
-        index_definition, = add_index_options(table_name, column_name, **options)
-        execute <<-SQL.squish
-          ALTER TABLE #{quote_table_name(index_definition.table)}
-            ADD #{schema_creation.accept(index_definition)}
-        SQL
-      end
+      concerning :SchemaStatements do
+        # add_index is modified from the underlying mysql adapter implementation to ensure we add ALTER TABLE to it
+        def add_index(table_name, column_name, options = {})
+          index_definition, = add_index_options(table_name, column_name, **options)
+          execute <<-SQL.squish
+            ALTER TABLE #{quote_table_name(index_definition.table)}
+              ADD #{schema_creation.accept(index_definition)}
+          SQL
+        end
 
-      # remove_index is modified from the underlying mysql adapter implementation to ensure we add ALTER TABLE to it
-      def remove_index(table_name, column_name = nil, **options)
-        return if options[:if_exists] && !index_exists?(table_name, column_name, **options)
+        # remove_index is modified from the underlying mysql adapter implementation to ensure we add ALTER TABLE to it
+        def remove_index(table_name, column_name = nil, **options)
+          return if options[:if_exists] && !index_exists?(table_name, column_name, **options)
 
-        index_name = index_name_for_remove(table_name, column_name, options)
+          index_name = index_name_for_remove(table_name, column_name, options)
 
-        execute "ALTER TABLE #{quote_table_name(table_name)} DROP INDEX #{quote_column_name(index_name)}"
-      end
-
-      def schema_creation
-        SchemaCreation.new(self)
+          execute "ALTER TABLE #{quote_table_name(table_name)} DROP INDEX #{quote_column_name(index_name)}"
+        end
       end
 
       private
@@ -85,6 +69,12 @@ module ActiveRecord
 
       # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/ParameterLists
       def perform_query(raw_connection, sql, binds, type_casted_binds, prepare:, notification_payload:, batch: false)
+        if (binds.nil? || binds.empty?) && raw_connection.alter_statement?(sql)
+          return raw_connection.send_to_pt_online_schema_change(sql)
+        end
+
+        return super
+
         reset_multi_statement = if batch && !multi_statements_enabled?
                                   raw_connection.set_server_option(::Mysql2::Client::OPTION_MULTI_STATEMENTS_ON)
                                   true

@@ -6,7 +6,8 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [NEXT]
 
-- Bump appraisal to 2.5.0
+- Bump [appraisal to 2.5.0](https://github.com/departurerb/departure/pull/129)
+- Add support for [Rails 8.1](https://github.com/departurerb/departure/pull/128)
 
 ## [7.0.0] - 2025-08-21
 

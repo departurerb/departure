@@ -5,6 +5,7 @@ require 'active_record/connection_adapters/for_alter'
 
 require 'departure/version'
 require 'departure/log_sanitizers/password_sanitizer'
+require 'departure/db_client'
 require 'departure/runner'
 require 'departure/cli_generator'
 require 'departure/logger'

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'tempfile'
 
-describe Departure::Runner do
+describe Departure::DbClient do
   let(:command_line) { 'pt-online-schema-change command' }
   let(:logger) { instance_double(Departure::Logger) }
   let(:cli_generator) { instance_double(Departure::CliGenerator) }
@@ -12,7 +12,7 @@ describe Departure::Runner do
     instance_double(
       Departure::Configuration,
       error_log_path: 'departure_error.log',
-      redirect_stderr: true,
+      redirect_stderr: true
     )
   end
 
@@ -49,12 +49,12 @@ describe Departure::Runner do
     end
 
     it 'executes the pt-online-schema-change command' do
-      runner.execute(command_line)
+      runner.send_to_pt_online_schema_change(command_line)
       expect(cmd).to have_received(:run)
     end
 
     it 'returns the command status' do
-      expect(runner.execute(command_line)).to eq(status)
+      expect(runner.send_to_pt_online_schema_change(command_line)).to eq(status)
     end
   end
 end

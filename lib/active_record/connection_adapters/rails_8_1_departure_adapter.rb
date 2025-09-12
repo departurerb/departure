@@ -50,7 +50,7 @@ module ActiveRecord
 
         mysql_adapter = ActiveRecord::ConnectionAdapters::Mysql2Adapter.new(config.merge(adapter: 'mysql2'))
 
-        Departure::Runner.new(
+        Departure::DbClient.new(
           percona_logger,
           cli_generator,
           mysql_adapter

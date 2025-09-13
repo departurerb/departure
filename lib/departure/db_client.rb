@@ -30,7 +30,6 @@ module Departure
     #   query("COMMIT") - query("SELECT * from 'comments'")
     def query(raw_sql_string)
       if alter_statement?(raw_sql_string)
-        command_line = @cli_generator.parse_statement(raw_sql_string)
         send_to_pt_online_schema_change(command_line)
       else
         database_client.query(raw_sql_string)
@@ -39,15 +38,14 @@ module Departure
 
     # Runs raw_sql_string through pt-online-schema-change command line tool
     def send_to_pt_online_schema_change(raw_sql_string)
-      Command.new(raw_sql_string,
+      command_line = @cli_generator.parse_statement(raw_sql_string)
+
+      Command.new(command_line,
                   Departure.configuration.error_log_path,
                   @logger,
                   Departure.configuration.redirect_stderr).run
     end
 
-    private
-
-    # Checks whether the sql statement is an ALTER TABLE
     def alter_statement?(raw_sql_string)
       raw_sql_string =~ /\Aalter table/i
     end

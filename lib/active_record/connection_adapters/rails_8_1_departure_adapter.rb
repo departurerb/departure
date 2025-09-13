@@ -40,21 +40,9 @@ module ActiveRecord
       ADAPTER_NAME = 'Percona'.freeze
 
       def self.new_client(config)
-        connection_details = Departure::ConnectionDetails.new(config)
-        verbose = ActiveRecord::Migration.verbose
-        sanitizers = [
-          Departure::LogSanitizers::PasswordSanitizer.new(connection_details)
-        ]
-        percona_logger = Departure::LoggerFactory.build(sanitizers: sanitizers, verbose: verbose)
-        cli_generator = Departure::CliGenerator.new(connection_details)
+        original_client = super
 
-        mysql_adapter = ::Mysql2::Client.new(config)
-
-        Departure::DbClient.new(
-          percona_logger,
-          cli_generator,
-          mysql_adapter
-        )
+        Departure::DbClient.new(config, original_client)
       end
 
       # add_index is modified from the underlying mysql adapter implementation to ensure we add ALTER TABLE to it

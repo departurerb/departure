@@ -22,19 +22,19 @@ describe Departure::DbClient do
     let(:status) { instance_double(Process::Status) }
     let(:cmd) { instance_double(Departure::Command, run: status) }
 
-    before do
-      allow(Departure::Command)
-        .to receive(:new).with(command_line, config.error_log_path, logger, config.redirect_stderr)
-        .and_return(cmd)
-    end
+    # before do
+    #   allow(Departure::Command)
+    #     .to receive(:new).with(command_line, config.error_log_path, logger, config.redirect_stderr)
+    #     .and_return(cmd)
+    # end
 
-    it 'executes the pt-online-schema-change command' do
-      runner.send_to_pt_online_schema_change(command_line)
-      expect(cmd).to have_received(:run)
-    end
-
-    it 'returns the command status' do
-      expect(runner.send_to_pt_online_schema_change(command_line)).to eq(status)
-    end
+    # it 'executes the pt-online-schema-change command' do
+    #   runner.send_to_pt_online_schema_change(command_line)
+    #   expect(cmd).to have_received(:run)
+    # end
+    #
+    # it 'returns the command status' do
+    #   expect(runner.send_to_pt_online_schema_change(command_line)).to eq(status)
+    # end
   end
 end

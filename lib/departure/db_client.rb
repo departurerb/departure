@@ -10,18 +10,16 @@ module Departure
 
     attr_reader :database_client
 
-    # Constructor
-    #
-    # @param logger [#say, #write]
-    # @param cli_generator [CliGenerator]
-    # @param mysql_adapter [ActiveRecord::ConnectionAdapter] it must implement
-    #   #execute and #raw_connection
-    def initialize(logger, cli_generator, database_client, config = Departure.configuration)
-      @logger = logger
-      @cli_generator = cli_generator
+    # def initialize(logger, cli_generator, database_client, config = Departure.configuration)
+    def initialize(config, database_client)
+      @config = config
       @database_client = database_client
-      @error_log_path = config&.error_log_path
-      @redirect_stderr = config&.redirect_stderr
+
+      connection_details = Departure::ConnectionDetails.new(config)
+      verbose = ActiveRecord::Migration.verbose
+      sanitizers = [Departure::LogSanitizers::PasswordSanitizer.new(connection_details)]
+      @logger = Departure::LoggerFactory.build(sanitizers: sanitizers, verbose: verbose)
+      @cli_generator = Departure::CliGenerator.new(connection_details)
     end
 
     # Intercepts raw query calls to pass ALTER TABLE statements to pt-online-schema-change
@@ -41,7 +39,10 @@ module Departure
 
     # Runs raw_sql_string through pt-online-schema-change command line tool
     def send_to_pt_online_schema_change(raw_sql_string)
-      Command.new(raw_sql_string, @error_log_path, @logger, @redirect_stderr).run
+      Command.new(raw_sql_string,
+                  Departure.configuration.error_log_path,
+                  @logger,
+                  Departure.configuration.redirect_stderr).run
     end
 
     private

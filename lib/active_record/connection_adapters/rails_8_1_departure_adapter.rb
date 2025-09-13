@@ -48,7 +48,7 @@ module ActiveRecord
         percona_logger = Departure::LoggerFactory.build(sanitizers: sanitizers, verbose: verbose)
         cli_generator = Departure::CliGenerator.new(connection_details)
 
-        mysql_adapter = ActiveRecord::ConnectionAdapters::Mysql2Adapter.new(config.merge(adapter: 'mysql2'))
+        mysql_adapter = ::Mysql2::Client.new(config)
 
         Departure::DbClient.new(
           percona_logger,

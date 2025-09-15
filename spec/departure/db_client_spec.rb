@@ -2,59 +2,59 @@ require 'spec_helper'
 require 'tempfile'
 
 describe Departure::DbClient do
-  let(:command_line) { 'pt-online-schema-change command' }
-  let(:logger) { instance_double(Departure::Logger) }
-  let(:cli_generator) { instance_double(Departure::CliGenerator) }
-  let(:mysql_adapter) do
-    instance_double(ActiveRecord::ConnectionAdapters::Mysql2Adapter)
-  end
-  let(:config) do
-    instance_double(
-      Departure::Configuration,
-      error_log_path: 'departure_error.log',
-      redirect_stderr: true
-    )
+  let(:db_config) do
+    { adapter: 'percona', host: 'db', username: 'root', password: nil, database: 'departure_test', flags: 2 }
   end
 
-  let(:runner) { described_class.new(logger, cli_generator, mysql_adapter, config) }
+  let(:database_client) { instance_double(::Mysql2::Client) }
 
-  it 'exposed the database adapter' do
-    expect(runner.database_adapter).to eql(mysql_adapter)
+  let(:cmd) { instance_double(Departure::Command, run: status) }
+  let(:status) { instance_double(Process::Status) }
+
+  let(:instance) { described_class.new(db_config, database_client) }
+
+  let(:alter_db_statement) { 'ALTER TABLE comments ADD `some_identifier` INT(11) DEFAULT NULL;' }
+  let(:commit_db_statement) { 'commit;' }
+
+  describe 'send_to_pt_online_schema_change' do
+    it 'parses and sends to the command object' do
+      expect(Departure::Command)
+        .to receive(:new).with(instance_of(String), Departure.configuration.error_log_path,
+                               instance_of(Departure::NullLogger), Departure.configuration.redirect_stderr)
+        .and_return(cmd)
+      expect(cmd).to receive(:run)
+
+      instance.send_to_pt_online_schema_change(alter_db_statement)
+    end
+  end
+
+  describe 'alter_statement?' do
+    it 'true when begins with alter table' do
+      expect(instance.alter_statement?(alter_db_statement)).to be_truthy
+    end
+
+    it 'false when does not begin with alter table statement' do
+      expect(instance.alter_statement?(commit_db_statement)).to be_falsey
+    end
   end
 
   describe '#query' do
-  end
-
-  describe '#affected_rows' do
-    let(:mysql_client) { double(:mysql_client) }
-
-    before do
-      allow(mysql_adapter).to receive(:raw_connection).and_return(mysql_client)
-    end
-
-    it 'delegates to the MySQL adapter\'s client' do
-      expect(mysql_client).to receive(:affected_rows)
-      runner.affected_rows
-    end
-  end
-
-  describe '#execute' do
     let(:status) { instance_double(Process::Status) }
-    let(:cmd) { instance_double(Departure::Command, run: status) }
 
-    before do
-      allow(Departure::Command)
-        .to receive(:new).with(command_line, config.error_log_path, logger, config.redirect_stderr)
-        .and_return(cmd)
+    it 'delegates to the database_client when we do not have an alter statement' do
+      expect(database_client).to receive(:query).with(commit_db_statement)
+
+      instance.query(commit_db_statement)
     end
 
-    it 'executes the pt-online-schema-change command' do
-      runner.send_to_pt_online_schema_change(command_line)
-      expect(cmd).to have_received(:run)
-    end
+    it 'runs alter statements through departure command' do
+      expect(Departure::Command)
+        .to receive(:new).with(instance_of(String), Departure.configuration.error_log_path,
+                               instance_of(Departure::NullLogger), Departure.configuration.redirect_stderr)
+                         .and_return(cmd)
+      expect(cmd).to receive(:run)
 
-    it 'returns the command status' do
-      expect(runner.send_to_pt_online_schema_change(command_line)).to eq(status)
+      instance.query(alter_db_statement)
     end
   end
 end

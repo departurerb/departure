@@ -43,7 +43,7 @@ module Departure
     end
 
     # Intercepts raw query calls to pass ALTER TABLE statements to pt-online-schema-change
-    # otherwise sends to
+    # otherwise sends to the database adapter
     # eg: goes to pt-online-schema-change
     #   query("ALTER TABLE `comments` ADD INDEX `index_comments_on_some_id_field` (`some_id_field`))
     # eg: sends to database adapter

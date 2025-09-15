@@ -1,6 +1,10 @@
 require 'open3'
 require 'forwardable'
 
+# Runner is deprecated and used in rails 8.0 and below
+# We will slowly reduce the responsibility of departure to be delegating
+# all calls to underlying adapters/connections
+
 module Departure
   # It executes pt-online-schema-change commands in a new process and gets its
   # output and status

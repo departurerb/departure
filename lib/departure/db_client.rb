@@ -10,7 +10,6 @@ module Departure
 
     attr_reader :database_client
 
-    # def initialize(logger, cli_generator, database_client, config = Departure.configuration)
     def initialize(config, database_client)
       @config = config
       @database_client = database_client
@@ -30,7 +29,7 @@ module Departure
     #   query("COMMIT") - query("SELECT * from 'comments'")
     def query(raw_sql_string)
       if alter_statement?(raw_sql_string)
-        send_to_pt_online_schema_change(command_line)
+        send_to_pt_online_schema_change(raw_sql_string)
       else
         database_client.query(raw_sql_string)
       end

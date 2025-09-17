@@ -3,7 +3,7 @@ name: Test
 on: [push, pull_request]
 
 jobs:
-  test:
+  test_mysql:
     strategy:
       fail-fast: false
       matrix:
@@ -16,8 +16,9 @@ jobs:
           - gemfiles/rails_7_1.gemfile
           - gemfiles/rails_7_2.gemfile
           - gemfiles/rails_8_0.gemfile
-          - gemfiles/rails_8_1.gemfile
+          - gemfiles/rails_8_1_mysql.gemfile
     env:
+      DB_ADAPTER: "mysql2"
       PERCONA_DB_USER: root
       PERCONA_DB_PASSWORD: root
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
@@ -38,6 +39,40 @@ jobs:
         run: sudo systemctl start mysql.service
       - run: bin/setup
       - run: bundle exec rake
+
+  test_trilogy:
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby:
+          - 3.2
+          - 3.3
+          - 3.4
+        gemfile:
+          - gemfiles/rails_8_1_trilogy.gemfile
+    env:
+      DB_ADAPTER: "trilogy"
+      PERCONA_DB_USER: root
+      PERCONA_DB_PASSWORD: root
+      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: "Add Percona GPG key"
+        run: sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 9334A25F8507EFA5
+      - name: "Add Percona APT repository"
+        run: echo "deb http://repo.percona.com/apt `lsb_release -cs` main" | sudo tee -a /etc/apt/sources.list
+      - run: sudo apt-get update -qq
+      - run: sudo apt-get install percona-toolkit
+      - name: Start MySQL server
+        run: sudo systemctl start mysql.service
+      - run: bin/setup
+      - run: bundle exec rake
+
   lint:
     strategy:
       fail-fast: false

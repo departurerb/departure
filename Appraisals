@@ -18,6 +18,11 @@ appraise 'rails-8-0' do
   gem 'rails', '8.0.2.1'
 end
 
-appraise 'rails-8-1' do
+appraise 'rails-8-1-mysql' do
   gem 'rails', '8.1.0.beta1'
+end
+
+appraise 'rails-8-1-trilogy' do
+  gem 'rails', '8.1.0.beta1'
+  gem 'trilogy'
 end

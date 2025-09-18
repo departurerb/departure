@@ -11,7 +11,7 @@ module ActiveRecord
 
       class Column < ActiveRecord::ConnectionAdapters::MySQL::Column
         def adapter
-          Rails81DepartureAdapter
+          Rails81Mysql2Adapter
         end
       end
 

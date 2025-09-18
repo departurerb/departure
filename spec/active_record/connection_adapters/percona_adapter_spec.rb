@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'active_record/connection_adapters/percona_adapter'
 
-describe ActiveRecord::ConnectionAdapters::DepartureAdapter, activerecord_compatibility: "< 7.2" do
+describe ActiveRecord::ConnectionAdapters::DepartureAdapter, activerecord_compatibility: RAILS_7_1 do
   describe ActiveRecord::ConnectionAdapters::DepartureAdapter::Column do
     let(:field) { double(:field) }
     let(:default) { double(:default) }
@@ -146,7 +146,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter, activerecord_compat
         )
       end
 
-      it 'passes the built SQL to #execute', activerecord_compatibility: "< 7.2" do
+      it 'passes the built SQL to #execute', activerecord_compatibility: RAILS_7_1 do
         expect(adapter).to receive(:execute).with(expected_sql)
         adapter.add_index(table_name, column_name, options)
       end
@@ -224,7 +224,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter, activerecord_compat
       )
     end
 
-    context 'when the adapter returns results', activerecord_compatibility: "< 7.2" do
+    context 'when the adapter returns results', activerecord_compatibility: RAILS_7_1 do
       let(:result_set) { double(fields: [:id], to_a: [1]) }
 
       it 'executes the sql' do
@@ -243,7 +243,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter, activerecord_compat
       end
     end
 
-    context 'when the adapter returns nil', activerecord_compatibility: "< 7.2" do
+    context 'when the adapter returns nil', activerecord_compatibility: RAILS_7_1 do
       let(:result_set) { nil }
 
       it 'executes the sql' do
@@ -274,7 +274,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter, activerecord_compat
     end
   end
 
-  describe '#select_rows', activerecord_compatibility: "< 7.2" do
+  describe '#select_rows', activerecord_compatibility: RAILS_7_1 do
     subject { adapter.select_rows(sql, name) }
 
     let(:sql) { 'SELECT id, body FROM comments' }

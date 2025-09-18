@@ -7,6 +7,7 @@ $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'bundler/setup'
 Bundler.require(:default, :development)
 
+require 'support/constants'
 require './configuration'
 require './test_database'
 

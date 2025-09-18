@@ -8,8 +8,6 @@ module Departure
 
     class << self
       def version_matches?(version_string, compatibility_string = current_version::STRING)
-        raise "Invalid Gem Version: '#{version_string}'" unless Gem::Version.correct?(version_string)
-
         requirement = Gem::Requirement.new(compatibility_string)
         requirement.satisfied_by?(Gem::Version.new(version_string))
       end

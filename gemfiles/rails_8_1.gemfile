@@ -10,6 +10,7 @@ gem 'mutex_m', require: false
 gem 'rails', '8.1.0.beta1'
 gem 'rubocop', '~> 1.74.0', require: false
 gem 'rubocop-performance', '~> 1.20.2', require: false
+gem 'trilogy'
 gem 'zeitwerk', '< 2.7.0'
 
 gemspec path: '../'

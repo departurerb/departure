@@ -151,9 +151,18 @@ It's strongly recommended to name it after this gems name, such as
 
 All configuration options are configurable from the `Departure.configure` block example below
 
-|Option|Default|What it Controls|
-|---|---|---|
-|disable_rails_advisory_lock_patch|false|When truthy, disables a patch in at least rails 7.1 and 7.2 where rails throws ConcurrentMigrationErrors due to the inability to release the advisory lock in migrations|
+| Option                            | Default | What it Controls                                                                                                                                                          |
+|-----------------------------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| disable_rails_advisory_lock_patch | false   | When truthy, disables a patch in at least rails 7.1 and 7.2 where rails throws ConcurrentMigrationErrors due to the inability to release the advisory lock in migrations  |
+| db_adapter_name                   | nil     | 'mysql2' or 'percona' - gives users an ability to provide the specific db adapter to override the db_adapter we use in departure see Db Adapter Support Below for details |
+
+### Db Adapter Support
+
+Starting in Rails 8.1 we add support for the use of the trilogy database adapter gem.  Logic for selecting an adapter follows this logic
+
+1. Departure.configuration.db_adapter_name is set to 'mysql2' or 'trilogy' use that value
+2. If the database configuration specifies 'mysql2 or 'trilogy' use that adapter
+3. Default to mysql2
 
 ### Disable on per-migration basis
 

@@ -1,27 +1,20 @@
 MIGRATION_FIXTURES = File.expand_path('../dummy/db/migrate', __dir__)
 
-def establish_percona_connection
+def db_config_for(adapter:)
   db_config = Configuration.new
 
-  ActiveRecord::Base.establish_connection(
-    adapter: 'percona',
-    host: db_config['hostname'],
-    username: db_config['username'],
-    password: db_config['password'],
-    database: db_config['database']
-  )
+  {
+    adapter:,
+    **db_config.config
+  }
+end
+
+def establish_percona_connection
+  ActiveRecord::Base.establish_connection(**db_config_for(adapter: 'percona'))
 end
 
 def establish_mysql_connection
-  db_config = Configuration.new
-
-  ActiveRecord::Base.establish_connection(
-    adapter: 'mysql2',
-    host: db_config['hostname'],
-    username: db_config['username'],
-    password: db_config['password'],
-    database: db_config['database']
-  )
+  ActiveRecord::Base.establish_connection(**db_config_for(adapter: 'mysql2'))
 end
 
 def disable_departure_rails_advisory_lock_patch

@@ -15,6 +15,8 @@ RSpec.describe Departure::RailsAdapter, integration: true do
     end
 
     it 'returns the correct adapater based on the gem version' do
+      expect(described_class.for(gem_version_for('8.1.0'))).to be(Departure::RailsAdapter::V8_1_Adapter)
+      expect(described_class.for(gem_version_for('8.1.0.beta1'))).to be(Departure::RailsAdapter::V8_1_Adapter)
       expect(described_class.for(gem_version_for('8.0.1'))).to be(Departure::RailsAdapter::V8_0_Adapter)
       expect(described_class.for(gem_version_for('8.0.0'))).to be(Departure::RailsAdapter::V8_0_Adapter)
       expect(described_class.for(gem_version_for('7.2.0'))).to be(Departure::RailsAdapter::V7_2_Adapter)

@@ -17,3 +17,7 @@ appraise 'rails-8-0' do
   gem 'bigdecimal'
   gem 'rails', '8.0.2.1'
 end
+
+appraise 'rails-8-1' do
+  gem 'rails', '8.1.0.beta1'
+end

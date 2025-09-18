@@ -6,8 +6,11 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [NEXT]
 
-- Bump appraisal to 2.5.0
-
+- Bump [appraisal to 2.5.0](https://github.com/departurerb/departure/pull/129)
+- Add support for [Rails 8.1](https://github.com/departurerb/departure/pull/128)
+- Skinnify Departure [to remove most non pt-online-schema-change](https://github.com/departurerb/departure/pull/131) responsibility from departure
+- Inherit from [Mysql2 Adapter instead of AbstractMysqlAdapter](https://github.com/departurerb/departure/pull/130)
+  
 ## [7.0.0] - 2025-08-21
 
 - Drop Ruby 3.1 support.  Add >= 3.2 ruby support in gemspec.  EOL for 3.1.0 was 2025-03-31

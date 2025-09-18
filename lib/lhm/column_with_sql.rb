@@ -52,11 +52,12 @@ module Lhm
         limit: cast_type.limit
       )
       mysql_metadata = ActiveRecord::ConnectionAdapters::MySQL::TypeMetadata.new(metadata)
-      @column ||= Departure::RailsAdapter.for_current.sql_column.new(
-        name,
-        default_value,
-        mysql_metadata,
-        null_value
+      @column ||= Departure::RailsAdapter.for_current.new_sql_column(
+        name:,
+        cast_type:,
+        default_value:,
+        mysql_metadata:,
+        null_value:
       )
     end
 

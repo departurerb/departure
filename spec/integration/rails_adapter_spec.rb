@@ -14,9 +14,40 @@ RSpec.describe Departure::RailsAdapter, integration: true do
       end
     end
 
+    context 'rails 8.1 adapter' do
+      describe 'returns trilogy adapter' do
+        it 'when the config specifies an adapter of trilogy' do
+          adapter = described_class.for(gem_version_for('8.1.0'), db_connection_adapter: 'trilogy')
+          expect(adapter).to be(Departure::RailsAdapter::V8_1_TrilogyAdapter)
+        end
+
+        it 'when the config specifies an adapter of trilogy regardless of the db-connection_adapter' do
+          expect(Departure.configuration).to receive(:db_adapter_name) { 'trilogy' }
+          adapter = described_class.for(gem_version_for('8.1.0'), db_connection_adapter: 'mysql2')
+          expect(adapter).to be(Departure::RailsAdapter::V8_1_TrilogyAdapter)
+        end
+      end
+
+      describe 'returns mysql2 adapter' do
+        it 'by default' do
+          expect(described_class.for(gem_version_for('8.1.0'))).to be(Departure::RailsAdapter::V8_1_Adapter)
+          expect(described_class.for(gem_version_for('8.1.0.beta1'))).to be(Departure::RailsAdapter::V8_1_Adapter)
+        end
+
+        it 'when the config specifies an adapter of mysql2' do
+          adapter = described_class.for(gem_version_for('8.1.0'), db_connection_adapter: 'mysql2')
+          expect(adapter).to be(Departure::RailsAdapter::V8_1_Adapter)
+        end
+
+        it 'when the config specifies an adapter of mysql2 regardless of the db-connection_adapter' do
+          expect(Departure.configuration).to receive(:db_adapter_name) { 'mysql2' }
+          adapter = described_class.for(gem_version_for('8.1.0'), db_connection_adapter: 'trilogy')
+          expect(adapter).to be(Departure::RailsAdapter::V8_1_Adapter)
+        end
+      end
+    end
+
     it 'returns the correct adapater based on the gem version' do
-      expect(described_class.for(gem_version_for('8.1.0'))).to be(Departure::RailsAdapter::V8_1_Adapter)
-      expect(described_class.for(gem_version_for('8.1.0.beta1'))).to be(Departure::RailsAdapter::V8_1_Adapter)
       expect(described_class.for(gem_version_for('8.0.1'))).to be(Departure::RailsAdapter::V8_0_Adapter)
       expect(described_class.for(gem_version_for('8.0.0'))).to be(Departure::RailsAdapter::V8_0_Adapter)
       expect(described_class.for(gem_version_for('7.2.0'))).to be(Departure::RailsAdapter::V7_2_Adapter)

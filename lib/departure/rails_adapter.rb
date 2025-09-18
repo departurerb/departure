@@ -158,7 +158,7 @@ module Departure
     class V8_1_Adapter < BaseAdapter # rubocop:disable Naming/ClassAndModuleCamelCase
       class << self
         def register_integrations
-          require 'active_record/connection_adapters/rails_8_1_departure_adapter'
+          require 'active_record/connection_adapters/rails_8_1_mysql2_adapter'
           require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
 
           ActiveSupport.on_load(:active_record) do
@@ -170,12 +170,12 @@ module Departure
           end
 
           ActiveRecord::ConnectionAdapters.register 'percona',
-                                                    'ActiveRecord::ConnectionAdapters::Rails81DepartureAdapter',
+                                                    'ActiveRecord::ConnectionAdapters::Rails81Mysql2Adapter',
                                                     'active_record/connection_adapters/rails_8_1_departure_adapter'
         end
 
         def create_connection_adapter(**config)
-          ActiveRecord::ConnectionAdapters::Rails81DepartureAdapter.new(config)
+          ActiveRecord::ConnectionAdapters::Rails81Mysql2Adapter.new(config)
         end
 
         # rubocop:disable Metrics/ParameterLists

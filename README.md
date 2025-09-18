@@ -235,7 +235,7 @@ adapters.
       %% Core Departure Components
       subgraph "Departure System"
           RailsAdapter["RailsAdapter<br/>(Version Detection)"]
-          DepartureAdapter["Rails81DepartureAdapter<br/>(Connection Adapter)"]
+          DepartureAdapter["Rails81MysqlAdapter<br/>(Connection Adapter)"]
           Runner["Runner<br/>(Query Interceptor)"]
           Command["Command<br/>(Process Executor)"]
           CliGenerator["CliGenerator<br/>(Command Builder)"]

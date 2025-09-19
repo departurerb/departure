@@ -1,7 +1,13 @@
 require 'spec_helper'
-require 'active_record/connection_adapters/rails_8_1_trilogy_adapter'
 
-describe ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter, activerecord_compatibility: RAILS_8_1 do
+describe 'ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter', activerecord_compatibility: RAILS_8_1 do
+  let(:described_class) do
+    # has to be required here because trilogy doesn't exist in older versions of rails
+    require 'active_record/connection_adapters/rails_8_1_trilogy_adapter'
+
+    ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter
+  end
+
   let(:adapter) { described_class.new(db_config_for(adapter: 'trilogy')) }
   let(:client) { described_class.new_client(db_config_for(adapter: 'trilogy')) }
   let(:trilogy_double) { instance_double(::Trilogy) }

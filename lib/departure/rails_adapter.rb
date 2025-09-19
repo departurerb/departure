@@ -8,6 +8,8 @@ module Departure
 
     class << self
       def version_matches?(version_string, compatibility_string = current_version::STRING)
+        raise "Invalid Gem Version: '#{version_string}'" unless Gem::Version.correct?(version_string)
+
         requirement = Gem::Requirement.new(compatibility_string)
         requirement.satisfied_by?(Gem::Version.new(version_string))
       end
@@ -16,13 +18,20 @@ module Departure
         ActiveRecord::VERSION
       end
 
-      def for_current
-        self.for(current_version)
+      def for_current(**args)
+        self.for(current_version, **args)
       end
 
-      def for(ar_version)
+      def for(ar_version, db_connection_adapter: nil)
         if ar_version::MAJOR == 8 && ar_version::MINOR.positive?
-          V8_1_Adapter
+          case specifies_adapter(db_connection_adapter)
+          when 'mysql2'
+            V8_1_Adapter
+          when 'trilogy'
+            V8_1_TrilogyAdapter
+          else
+            V8_1_Adapter
+          end
         elsif ar_version::MAJOR == 8
           V8_0_Adapter
         elsif ar_version::MAJOR >= 7 && ar_version::MINOR >= 2
@@ -32,6 +41,10 @@ module Departure
         else
           raise "Unsupported Rails version: #{ar_version}"
         end
+      end
+
+      def specifies_adapter(db_connection_adapter)
+        Departure.configuration.db_adapter_name.presence || db_connection_adapter
       end
     end
 
@@ -170,8 +183,8 @@ module Departure
           end
 
           ActiveRecord::ConnectionAdapters.register 'percona',
-                                                    'ActiveRecord::ConnectionAdapters::Rails81Mysql2Adapter',
-                                                    'active_record/connection_adapters/rails_8_1_departure_adapter'
+                                                    'ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter',
+                                                    'active_record/connection_adapters/rails_8_1_trilogy_adapter'
         end
 
         def create_connection_adapter(**config)
@@ -193,6 +206,23 @@ module Departure
 
         def sql_column
           ::ActiveRecord::ConnectionAdapters::MySQL::Column
+        end
+      end
+    end
+
+    class V8_1_TrilogyAdapter < V8_1_Adapter # rubocop:disable Naming/ClassAndModuleCamelCase
+      class << self
+        def register_integrations
+          require 'active_record/connection_adapters/rails_8_1_trilogy_adapter'
+          require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
+
+          ActiveRecord::ConnectionAdapters.register 'percona',
+                                                    'ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter',
+                                                    'active_record/connection_adapters/rails_8_1_trilogy_adapter'
+        end
+
+        def create_connection_adapter(**config)
+          ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter.new(config)
         end
       end
     end

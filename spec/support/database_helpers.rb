@@ -9,6 +9,21 @@ def db_config_for(adapter:)
   }
 end
 
+def establish_default_database_connection
+  case ENV['DB_ADAPTER']
+  when 'trilogy'
+    establish_trilogy_connection
+  when 'percona'
+    establish_percona_connection
+  else
+    establish_mysql_connection
+  end
+end
+
+def establish_trilogy_connection
+  ActiveRecord::Base.establish_connection(**db_config_for(adapter: 'trilogy'))
+end
+
 def establish_percona_connection
   ActiveRecord::Base.establish_connection(**db_config_for(adapter: 'percona'))
 end

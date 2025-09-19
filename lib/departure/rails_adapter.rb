@@ -24,13 +24,10 @@ module Departure
 
       def for(ar_version, db_connection_adapter: nil)
         if ar_version::MAJOR == 8 && ar_version::MINOR.positive?
-          case specifies_adapter(db_connection_adapter)
-          when 'mysql2'
-            V8_1_Adapter
-          when 'trilogy'
+          if db_connection_adapter == 'trilogy'
             V8_1_TrilogyAdapter
           else
-            V8_1_Adapter
+            V8_1_Mysql2Adapter
           end
         elsif ar_version::MAJOR == 8
           V8_0_Adapter
@@ -42,10 +39,6 @@ module Departure
           raise "Unsupported Rails version: #{ar_version}"
         end
       end
-
-      def specifies_adapter(db_connection_adapter)
-        Departure.configuration.db_adapter_name.presence || db_connection_adapter
-      end
     end
 
     class BaseAdapter
@@ -53,7 +46,6 @@ module Departure
         def register_integrations
           require 'active_record/connection_adapters/percona_adapter'
 
-          ActiveSupport.on_load(:active_record) do
             ActiveRecord::Migration.class_eval do
               include Departure::Migration
             end
@@ -63,7 +55,6 @@ module Departure
 
               ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
             end
-          end
         end
 
         # ActiveRecord::ConnectionAdapters::Mysql2Adapter
@@ -116,13 +107,11 @@ module Departure
           require 'active_record/connection_adapters/rails_7_2_departure_adapter'
           require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
 
-          ActiveSupport.on_load(:active_record) do
             ActiveRecord::Migration.class_eval do
               include Departure::Migration
             end
 
             ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
-          end
 
           ActiveRecord::ConnectionAdapters.register 'percona',
                                                     'ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter',
@@ -145,13 +134,11 @@ module Departure
           require 'active_record/connection_adapters/rails_8_0_departure_adapter'
           require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
 
-          ActiveSupport.on_load(:active_record) do
             ActiveRecord::Migration.class_eval do
               include Departure::Migration
             end
 
             ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
-          end
 
           ActiveRecord::ConnectionAdapters.register 'percona',
                                                     'ActiveRecord::ConnectionAdapters::Rails80DepartureAdapter',
@@ -168,19 +155,17 @@ module Departure
       end
     end
 
-    class V8_1_Adapter < BaseAdapter # rubocop:disable Naming/ClassAndModuleCamelCase
+    class V8_1_Mysql2Adapter < BaseAdapter # rubocop:disable Naming/ClassAndModuleCamelCase
       class << self
         def register_integrations
           require 'active_record/connection_adapters/rails_8_1_mysql2_adapter'
           require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
 
-          ActiveSupport.on_load(:active_record) do
             ActiveRecord::Migration.class_eval do
               include Departure::Migration
             end
 
             ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
-          end
 
           ActiveRecord::ConnectionAdapters.register 'percona',
                                                     'ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter',
@@ -210,11 +195,17 @@ module Departure
       end
     end
 
-    class V8_1_TrilogyAdapter < V8_1_Adapter # rubocop:disable Naming/ClassAndModuleCamelCase
+    class V8_1_TrilogyAdapter < V8_1_Mysql2Adapter # rubocop:disable Naming/ClassAndModuleCamelCase
       class << self
         def register_integrations
           require 'active_record/connection_adapters/rails_8_1_trilogy_adapter'
           require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
+
+            ActiveRecord::Migration.class_eval do
+              include Departure::Migration
+            end
+
+            ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
 
           ActiveRecord::ConnectionAdapters.register 'percona',
                                                     'ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter',

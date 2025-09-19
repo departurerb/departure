@@ -40,6 +40,7 @@ module ActiveRecord
       ADAPTER_NAME = 'Percona'.freeze
 
       def self.new_client(config)
+        binding.pry
         original_client = super
 
         Departure::DbClient.new(config, original_client)

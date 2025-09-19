@@ -16,6 +16,8 @@ module Departure
       Departure.configure do |dc|
         ActiveRecord::Migration.uses_departure = dc.enabled_by_default
       end
+
+      Departure::RailsAdapter.for_current(ApplicationRecord.connection.config)
     end
   end
 end

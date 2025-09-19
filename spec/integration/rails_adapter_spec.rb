@@ -23,11 +23,6 @@ RSpec.describe Departure::RailsAdapter, integration: true do
         it 'when the config specifies an adapter of trilogy' do
           expect(instance_for('8.1.0', 'trilogy')).to be(Departure::RailsAdapter::V8_1_TrilogyAdapter)
         end
-
-        it 'when the config specifies an adapter of trilogy regardless of the db-connection_adapter' do
-          expect(Departure.configuration).to receive(:db_adapter_name) { 'trilogy' }
-          expect(instance_for('8.1.0', 'mysql2')).to be(Departure::RailsAdapter::V8_1_TrilogyAdapter)
-        end
       end
 
       describe 'returns mysql2 adapter' do
@@ -40,9 +35,8 @@ RSpec.describe Departure::RailsAdapter, integration: true do
           expect(instance_for('8.1.0', 'mysql2')).to be(Departure::RailsAdapter::V8_1_Adapter)
         end
 
-        it 'when the config specifies an adapter of mysql2 regardless of the db-connection_adapter' do
-          expect(Departure.configuration).to receive(:db_adapter_name) { 'mysql2' }
-          expect(instance_for('8.1.0', 'trilogy')).to be(Departure::RailsAdapter::V8_1_Adapter)
+        it 'when the config specifies anything else' do
+          expect(instance_for('8.1.0', 'percona')).to be(Departure::RailsAdapter::V8_1_Adapter)
         end
       end
     end

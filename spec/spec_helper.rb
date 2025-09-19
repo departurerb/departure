@@ -29,8 +29,6 @@ ActiveRecord::Base.logger = Logger.new(fd)
 
 test_database = TestDatabase.new(db_config)
 
-Departure::RailsAdapter.for_current.register_integrations
-
 RSpec.configure do |config|
   config.include TableMethods
   config.filter_run_when_matching :focus
@@ -52,9 +50,13 @@ RSpec.configure do |config|
   # Cleans up the database before each example, so the current example doesn't
   # see the state of the previous one
   config.before(:each) do |example|
-    establish_mysql_connection
+    establish_default_database_connection
 
-    test_database.setup if example.metadata[:integration]
+    if example.metadata[:integration]
+      test_database.setup
+
+      Departure::RailsAdapter.for_current.register_integrations
+    end
   end
 
   config.order = :random

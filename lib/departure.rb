@@ -23,9 +23,9 @@ require 'departure/railtie' if defined?(Rails)
 # We need the OS not to buffer the IO to see pt-osc's output while migrating
 $stdout.sync = true
 
-Departure::RailsAdapter.for_current.register_integrations
-
 module Departure
+  DEPARTURE_ADAPTER_NAME = 'percona'
+
   class << self
     attr_accessor :configuration
   end

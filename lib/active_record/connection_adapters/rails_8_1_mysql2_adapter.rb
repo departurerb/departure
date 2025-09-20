@@ -9,12 +9,6 @@ module ActiveRecord
     class Rails81Mysql2Adapter < ActiveRecord::ConnectionAdapters::Mysql2Adapter
       TYPE_MAP = Type::TypeMap.new.tap { |m| initialize_type_map(m) } if defined?(initialize_type_map)
 
-      class Column < ActiveRecord::ConnectionAdapters::MySQL::Column
-        def adapter
-          Rails81Mysql2Adapter
-        end
-      end
-
       # https://github.com/departurerb/departure/commit/f178ca26cd3befa1c68301d3b57810f8cdcff9eb
       # For `DROP FOREIGN KEY constraint_name` with pt-online-schema-change requires specifying `_constraint_name`
       # rather than the real constraint_name due to to a limitation in MySQL
@@ -33,14 +27,11 @@ module ActiveRecord
         end
       end
 
-      extend Forwardable
-
       include ForAlterStatements unless method_defined?(:change_column_for_alter)
 
       ADAPTER_NAME = 'Percona'.freeze
 
       def self.new_client(config)
-        binding.pry
         original_client = super
 
         Departure::DbClient.new(config, original_client)

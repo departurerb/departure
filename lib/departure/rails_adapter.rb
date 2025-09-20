@@ -168,8 +168,8 @@ module Departure
             ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
 
           ActiveRecord::ConnectionAdapters.register 'percona',
-                                                    'ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter',
-                                                    'active_record/connection_adapters/rails_8_1_trilogy_adapter'
+                                                    'ActiveRecord::ConnectionAdapters::Rails81Mysql2Adapter',
+                                                    'active_record/connection_adapters/rails_8_1_mysql2_adapter'
         end
 
         def create_connection_adapter(**config)

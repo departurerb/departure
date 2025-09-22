@@ -24,8 +24,6 @@ require 'departure/railtie' if defined?(Rails)
 $stdout.sync = true
 
 module Departure
-  DEPARTURE_ADAPTER_NAME = 'percona'
-
   class << self
     attr_accessor :configuration
   end

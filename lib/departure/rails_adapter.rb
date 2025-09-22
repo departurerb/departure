@@ -46,15 +46,15 @@ module Departure
         def register_integrations
           require 'active_record/connection_adapters/percona_adapter'
 
-            ActiveRecord::Migration.class_eval do
-              include Departure::Migration
-            end
+          ActiveRecord::Migration.class_eval do
+            include Departure::Migration
+          end
 
-            if ActiveRecord::VERSION::MAJOR == 7 && ActiveRecord::VERSION::MINOR == 1
-              require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
+          return unless ActiveRecord::VERSION::MAJOR == 7 && ActiveRecord::VERSION::MINOR == 1
 
-              ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
-            end
+          require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
+
+          ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
         end
 
         # ActiveRecord::ConnectionAdapters::Mysql2Adapter
@@ -107,11 +107,11 @@ module Departure
           require 'active_record/connection_adapters/rails_7_2_departure_adapter'
           require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
 
-            ActiveRecord::Migration.class_eval do
-              include Departure::Migration
-            end
+          ActiveRecord::Migration.class_eval do
+            include Departure::Migration
+          end
 
-            ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
+          ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
 
           ActiveRecord::ConnectionAdapters.register 'percona',
                                                     'ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter',
@@ -134,11 +134,11 @@ module Departure
           require 'active_record/connection_adapters/rails_8_0_departure_adapter'
           require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
 
-            ActiveRecord::Migration.class_eval do
-              include Departure::Migration
-            end
+          ActiveRecord::Migration.class_eval do
+            include Departure::Migration
+          end
 
-            ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
+          ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
 
           ActiveRecord::ConnectionAdapters.register 'percona',
                                                     'ActiveRecord::ConnectionAdapters::Rails80DepartureAdapter',
@@ -161,11 +161,11 @@ module Departure
           require 'active_record/connection_adapters/rails_8_1_mysql2_adapter'
           require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
 
-            ActiveRecord::Migration.class_eval do
-              include Departure::Migration
-            end
+          ActiveRecord::Migration.class_eval do
+            include Departure::Migration
+          end
 
-            ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
+          ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
 
           ActiveRecord::ConnectionAdapters.register 'percona',
                                                     'ActiveRecord::ConnectionAdapters::Rails81Mysql2Adapter',
@@ -201,11 +201,11 @@ module Departure
           require 'active_record/connection_adapters/rails_8_1_trilogy_adapter'
           require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
 
-            ActiveRecord::Migration.class_eval do
-              include Departure::Migration
-            end
+          ActiveRecord::Migration.class_eval do
+            include Departure::Migration
+          end
 
-            ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
+          ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
 
           ActiveRecord::ConnectionAdapters.register 'percona',
                                                     'ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter',

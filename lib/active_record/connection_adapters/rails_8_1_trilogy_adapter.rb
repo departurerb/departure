@@ -7,6 +7,13 @@ require 'forwardable'
 module ActiveRecord
   module ConnectionAdapters
     class Rails81TrilogyAdapter < ActiveRecord::ConnectionAdapters::TrilogyAdapter
+      class Column < ActiveRecord::ConnectionAdapters::MySQL::Column
+        def adapter
+          Rails81TrilogyAdapter
+        end
+      end
+
+
       # https://github.com/departurerb/departure/commit/f178ca26cd3befa1c68301d3b57810f8cdcff9eb
       # For `DROP FOREIGN KEY constraint_name` with pt-online-schema-change requires specifying `_constraint_name`
       # rather than the real constraint_name due to to a limitation in MySQL

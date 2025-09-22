@@ -27,16 +27,16 @@ RSpec.describe Departure::RailsAdapter, integration: true do
 
       describe 'returns mysql2 adapter' do
         it 'by default' do
-          expect(instance_for('8.1.0')).to be(Departure::RailsAdapter::V8_1_Adapter)
-          expect(instance_for('8.1.0.beta1')).to be(Departure::RailsAdapter::V8_1_Adapter)
+          expect(instance_for('8.1.0')).to be(Departure::RailsAdapter::V8_1_Mysql2Adapter)
+          expect(instance_for('8.1.0.beta1')).to be(Departure::RailsAdapter::V8_1_Mysql2Adapter)
         end
 
         it 'when the config specifies an adapter of mysql2' do
-          expect(instance_for('8.1.0', 'mysql2')).to be(Departure::RailsAdapter::V8_1_Adapter)
+          expect(instance_for('8.1.0', 'mysql2')).to be(Departure::RailsAdapter::V8_1_Mysql2Adapter)
         end
 
         it 'when the config specifies anything else' do
-          expect(instance_for('8.1.0', 'percona')).to be(Departure::RailsAdapter::V8_1_Adapter)
+          expect(instance_for('8.1.0', 'percona')).to be(Departure::RailsAdapter::V8_1_Mysql2Adapter)
         end
       end
     end

@@ -32,6 +32,10 @@ def establish_mysql_connection
   ActiveRecord::Base.establish_connection(**db_config_for(adapter: 'mysql2'))
 end
 
+def setup_departure_integrations
+  Departure::RailsAdapter.for_current.register_integrations
+end
+
 def disable_departure_rails_advisory_lock_patch
   Departure.configure do |config|
     config.disable_rails_advisory_lock_patch = true

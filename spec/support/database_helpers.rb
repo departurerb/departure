@@ -2,34 +2,52 @@ MIGRATION_FIXTURES = File.expand_path('../dummy/db/migrate', __dir__)
 
 def db_config_for(adapter:)
   db_config = Configuration.new
-
   {
     adapter:,
     **db_config.config
   }
 end
 
-def establish_default_database_connection
+def establish_default_database_connection(**config, &block)
   case ENV['DB_ADAPTER']
   when 'trilogy'
-    establish_trilogy_connection
+    establish_trilogy_connection(**config, &block)
   when 'percona'
-    establish_percona_connection
+    establish_percona_connection(**config, &block)
   else
-    establish_mysql_connection
+    establish_mysql_connection(**config, &block)
   end
 end
 
-def establish_trilogy_connection
-  ActiveRecord::Base.establish_connection(**db_config_for(adapter: 'trilogy'))
+def build_connection_config(adapter, **config, &block)
+  c = {
+    **db_config_for(adapter: adapter),
+    **config,
+  }
+
+  if block_given?
+    yield c
+  end
+
+  c
 end
 
-def establish_percona_connection
-  ActiveRecord::Base.establish_connection(**db_config_for(adapter: 'percona'))
+def establish_trilogy_connection(**config, &block)
+  c = build_connection_config('trilogy', **config, &block)
+
+  ActiveRecord::Base.establish_connection(c)
 end
 
-def establish_mysql_connection
-  ActiveRecord::Base.establish_connection(**db_config_for(adapter: 'mysql2'))
+def establish_percona_connection(**config, &block)
+  c = build_connection_config('percona', **config, &block)
+
+  ActiveRecord::Base.establish_connection(c)
+end
+
+def establish_mysql_connection(**config, &block)
+  c = build_connection_config('mysql2', **config, &block)
+
+  ActiveRecord::Base.establish_connection(c)
 end
 
 def setup_departure_integrations

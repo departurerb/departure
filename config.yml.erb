@@ -1,5 +1,9 @@
 username: <%= ENV['PERCONA_DB_USER'] || 'root' %>
-password: <%= ENV['PERCONA_DB_PASSWORD'] || '' %> 
-database: <%= ENV['PERCONA_DB_NAME'] || 'departure_test' %> 
-hostname: <%= ENV['PERCONA_DB_HOST'] || 'localhost' %>
-socket: <%= ENV['PERCONA_DB_SOCKET'] || '' %>
+password: <%= ENV['PERCONA_DB_PASSWORD'] || '' %>
+database: <%= ENV['PERCONA_DB_NAME'] || 'departure_test' %>
+<% if ENV['PERCONA_DB_SOCKET'] && !ENV['PERCONA_DB_SOCKET'].empty? %>
+socket: <%= ENV['PERCONA_DB_SOCKET'] %>
+<% else %>
+host: <%= ENV['PERCONA_DB_HOST'] || 'localhost' %>
+port: <%= ENV['PERCONA_DB_PORT'] || 3306 %>
+<% end %>

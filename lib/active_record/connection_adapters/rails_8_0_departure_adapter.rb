@@ -215,7 +215,11 @@ module ActiveRecord
 
             # THIS IS THE CORE CHANGES 1 related to size
             # We will sometimes have a process exit code instead of a result from executing
-            @affected_rows_before_warnings = result.try(:size) || raw_connection.affected_rows
+            @affected_rows_before_warnings = begin
+                                               result.try(:size) || raw_connection.affected_rows
+                                             rescue StandardError
+                                               0
+                                             end
           end
         elsif prepare
 

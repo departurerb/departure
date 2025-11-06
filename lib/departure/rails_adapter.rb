@@ -31,21 +31,20 @@ module Departure
         elsif ar_version::MAJOR >= 7 && ar_version::MINOR >= 2
           V7_2_Adapter
         else
-          raise UnsupportedRailsVersionError.new("Unsupported Rails version: #{ar_version}")
+          raise UnsupportedRailsVersionError, "Unsupported Rails version: #{ar_version}"
         end
       end
     end
 
     class BaseAdapter
-
       class << self
         def register_integrations
-          raise MustImplementError.new("adapter must implement register_integrations")
+          raise MustImplementError, 'adapter must implement register_integrations'
         end
 
         # ActiveRecord::ConnectionAdapters::Mysql2Adapter
-        def create_connection_adapter(**config)
-          raise MustImplementError.new("adapter must implement create_connection_adapter")
+        def create_connection_adapter(**_config)
+          raise MustImplementError, 'adapter must implement create_connection_adapter'
         end
 
         # https://github.com/rails/rails/commit/9ad36e067222478090b36a985090475bb03e398c#diff-de807ece2205a84c0e3de66b0e5ab831325d567893b8b88ce0d6e9d498f923d1

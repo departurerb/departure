@@ -6,6 +6,8 @@ module Departure
   class RailsAdapter
     extend ::Forwardable
 
+    class UnsupportedRailsVersionError < StandardError; end
+
     class << self
       def version_matches?(version_string, compatibility_string = current_version::STRING)
         requirement = Gem::Requirement.new(compatibility_string)
@@ -27,10 +29,8 @@ module Departure
           V8_0_Adapter
         elsif ar_version::MAJOR >= 7 && ar_version::MINOR >= 2
           V7_2_Adapter
-        elsif ar_version::MAJOR >= 6
-          BaseAdapter
         else
-          raise "Unsupported Rails version: #{ar_version}"
+          raise UnsupportedRailsVersionError.new("Unsupported Rails version: #{ar_version}")
         end
       end
     end

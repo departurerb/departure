@@ -20,8 +20,11 @@ RSpec.describe Departure::RailsAdapter, integration: true do
       expect(described_class.for(gem_version_for('8.0.1'))).to be(Departure::RailsAdapter::V8_0_Adapter)
       expect(described_class.for(gem_version_for('8.0.0'))).to be(Departure::RailsAdapter::V8_0_Adapter)
       expect(described_class.for(gem_version_for('7.2.0'))).to be(Departure::RailsAdapter::V7_2_Adapter)
-      expect(described_class.for(gem_version_for('7.1.0'))).to be(Departure::RailsAdapter::BaseAdapter)
-      expect(described_class.for(gem_version_for('6.1.0'))).to be(Departure::RailsAdapter::BaseAdapter)
+    end
+
+    it 'raises an exception on before 7.2' do
+      expect { described_class.for(gem_version_for('7.1.0')) }.to raise_error(described_class::UnsupportedRailsVersionError)
+      expect { described_class.for(gem_version_for('6.1.0')) }.to raise_error(described_class::UnsupportedRailsVersionError)
     end
   end
 

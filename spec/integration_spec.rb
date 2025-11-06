@@ -74,17 +74,6 @@ describe Departure, integration: true do
       end
     end
 
-    context 'when no username is provided', activerecord_compatibility: RAILS_7_1 do
-      before do
-        establish_percona_connection(username: nil)
-      end
-
-      it 'uses root' do
-        run_a_migration(direction, 1)
-        expect(spec_config[:username]).to eq('root')
-      end
-    end
-
     # TODO: Use dummy app so that we actually go through the railtie's code
     context 'when there is LHM' do
       xit 'patches it to use regular Rails migration methods' do

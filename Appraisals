@@ -19,6 +19,6 @@ appraise 'rails-8-0' do
 end
 
 appraise 'rails-8-1' do
-  gem 'rails', '8.1.0.beta1'
+  gem 'rails', '8.1.1'
   gem 'trilogy'
 end

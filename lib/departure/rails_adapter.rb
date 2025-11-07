@@ -22,7 +22,11 @@ module Departure
         self.for(current_version, **args)
       end
 
+      # rubocop:disable Metrics/CyclomaticComplexity
+      # rubocop:disable Metrics/PerceivedComplexity
       def for(ar_version, db_connection_adapter: nil)
+        # rubocop:enable Metrics/CyclomaticComplexity
+        # rubocop:enable Metrics/PerceivedComplexity
         if ar_version::MAJOR == 8 && ar_version::MINOR.positive?
           if db_connection_adapter == 'trilogy'
             V8_1_TrilogyAdapter

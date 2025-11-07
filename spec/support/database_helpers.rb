@@ -19,15 +19,13 @@ def establish_default_database_connection(**config, &block)
   end
 end
 
-def build_connection_config(adapter, **config, &block)
+def build_connection_config(adapter, **config)
   c = {
     **db_config_for(adapter: adapter),
-    **config,
+    **config
   }
 
-  if block_given?
-    yield c
-  end
+  yield c if block_given?
 
   c
 end

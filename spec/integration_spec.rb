@@ -65,7 +65,7 @@ describe Departure, integration: true do
 
     context 'when a username is provided' do
       before do
-        establish_percona_connection(username: db_config["username"])
+        establish_percona_connection(username: db_config['username'])
       end
 
       it 'uses the provided username' do

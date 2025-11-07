@@ -76,3 +76,14 @@ end
 if ActiveRecord::VERSION::STRING >= '7.1'
   ActiveRecord::MigrationContext.send :prepend, Rails7Compatibility::MigrationContext
 end
+
+def rails_version_under_test_matches?(version_string, file)
+  Departure::RailsAdapter.version_matches?(ActiveRecord::VERSION::STRING, version_string).tap do |result|
+    unless result
+      puts ''
+      puts '-- *** INFO ****'
+      puts "-- Skipping #{file} test due to requirement '#{version_string}' not matching current version '#{ActiveRecord::VERSION::STRING}"
+      puts ''
+    end
+  end
+end

@@ -1,7 +1,7 @@
 PATH
   remote: ..
   specs:
-    departure (7.0.0)
+    departure (8.0.0)
       activerecord (>= 7.2.0)
       mysql2 (>= 0.4.0, < 0.6.0)
       railties (>= 7.2.0)

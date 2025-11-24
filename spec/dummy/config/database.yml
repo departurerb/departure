@@ -9,9 +9,12 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
   username: <%= ENV['PERCONA_DB_USER'] || 'root' %>
-  password: <%= ENV['PERCONA_DB_PASSWORD'] || 'password' %>
-  hostname: <%= ENV['PERCONA_DB_HOST'] || 'localhost' %>
+  password: <%= ENV['PERCONA_DB_PASSWORD'] || '' %>
+  <% if ENV.key?('PERCONA_DB_SOCKET') %>
   socket: <%= ENV['PERCONA_DB_SOCKET'] || '' %>
+  <% else %>
+  hostname: <%= ENV['PERCONA_DB_HOST'] || 'localhost' %>
+  <% end %>
   database: <%= ENV['PERCONA_DB_NAME'] || 'departure_test' %>
 
 development:

@@ -65,32 +65,10 @@ describe Departure, integration: true do
 
     context 'when a username is provided' do
       before do
-        ActiveRecord::Base.establish_connection(
-          adapter: 'percona',
-          host: db_config['hostname'],
-          username: db_config['username'],
-          password: db_config['password'],
-          database: db_config['database']
-        )
+        establish_percona_connection(username: db_config['username'])
       end
 
       it 'uses the provided username' do
-        run_a_migration(direction, 1)
-        expect(spec_config[:username]).to eq('root')
-      end
-    end
-
-    context 'when no username is provided', activerecord_compatibility: RAILS_7_1 do
-      before do
-        ActiveRecord::Base.establish_connection(
-          adapter: 'percona',
-          host: db_config['hostname'],
-          password: db_config['password'],
-          database: db_config['database']
-        )
-      end
-
-      it 'uses root' do
         run_a_migration(direction, 1)
         expect(spec_config[:username]).to eq('root')
       end

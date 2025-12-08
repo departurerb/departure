@@ -45,8 +45,11 @@ RSpec.describe Departure::RailsAdapter, integration: true do
       expect(instance_for('8.0.1')).to be(Departure::RailsAdapter::V8_0_Adapter)
       expect(instance_for('8.0.0')).to be(Departure::RailsAdapter::V8_0_Adapter)
       expect(instance_for('7.2.0')).to be(Departure::RailsAdapter::V7_2_Adapter)
-      expect(instance_for('7.1.0')).to be(Departure::RailsAdapter::BaseAdapter)
-      expect(instance_for('6.1.0')).to be(Departure::RailsAdapter::BaseAdapter)
+    end
+
+    it 'raises an exception for older versiosn of rails' do
+      expect { instance_for('7.1.0') }.to raise_error(Departure::RailsAdapter::UnsupportedRailsVersionError)
+      expect { instance_for('6.1.0') }.to raise_error(Departure::RailsAdapter::UnsupportedRailsVersionError)
     end
   end
 

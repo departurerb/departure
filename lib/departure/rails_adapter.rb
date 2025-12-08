@@ -6,6 +6,9 @@ module Departure
   class RailsAdapter
     extend ::Forwardable
 
+    class UnsupportedRailsVersionError < StandardError; end
+    class MustImplementError < StandardError; end
+
     class << self
       def version_matches?(version_string, compatibility_string = current_version::STRING)
         raise "Invalid Gem Version: '#{version_string}'" unless Gem::Version.correct?(version_string)
@@ -37,10 +40,8 @@ module Departure
           V8_0_Adapter
         elsif ar_version::MAJOR >= 7 && ar_version::MINOR >= 2
           V7_2_Adapter
-        elsif ar_version::MAJOR >= 6
-          BaseAdapter
         else
-          raise "Unsupported Rails version: #{ar_version}"
+          raise UnsupportedRailsVersionError, "Unsupported Rails version: #{ar_version}"
         end
       end
     end
@@ -48,45 +49,12 @@ module Departure
     class BaseAdapter
       class << self
         def register_integrations
-          require 'active_record/connection_adapters/percona_adapter'
-
-          ActiveRecord::Migration.class_eval do
-            include Departure::Migration
-          end
-
-          return unless ActiveRecord::VERSION::MAJOR == 7 && ActiveRecord::VERSION::MINOR == 1
-
-          require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
-
-          ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
+          raise MustImplementError, 'adapter must implement register_integrations'
         end
 
         # ActiveRecord::ConnectionAdapters::Mysql2Adapter
-        def create_connection_adapter(**config)
-          mysql2_adapter = ActiveRecord::Base.mysql2_connection(config)
-
-          connection_details = Departure::ConnectionDetails.new(config)
-          verbose = ActiveRecord::Migration.verbose
-          sanitizers = [
-            Departure::LogSanitizers::PasswordSanitizer.new(connection_details)
-          ]
-          percona_logger = Departure::LoggerFactory.build(sanitizers: sanitizers, verbose: verbose)
-          cli_generator = Departure::CliGenerator.new(connection_details)
-
-          runner = Departure::Runner.new(
-            percona_logger,
-            cli_generator,
-            mysql2_adapter
-          )
-
-          connection_options = { mysql_adapter: mysql2_adapter }
-
-          ActiveRecord::ConnectionAdapters::DepartureAdapter.new(
-            runner,
-            percona_logger,
-            connection_options,
-            config
-          )
+        def create_connection_adapter(**_config)
+          raise MustImplementError, 'adapter must implement create_connection_adapter'
         end
 
         # https://github.com/rails/rails/commit/9ad36e067222478090b36a985090475bb03e398c#diff-de807ece2205a84c0e3de66b0e5ab831325d567893b8b88ce0d6e9d498f923d1

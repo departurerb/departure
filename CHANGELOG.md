@@ -6,10 +6,13 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [NEXT]
 
+## [8.0.0] - 2025-11-24
+
 - Bump [appraisal to 2.5.0](https://github.com/departurerb/departure/pull/129)
 - Add support for [Rails 8.1](https://github.com/departurerb/departure/pull/128)
 - Skinnify Departure [to remove most non pt-online-schema-change](https://github.com/departurerb/departure/pull/131) responsibility from departure
 - Inherit from [Mysql2 Adapter instead of AbstractMysqlAdapter](https://github.com/departurerb/departure/pull/130)
+- Remove Support for [Rails 7.0 and Rails 7.1](https://github.com/departurerb/departure/pull/135)
   
 ## [7.0.0] - 2025-08-21
 

@@ -80,9 +80,11 @@ end
 def rails_version_under_test_matches?(version_string, file)
   Departure::RailsAdapter.version_matches?(ActiveRecord::VERSION::STRING, version_string).tap do |result|
     unless result
+      error = "Skip #{file} test - current '#{version_string}' not matching version #{ActiveRecord::VERSION::STRING}"
+
       puts ''
       puts '-- *** INFO ****'
-      puts "-- Skipping #{file} test due to requirement '#{version_string}' not matching current version '#{ActiveRecord::VERSION::STRING}"
+      puts "-- #{error}"
       puts ''
     end
   end

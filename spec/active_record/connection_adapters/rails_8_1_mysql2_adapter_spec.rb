@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-if rails_version_under_test_matches?(RAILS_8_0, __FILE__)
+if rails_version_under_test_matches?(RAILS_8_1, __FILE__)
   require 'active_record/connection_adapters/rails_8_1_mysql2_adapter'
 
   describe ActiveRecord::ConnectionAdapters::Rails81Mysql2Adapter, activerecord_compatibility: RAILS_8_1 do

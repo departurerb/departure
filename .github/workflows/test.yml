@@ -67,6 +67,9 @@ jobs:
       - run: sudo apt-get install percona-toolkit
       - name: Start MySQL server
         run: sudo systemctl start mysql.service
+      - name: Configure MySQL for Trilogy
+        run: |
+          sudo mysql -u root -proot -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root'; FLUSH PRIVILEGES;"
       - run: bin/setup
       - run: bundle exec rake
 

@@ -10,14 +10,14 @@ module Departure
       Departure.configure do |config|
         config.tmp_path = app.paths['tmp'].first
       end
+
+      Departure::RailsAdapter.register_integrations
     end
 
     config.after_initialize do
       Departure.configure do |dc|
         ActiveRecord::Migration.uses_departure = dc.enabled_by_default
       end
-
-      Departure::RailsAdapter.for_current(ApplicationRecord.connection.config)
     end
   end
 end

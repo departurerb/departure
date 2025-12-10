@@ -10,6 +10,10 @@ module Departure
     class MustImplementError < StandardError; end
 
     class << self
+      def register_integrations(**args)
+        for_current(**args).register_integrations
+      end
+
       def version_matches?(version_string, compatibility_string = current_version::STRING)
         raise "Invalid Gem Version: '#{version_string}'" unless Gem::Version.correct?(version_string)
 

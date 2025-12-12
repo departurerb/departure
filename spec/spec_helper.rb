@@ -29,8 +29,6 @@ ActiveRecord::Base.logger = Logger.new(fd)
 
 test_database = TestDatabase.new(db_config)
 
-Departure::RailsAdapter.for_current.register_integrations
-
 RSpec.configure do |config|
   config.include TableMethods
   config.filter_run_when_matching :focus
@@ -52,9 +50,13 @@ RSpec.configure do |config|
   # Cleans up the database before each example, so the current example doesn't
   # see the state of the previous one
   config.before(:each) do |example|
-    establish_mysql_connection
+    establish_default_database_connection
 
-    test_database.setup if example.metadata[:integration]
+    if example.metadata[:integration]
+      test_database.setup
+
+      Departure::RailsAdapter.for_current.register_integrations
+    end
   end
 
   config.order = :random
@@ -73,4 +75,17 @@ end
 
 if ActiveRecord::VERSION::STRING >= '7.1'
   ActiveRecord::MigrationContext.send :prepend, Rails7Compatibility::MigrationContext
+end
+
+def rails_version_under_test_matches?(version_string, file)
+  Departure::RailsAdapter.version_matches?(ActiveRecord::VERSION::STRING, version_string).tap do |result|
+    unless result
+      error = "Skip #{file} test - current '#{version_string}' not matching version #{ActiveRecord::VERSION::STRING}"
+
+      puts ''
+      puts '-- *** INFO ****'
+      puts "-- #{error}"
+      puts ''
+    end
+  end
 end

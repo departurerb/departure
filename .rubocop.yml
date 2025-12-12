@@ -28,6 +28,8 @@ Layout/LineLength:
   Exclude:
     - 'departure.gemspec'
     - 'test_database.rb'
+    - 'spec/*'
+    - 'spec/**/*'
 
 Metrics/MethodLength:
   Max: 30

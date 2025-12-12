@@ -6,12 +6,12 @@ require 'forwardable'
 
 module ActiveRecord
   module ConnectionAdapters
-    class Rails81DepartureAdapter < ActiveRecord::ConnectionAdapters::Mysql2Adapter
+    class Rails81Mysql2Adapter < ActiveRecord::ConnectionAdapters::Mysql2Adapter
       TYPE_MAP = Type::TypeMap.new.tap { |m| initialize_type_map(m) } if defined?(initialize_type_map)
 
       class Column < ActiveRecord::ConnectionAdapters::MySQL::Column
         def adapter
-          Rails81DepartureAdapter
+          Rails81Mysql2Adapter
         end
       end
 
@@ -32,8 +32,6 @@ module ActiveRecord
           "DROP FOREIGN KEY #{fk_name}"
         end
       end
-
-      extend Forwardable
 
       include ForAlterStatements unless method_defined?(:change_column_for_alter)
 

@@ -10,7 +10,13 @@ module Departure
     class MustImplementError < StandardError; end
 
     class << self
+      def register_integrations(**args)
+        for_current(**args).register_integrations
+      end
+
       def version_matches?(version_string, compatibility_string = current_version::STRING)
+        raise "Invalid Gem Version: '#{version_string}'" unless Gem::Version.correct?(version_string)
+
         requirement = Gem::Requirement.new(compatibility_string)
         requirement.satisfied_by?(Gem::Version.new(version_string))
       end
@@ -19,13 +25,19 @@ module Departure
         ActiveRecord::VERSION
       end
 
-      def for_current
-        self.for(current_version)
+      def for_current(**args)
+        self.for(current_version, **args)
       end
 
-      def for(ar_version)
+      # rubocop:disable Metrics/PerceivedComplexity
+      def for(ar_version, db_connection_adapter: nil)
+        # rubocop:enable Metrics/PerceivedComplexity
         if ar_version::MAJOR == 8 && ar_version::MINOR.positive?
-          V8_1_Adapter
+          if db_connection_adapter == 'trilogy'
+            V8_1_TrilogyAdapter
+          else
+            V8_1_Mysql2Adapter
+          end
         elsif ar_version::MAJOR == 8
           V8_0_Adapter
         elsif ar_version::MAJOR >= 7 && ar_version::MINOR >= 2
@@ -69,13 +81,11 @@ module Departure
           require 'active_record/connection_adapters/rails_7_2_departure_adapter'
           require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
 
-          ActiveSupport.on_load(:active_record) do
-            ActiveRecord::Migration.class_eval do
-              include Departure::Migration
-            end
-
-            ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
+          ActiveRecord::Migration.class_eval do
+            include Departure::Migration
           end
+
+          ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
 
           ActiveRecord::ConnectionAdapters.register 'percona',
                                                     'ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter',
@@ -98,13 +108,11 @@ module Departure
           require 'active_record/connection_adapters/rails_8_0_departure_adapter'
           require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
 
-          ActiveSupport.on_load(:active_record) do
-            ActiveRecord::Migration.class_eval do
-              include Departure::Migration
-            end
-
-            ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
+          ActiveRecord::Migration.class_eval do
+            include Departure::Migration
           end
+
+          ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
 
           ActiveRecord::ConnectionAdapters.register 'percona',
                                                     'ActiveRecord::ConnectionAdapters::Rails80DepartureAdapter',
@@ -121,27 +129,25 @@ module Departure
       end
     end
 
-    class V8_1_Adapter < BaseAdapter # rubocop:disable Naming/ClassAndModuleCamelCase
+    class V8_1_Mysql2Adapter < BaseAdapter # rubocop:disable Naming/ClassAndModuleCamelCase
       class << self
         def register_integrations
-          require 'active_record/connection_adapters/rails_8_1_departure_adapter'
+          require 'active_record/connection_adapters/rails_8_1_mysql2_adapter'
           require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
 
-          ActiveSupport.on_load(:active_record) do
-            ActiveRecord::Migration.class_eval do
-              include Departure::Migration
-            end
-
-            ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
+          ActiveRecord::Migration.class_eval do
+            include Departure::Migration
           end
 
+          ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
+
           ActiveRecord::ConnectionAdapters.register 'percona',
-                                                    'ActiveRecord::ConnectionAdapters::Rails81DepartureAdapter',
-                                                    'active_record/connection_adapters/rails_8_1_departure_adapter'
+                                                    'ActiveRecord::ConnectionAdapters::Rails81Mysql2Adapter',
+                                                    'active_record/connection_adapters/rails_8_1_mysql2_adapter'
         end
 
         def create_connection_adapter(**config)
-          ActiveRecord::ConnectionAdapters::Rails81DepartureAdapter.new(config)
+          ActiveRecord::ConnectionAdapters::Rails81Mysql2Adapter.new(config)
         end
 
         # rubocop:disable Metrics/ParameterLists
@@ -159,6 +165,29 @@ module Departure
 
         def sql_column
           ::ActiveRecord::ConnectionAdapters::MySQL::Column
+        end
+      end
+    end
+
+    class V8_1_TrilogyAdapter < V8_1_Mysql2Adapter # rubocop:disable Naming/ClassAndModuleCamelCase
+      class << self
+        def register_integrations
+          require 'active_record/connection_adapters/rails_8_1_trilogy_adapter'
+          require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
+
+          ActiveRecord::Migration.class_eval do
+            include Departure::Migration
+          end
+
+          ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
+
+          ActiveRecord::ConnectionAdapters.register 'percona',
+                                                    'ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter',
+                                                    'active_record/connection_adapters/rails_8_1_trilogy_adapter'
+        end
+
+        def create_connection_adapter(**config)
+          ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter.new(config)
         end
       end
     end

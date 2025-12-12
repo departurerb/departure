@@ -151,9 +151,16 @@ It's strongly recommended to name it after this gems name, such as
 
 All configuration options are configurable from the `Departure.configure` block example below
 
-|Option|Default|What it Controls|
-|---|---|---|
-|disable_rails_advisory_lock_patch|false|When truthy, disables a patch in at least rails 7.1 and 7.2 where rails throws ConcurrentMigrationErrors due to the inability to release the advisory lock in migrations|
+| Option                            | Default | What it Controls                                                                                                                                                          |
+|-----------------------------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| disable_rails_advisory_lock_patch | false   | When truthy, disables a patch in at least rails 7.1 and 7.2 where rails throws ConcurrentMigrationErrors due to the inability to release the advisory lock in migrations  |
+
+### Trilogy Adapter Support
+
+Starting in Rails 8.1 we add support for the use of the trilogy database adapter gem.  Logic for selecting an adapter follows this logic
+
+1. If the database configuration specifies 'trilogy' use the trilogy adapter
+2. Default to mysql2
 
 ### Disable on per-migration basis
 
@@ -226,7 +233,7 @@ adapters.
       %% Core Departure Components
       subgraph "Departure System"
           RailsAdapter["RailsAdapter<br/>(Version Detection)"]
-          DepartureAdapter["Rails81DepartureAdapter<br/>(Connection Adapter)"]
+          DepartureAdapter["Rails81MysqlAdapter<br/>(Connection Adapter)"]
           Runner["Runner<br/>(Query Interceptor)"]
           Command["Command<br/>(Process Executor)"]
           CliGenerator["CliGenerator<br/>(Command Builder)"]

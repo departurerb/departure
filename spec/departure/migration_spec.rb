@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe Departure::Migration do
+  before { setup_departure_integrations }
+
   let(:base) do
     Class.new do
       attr_accessor :migrated_direction

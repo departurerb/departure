@@ -6,6 +6,10 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [NEXT]
 
+## [8.0.1] - 2025-12-12
+
+- [Remove stderr message "Including for_alter statements"](https://github.com/departurerb/departure/pull/136)
+
 ## [8.0.0] - 2025-11-24
 
 - Bump [appraisal to 2.5.0](https://github.com/departurerb/departure/pull/129)

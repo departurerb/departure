@@ -5,7 +5,7 @@ module Departure
   # status.
   class NoStatusError < Error
     def message
-      'Status could not be retrieved'.freeze
+      "Status could not be retrieved".freeze
     end
   end
 
@@ -29,7 +29,7 @@ module Departure
 
   class CommandNotFoundError < Error
     def message
-      'Please install pt-online-schema-change. Check: https://www.percona.com/doc/percona-toolkit for further details'
+      "Please install pt-online-schema-change. Check: https://www.percona.com/doc/percona-toolkit for further details"
     end
   end
 

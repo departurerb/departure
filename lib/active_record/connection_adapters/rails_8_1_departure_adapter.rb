@@ -1,8 +1,8 @@
-require 'active_record/connection_adapters/abstract_mysql_adapter'
-require 'active_record/connection_adapters/mysql2_adapter'
-require 'active_record/connection_adapters/patch_connection_handling'
-require 'departure'
-require 'forwardable'
+require "active_record/connection_adapters/abstract_mysql_adapter"
+require "active_record/connection_adapters/mysql2_adapter"
+require "active_record/connection_adapters/patch_connection_handling"
+require "departure"
+require "forwardable"
 
 module ActiveRecord
   module ConnectionAdapters
@@ -21,7 +21,7 @@ module ActiveRecord
       # pt-online-schema-change adds a leading underscore to foreign key constraint names when creating the new table.
       # https://www.percona.com/blog/2017/03/21/dropping-foreign-key-constraint-using-pt-online-schema-change-2/
       class SchemaCreation < ActiveRecord::ConnectionAdapters::MySQL::SchemaCreation
-        def visit_DropForeignKey(name) # rubocop:disable Naming/MethodName
+        def visit_DropForeignKey(name) # standard:disable Naming/MethodName
           fk_name =
             if name =~ /^__(.+)/
               Regexp.last_match(1)
@@ -37,7 +37,7 @@ module ActiveRecord
 
       include ForAlterStatements unless method_defined?(:change_column_for_alter)
 
-      ADAPTER_NAME = 'Percona'.freeze
+      ADAPTER_NAME = "Percona".freeze
 
       def self.new_client(config)
         original_client = super
@@ -71,13 +71,13 @@ module ActiveRecord
 
       attr_reader :mysql_adapter
 
-      # rubocop:disable Metrics/ParameterLists
+      # standard:disable Metrics/ParameterLists
       def perform_query(raw_connection, sql, binds, type_casted_binds, prepare:, notification_payload:, batch: false)
         return raw_connection.send_to_pt_online_schema_change(sql) if raw_connection.alter_statement?(sql)
 
         super
       end
-      # rubocop:enable Metrics/ParameterLists
+      # standard:enable Metrics/ParameterLists
     end
   end
 end

@@ -1,4 +1,4 @@
-MIGRATION_FIXTURES = File.expand_path('../dummy/db/migrate', __dir__)
+MIGRATION_FIXTURES = File.expand_path("../dummy/db/migrate", __dir__)
 
 def db_config_for(adapter:, **kwargs)
   db_config = Configuration.new
@@ -11,11 +11,11 @@ def db_config_for(adapter:, **kwargs)
 end
 
 def establish_percona_connection(**kwargs)
-  ActiveRecord::Base.establish_connection(**db_config_for(adapter: 'percona', **kwargs))
+  ActiveRecord::Base.establish_connection(**db_config_for(adapter: "percona", **kwargs))
 end
 
 def establish_mysql_connection(**kwargs)
-  ActiveRecord::Base.establish_connection(**db_config_for(adapter: 'mysql2', **kwargs))
+  ActiveRecord::Base.establish_connection(**db_config_for(adapter: "mysql2", **kwargs))
 end
 
 def disable_departure_rails_advisory_lock_patch

@@ -1,16 +1,17 @@
-require 'active_record/connection_adapters/abstract_mysql_adapter'
-require 'active_record/connection_adapters/statement_pool'
-require 'active_record/connection_adapters/mysql2_adapter'
-require 'active_record/connection_adapters/mysql2/database_statements'
-require 'active_record/connection_adapters/patch_connection_handling'
-require 'active_support/core_ext/string/filters'
-require 'departure'
-require 'forwardable'
+require "active_record/connection_adapters/abstract_mysql_adapter"
+require "active_record/connection_adapters/statement_pool"
+require "active_record/connection_adapters/mysql2_adapter"
+require "active_record/connection_adapters/mysql2/database_statements"
+require "active_record/connection_adapters/patch_connection_handling"
+require "active_support/core_ext/string/filters"
+require "departure"
+require "forwardable"
 
 module ActiveRecord
   module ConnectionAdapters
     class Rails80DepartureAdapter < AbstractMysqlAdapter
       include ActiveRecord::ConnectionAdapters::Mysql2::DatabaseStatements
+
       TYPE_MAP = Type::TypeMap.new.tap { |m| initialize_type_map(m) } if defined?(initialize_type_map)
 
       class Column < ActiveRecord::ConnectionAdapters::MySQL::Column
@@ -20,7 +21,7 @@ module ActiveRecord
       end
 
       class SchemaCreation < ActiveRecord::ConnectionAdapters::MySQL::SchemaCreation
-        def visit_DropForeignKey(name) # rubocop:disable Naming/MethodName
+        def visit_DropForeignKey(name) # standard:disable Naming/MethodName
           fk_name =
             if name =~ /^__(.+)/
               Regexp.last_match(1)
@@ -36,7 +37,7 @@ module ActiveRecord
 
       include ForAlterStatements unless method_defined?(:change_column_for_alter)
 
-      ADAPTER_NAME = 'Percona'.freeze
+      ADAPTER_NAME = "Percona".freeze
 
       def self.new_client(config)
         connection_details = Departure::ConnectionDetails.new(config)
@@ -47,7 +48,7 @@ module ActiveRecord
         percona_logger = Departure::LoggerFactory.build(sanitizers: sanitizers, verbose: verbose)
         cli_generator = Departure::CliGenerator.new(connection_details)
 
-        mysql_adapter = ActiveRecord::ConnectionAdapters::Mysql2Adapter.new(config.merge(adapter: 'mysql2'))
+        mysql_adapter = ActiveRecord::ConnectionAdapters::Mysql2Adapter.new(config.merge(adapter: "mysql2"))
 
         Departure::Runner.new(
           percona_logger,
@@ -62,7 +63,7 @@ module ActiveRecord
         @config[:flags] ||= 0
 
         if @config[:flags].is_a? Array
-          @config[:flags].push 'FOUND_ROWS'
+          @config[:flags].push "FOUND_ROWS"
         else
           @config[:flags] |= ::Mysql2::Client::FOUND_ROWS
         end
@@ -81,18 +82,18 @@ module ActiveRecord
 
         @raw_connection.affected_rows
       end
-      alias exec_update exec_delete
+      alias_method :exec_update, :exec_delete
 
-      def exec_insert(sql, name, binds, pky = nil, sequence_name = nil, returning: nil) # rubocop:disable Lint/UnusedMethodArgument, Metrics/ParameterLists
+      def exec_insert(sql, name, binds, pky = nil, sequence_name = nil, returning: nil) # standard:disable Lint/UnusedMethodArgument, Metrics/ParameterLists
         execute(to_sql(sql, binds), name)
       end
 
-      def internal_exec_query(sql, name = 'SQL', _binds = [], **_kwargs) # :nodoc:
+      def internal_exec_query(sql, name = "SQL", _binds = [], **_kwargs) # :nodoc:
         result = execute(sql, name)
         fields = result.fields if defined?(result.fields)
         ActiveRecord::Result.new(fields || [], result.to_a)
       end
-      alias exec_query internal_exec_query
+      alias_method :exec_query, :internal_exec_query
 
       # Executes a SELECT query and returns an array of rows. Each row is an
       # array of field values.
@@ -155,7 +156,7 @@ module ActiveRecord
         get_full_version
       end
 
-      def get_full_version # rubocop:disable Naming/AccessorMethodName
+      def get_full_version # standard:disable Naming/AccessorMethodName
         return @get_full_version if defined? @get_full_version
 
         with_raw_connection do |conn|
@@ -181,23 +182,23 @@ module ActiveRecord
         @raw_connection.database_adapter.error_number(exception)
       end
 
-      # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/ParameterLists
+      # standard:disable Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/ParameterLists
       def raw_execute(sql, name = nil, binds = [], prepare: false, async: false, allow_retry: false,
-                      materialize_transactions: true, batch: false)
+        materialize_transactions: true, batch: false)
         type_casted_binds = type_casted_binds(binds)
         log(sql, name, binds, type_casted_binds, async: async) do |notification_payload|
           with_raw_connection(allow_retry: allow_retry, materialize_transactions: materialize_transactions) do |conn|
             perform_query(conn, sql, binds, type_casted_binds, prepare: prepare,
-                                                               notification_payload: notification_payload, batch: batch)
+              notification_payload: notification_payload, batch: batch)
           end
         end
       end
 
       def perform_query(raw_connection, sql, binds, type_casted_binds, prepare:, notification_payload:, batch: false)
         reset_multi_statement = if batch && !multi_statements_enabled?
-                                  raw_connection.set_server_option(::Mysql2::Client::OPTION_MULTI_STATEMENTS_ON)
-                                  true
-                                end
+          raw_connection.set_server_option(::Mysql2::Client::OPTION_MULTI_STATEMENTS_ON)
+          true
+        end
 
         # Make sure we carry over any changes to ActiveRecord.default_timezone that have been
         # made since we established the connection
@@ -216,10 +217,10 @@ module ActiveRecord
             # THIS IS THE CORE CHANGES 1 related to size
             # We will sometimes have a process exit code instead of a result from executing
             @affected_rows_before_warnings = if result.is_a? Process::Status
-                                               result.try(:size) || 0
-                                             else
-                                               result.try(:size) || raw_connection.affected_rows
-                                             end
+              result.try(:size) || 0
+            else
+              result.try(:size) || raw_connection.affected_rows
+            end
           end
         elsif prepare
 
@@ -277,7 +278,7 @@ module ActiveRecord
           raw_connection.set_server_option(::Mysql2::Client::OPTION_MULTI_STATEMENTS_OFF)
         end
       end
-      # rubocop:enable Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/ParameterLists
+      # standard:enable Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/ParameterLists
 
       def connect
         @raw_connection = self.class.new_client(@config)

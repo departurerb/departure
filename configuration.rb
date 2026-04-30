@@ -1,8 +1,8 @@
-require 'yaml'
-require 'erb'
+require "yaml"
+require "erb"
 
 class Configuration
-  CONFIG_PATH = 'config.yml.erb'.freeze
+  CONFIG_PATH = "config.yml.erb".freeze
 
   attr_reader :config
 

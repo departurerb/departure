@@ -1,32 +1,32 @@
-require 'simplecov'
+require "simplecov"
 SimpleCov.start
 
-ENV['RAILS_ENV'] ||= 'development'
+ENV["RAILS_ENV"] ||= "development"
 
-$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
-require 'bundler/setup'
+$LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
+require "bundler/setup"
 Bundler.require(:default, :development)
 
-require 'support/constants'
-require './configuration'
-require './test_database'
+require "support/constants"
+require "./configuration"
+require "./test_database"
 
-require 'departure'
-require 'lhm'
+require "departure"
+require "lhm"
 
 class Comment < ActiveRecord::Base; end
 
-require 'support/matchers/have_column'
-require 'support/matchers/have_index'
-require 'support/matchers/have_foreign_key_on'
-require 'support/shared_examples/column_definition_method'
-require 'support/table_methods'
-require 'support/database_helpers'
+require "support/matchers/have_column"
+require "support/matchers/have_index"
+require "support/matchers/have_foreign_key_on"
+require "support/shared_examples/column_definition_method"
+require "support/table_methods"
+require "support/database_helpers"
 
 db_config = Configuration.new
 
 # Disables/enables the queries log you see in your rails server in dev mode
-fd = ENV['VERBOSE'] ? $stdout : File::NULL
+fd = ENV["VERBOSE"] ? $stdout : File::NULL
 ActiveRecord::Base.logger = Logger.new(fd)
 
 test_database = TestDatabase.new(db_config)
@@ -77,6 +77,6 @@ module Rails7Compatibility
   end
 end
 
-if ActiveRecord::VERSION::STRING >= '7.1'
+if ActiveRecord::VERSION::STRING >= "7.1"
   ActiveRecord::MigrationContext.send :prepend, Rails7Compatibility::MigrationContext
 end

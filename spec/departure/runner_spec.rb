@@ -1,8 +1,8 @@
-require 'spec_helper'
-require 'tempfile'
+require "spec_helper"
+require "tempfile"
 
 describe Departure::Runner do
-  let(:command_line) { 'pt-online-schema-change command' }
+  let(:command_line) { "pt-online-schema-change command" }
   let(:logger) { instance_double(Departure::Logger) }
   let(:cli_generator) { instance_double(Departure::CliGenerator) }
   let(:mysql_adapter) do
@@ -11,34 +11,34 @@ describe Departure::Runner do
   let(:config) do
     instance_double(
       Departure::Configuration,
-      error_log_path: 'departure_error.log',
-      redirect_stderr: true,
+      error_log_path: "departure_error.log",
+      redirect_stderr: true
     )
   end
 
   let(:runner) { described_class.new(logger, cli_generator, mysql_adapter, config) }
 
-  it 'exposed the database adapter' do
+  it "exposed the database adapter" do
     expect(runner.database_adapter).to eql(mysql_adapter)
   end
 
-  describe '#query' do
+  describe "#query" do
   end
 
-  describe '#affected_rows' do
+  describe "#affected_rows" do
     let(:mysql_client) { double(:mysql_client) }
 
     before do
       allow(mysql_adapter).to receive(:raw_connection).and_return(mysql_client)
     end
 
-    it 'delegates to the MySQL adapter\'s client' do
+    it "delegates to the MySQL adapter's client" do
       expect(mysql_client).to receive(:affected_rows)
       runner.affected_rows
     end
   end
 
-  describe '#execute' do
+  describe "#execute" do
     let(:status) { instance_double(Process::Status) }
     let(:cmd) { instance_double(Departure::Command, run: status) }
 
@@ -48,12 +48,12 @@ describe Departure::Runner do
         .and_return(cmd)
     end
 
-    it 'executes the pt-online-schema-change command' do
+    it "executes the pt-online-schema-change command" do
       runner.execute(command_line)
       expect(cmd).to have_received(:run)
     end
 
-    it 'returns the command status' do
+    it "returns the command status" do
       expect(runner.execute(command_line)).to eq(status)
     end
   end

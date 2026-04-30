@@ -1,5 +1,5 @@
-require 'lhm/column_with_sql'
-require 'lhm/column_with_type'
+require "lhm/column_with_sql"
+require "lhm/column_with_type"
 
 module Lhm
   # Translates Lhm DSL to ActiveRecord's one, so Lhm migrations will now go
@@ -37,7 +37,7 @@ module Lhm
     # @param columns [Array<String>, Array<Symbol>, String, Symbol]
     # @param index_name [String]
     def add_index(columns, index_name = nil)
-      options = { name: index_name } if index_name
+      options = {name: index_name} if index_name
       migration.add_index(table_name, columns, options || {})
     end
 
@@ -47,10 +47,10 @@ module Lhm
     # @param index_name [String]
     def remove_index(columns, index_name = nil)
       options = if index_name
-                  { name: index_name }
-                else
-                  { column: columns }
-                end
+        {name: index_name}
+      else
+        {column: columns}
+      end
       migration.remove_index(table_name, options)
     end
 
@@ -76,8 +76,8 @@ module Lhm
     # @param columns [Array<String>, Array<Symbol>, String, Symbol]
     # @param index_name [String]
     def add_unique_index(columns, index_name = nil)
-      options = { unique: true }
-      options.merge!(name: index_name) if index_name # rubocop:disable Performance/RedundantMerge
+      options = {unique: true}
+      options.merge!(name: index_name) if index_name # standard:disable Performance/RedundantMerge
 
       migration.add_index(table_name, columns, options)
     end
@@ -93,10 +93,10 @@ module Lhm
     # @param definition [String]
     def column(name, definition)
       @column ||= if definition.is_a?(Symbol)
-                    ColumnWithType.new(name, definition)
-                  else
-                    ColumnWithSql.new(name, definition)
-                  end
+        ColumnWithType.new(name, definition)
+      else
+        ColumnWithSql.new(name, definition)
+      end
     end
 
     def column_attributes(name, definition)

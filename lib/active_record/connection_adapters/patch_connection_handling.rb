@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'active_record/connection_handling'
+require "active_record/connection_handling"
 
 module ActiveRecord
   module ConnectionHandling
@@ -9,7 +9,7 @@ module ActiveRecord
     def percona_connection(config)
       if config[:username].nil?
         config = config.dup if config.frozen?
-        config[:username] = 'root'
+        config[:username] = "root"
       end
 
       Departure::RailsAdapter.for_current.create_connection_adapter(**config)

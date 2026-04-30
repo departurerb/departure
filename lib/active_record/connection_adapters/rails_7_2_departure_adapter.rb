@@ -1,10 +1,10 @@
-require 'active_record/connection_adapters/abstract_mysql_adapter'
-require 'active_record/connection_adapters/statement_pool'
-require 'active_record/connection_adapters/mysql2_adapter'
-require 'active_record/connection_adapters/patch_connection_handling'
-require 'active_support/core_ext/string/filters'
-require 'departure'
-require 'forwardable'
+require "active_record/connection_adapters/abstract_mysql_adapter"
+require "active_record/connection_adapters/statement_pool"
+require "active_record/connection_adapters/mysql2_adapter"
+require "active_record/connection_adapters/patch_connection_handling"
+require "active_support/core_ext/string/filters"
+require "departure"
+require "forwardable"
 
 module ActiveRecord
   module ConnectionAdapters
@@ -18,7 +18,7 @@ module ActiveRecord
       end
 
       class SchemaCreation < ActiveRecord::ConnectionAdapters::MySQL::SchemaCreation
-        def visit_DropForeignKey(name) # rubocop:disable Style/MethodName
+        def visit_DropForeignKey(name) # standard:disable Naming/MethodName
           fk_name =
             if name =~ /^__(.+)/
               Regexp.last_match(1)
@@ -34,7 +34,7 @@ module ActiveRecord
 
       include ForAlterStatements unless method_defined?(:change_column_for_alter)
 
-      ADAPTER_NAME = 'Percona'.freeze
+      ADAPTER_NAME = "Percona".freeze
 
       def self.new_client(config)
         connection_details = Departure::ConnectionDetails.new(config)
@@ -45,7 +45,7 @@ module ActiveRecord
         percona_logger = Departure::LoggerFactory.build(sanitizers: sanitizers, verbose: verbose)
         cli_generator = Departure::CliGenerator.new(connection_details)
 
-        mysql_adapter = ActiveRecord::ConnectionAdapters::Mysql2Adapter.new(config.merge(adapter: 'mysql2'))
+        mysql_adapter = ActiveRecord::ConnectionAdapters::Mysql2Adapter.new(config.merge(adapter: "mysql2"))
 
         Departure::Runner.new(
           percona_logger,
@@ -60,7 +60,7 @@ module ActiveRecord
         @config[:flags] ||= 0
 
         if @config[:flags].is_a? Array
-          @config[:flags].push 'FOUND_ROWS'
+          @config[:flags].push "FOUND_ROWS"
         else
           @config[:flags] |= ::Mysql2::Client::FOUND_ROWS
         end
@@ -79,18 +79,18 @@ module ActiveRecord
 
         @raw_connection.affected_rows
       end
-      alias exec_update exec_delete
+      alias_method :exec_update, :exec_delete
 
-      def exec_insert(sql, name, binds, pky = nil, sequence_name = nil, returning: nil) # rubocop:disable Lint/UnusedMethodArgument, Metrics/Metrics/ParameterLists
+      def exec_insert(sql, name, binds, pky = nil, sequence_name = nil, returning: nil) # standard:disable Lint/UnusedMethodArgument, Metrics/ParameterLists
         execute(to_sql(sql, binds), name)
       end
 
-      def internal_exec_query(sql, name = 'SQL', _binds = [], **_kwargs) # :nodoc:
+      def internal_exec_query(sql, name = "SQL", _binds = [], **_kwargs) # :nodoc:
         result = execute(sql, name)
         fields = result.fields if defined?(result.fields)
         ActiveRecord::Result.new(fields || [], result.to_a)
       end
-      alias exec_query internal_exec_query
+      alias_method :exec_query, :internal_exec_query
 
       # Executes a SELECT query and returns an array of rows. Each row is an
       # array of field values.
@@ -153,7 +153,7 @@ module ActiveRecord
         get_full_version
       end
 
-      def get_full_version # rubocop:disable Style/AccessorMethodName
+      def get_full_version # standard:disable Naming/AccessorMethodName
         return @get_full_version if defined? @get_full_version
 
         with_raw_connection do |conn|

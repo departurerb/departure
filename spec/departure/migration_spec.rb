@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Departure::Migration do
   let(:base) do
@@ -17,24 +17,24 @@ describe Departure::Migration do
 
   subject(:migration) { klass.new }
 
-  context 'uses_departure class attribute' do
-    it 'can set default value on base class' do
+  context "uses_departure class attribute" do
+    it "can set default value on base class" do
       base.uses_departure = true
       expect(klass.uses_departure).to eq(true)
       expect(subject.uses_departure).to eq(true)
     end
 
-    it 'can override on migration with uses_departure!' do
+    it "can override on migration with uses_departure!" do
       base.uses_departure = false
       klass.uses_departure!
       expect(subject.uses_departure).to eq(true)
     end
   end
 
-  context 'Departure enabled (uses_departure is truthy)' do
+  context "Departure enabled (uses_departure is truthy)" do
     before { klass.uses_departure! }
 
-    it 'calls departure_migrate' do
+    it "calls departure_migrate" do
       expect(subject).to receive(:departure_migrate).and_call_original
 
       subject.migrate(:up)
@@ -43,10 +43,10 @@ describe Departure::Migration do
     end
   end
 
-  context 'Departure disabled (uses_departure falsy)' do
+  context "Departure disabled (uses_departure falsy)" do
     before { klass.uses_departure = false }
 
-    it 'does not call departure_migrate' do
+    it "does not call departure_migrate" do
       expect(subject).to_not receive(:departure_migrate)
 
       subject.migrate(:up)

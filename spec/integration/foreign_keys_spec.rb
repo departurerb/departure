@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Departure, integration: true do
   let(:migration_fixtures) do
@@ -8,7 +8,7 @@ describe Departure, integration: true do
 
   let(:direction) { :up }
 
-  context 'adding foreign keys' do
+  context "adding foreign keys" do
     let(:version) { 26 }
 
     before do
@@ -21,13 +21,13 @@ describe Departure, integration: true do
       )
     end
 
-    it 'adds a foreign key' do
+    it "adds a foreign key" do
       ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, version)
-      expect(:comments).to have_foreign_key_on('product_id')
+      expect(:comments).to have_foreign_key_on("product_id")
     end
   end
 
-  context 'removing foreign keys' do
+  context "removing foreign keys" do
     let(:version) { 27 }
 
     before do
@@ -40,36 +40,36 @@ describe Departure, integration: true do
       )
     end
 
-    it 'when foreign key has default name' do
+    it "when foreign key has default name" do
       ActiveRecord::Base.connection.add_foreign_key(:comments, :products)
-      expect(:comments).to have_foreign_key_on('product_id')
+      expect(:comments).to have_foreign_key_on("product_id")
 
       ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, version)
-      expect(:comments).not_to have_foreign_key_on('product_id')
+      expect(:comments).not_to have_foreign_key_on("product_id")
     end
 
-    it 'when foreign key has a custom name' do
+    it "when foreign key has a custom name" do
       ActiveRecord::Base.connection.add_foreign_key(:comments, :products, name: "fk_123456")
-      expect(:comments).to have_foreign_key_on('product_id')
+      expect(:comments).to have_foreign_key_on("product_id")
 
       ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, version)
-      expect(:comments).not_to have_foreign_key_on('product_id')
+      expect(:comments).not_to have_foreign_key_on("product_id")
     end
 
-    it 'when foreign key has a custom name prefixed with _' do
+    it "when foreign key has a custom name prefixed with _" do
       ActiveRecord::Base.connection.add_foreign_key(:comments, :products, name: "_fk_123456")
-      expect(:comments).to have_foreign_key_on('product_id')
+      expect(:comments).to have_foreign_key_on("product_id")
 
       ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, version)
-      expect(:comments).not_to have_foreign_key_on('product_id')
+      expect(:comments).not_to have_foreign_key_on("product_id")
     end
 
-    it 'when foreign key has a custom name prefixed with __ (double _)' do
+    it "when foreign key has a custom name prefixed with __ (double _)" do
       ActiveRecord::Base.connection.add_foreign_key(:comments, :products, name: "__fk_123456")
-      expect(:comments).to have_foreign_key_on('product_id')
+      expect(:comments).to have_foreign_key_on("product_id")
 
       ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, version)
-      expect(:comments).not_to have_foreign_key_on('product_id')
+      expect(:comments).not_to have_foreign_key_on("product_id")
     end
   end
 end

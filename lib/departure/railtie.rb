@@ -1,14 +1,14 @@
-require 'departure'
-require 'lhm' # It's our own Lhm adapter, not the gem
-require 'rails'
+require "departure"
+require "lhm" # It's our own Lhm adapter, not the gem
+require "rails"
 
 module Departure
   class Railtie < Rails::Railtie
     railtie_name :departure
 
-    initializer 'departure.configure' do |app|
+    initializer "departure.configure" do |app|
       Departure.configure do |config|
-        config.tmp_path = app.paths['tmp'].first
+        config.tmp_path = app.paths["tmp"].first
       end
     end
 

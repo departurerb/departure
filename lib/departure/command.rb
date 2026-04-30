@@ -42,13 +42,13 @@ module Departure
     # execution status
     def run_in_process
       Open3.popen3(full_command) do |_stdin, stdout, _stderr, waith_thr|
-        begin # rubocop:disable Style/RedundantBegin
+        begin # standard:disable Style/RedundantBegin
           loop do
             IO.select([stdout])
             data = stdout.read_nonblock(8192)
             logger.write_no_newline(data)
           end
-        rescue EOFError # rubocop:disable Lint/HandleExceptions
+        rescue EOFError # standard:disable Lint/HandleExceptions
           # noop
         ensure
           @status = waith_thr.value
@@ -74,7 +74,7 @@ module Departure
     # @raise [SignalError] if the spawned process received a signal
     # @raise [CommandNotFoundError] if pt-online-schema-change can't be found
     def validate_status!
-      raise SignalError.new(status) if status.signaled? # rubocop:disable Style/RaiseArgs
+      raise SignalError.new(status) if status.signaled? # standard:disable Style/RaiseArgs
       raise CommandNotFoundError if status.exitstatus == COMMAND_NOT_FOUND
       raise Error, error_message unless status.success?
     end
@@ -86,7 +86,7 @@ module Departure
       if redirect_stderr
         File.read(error_log_path)
       else
-        ''
+        ""
       end
     end
 

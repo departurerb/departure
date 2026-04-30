@@ -1,4 +1,4 @@
-require 'lhm/adapter'
+require "lhm/adapter"
 
 # Defines the same global namespace as LHM's gem does to mimic its API
 # while providing a different behaviour. We delegate all LHM's methods to
@@ -10,7 +10,7 @@ module Lhm
   # @param table_name [String]
   # @param _options [Hash]
   # @param block [Block]
-  def self.change_table(table_name, _options = {}, &block) # rubocop:disable Lint/UnusedMethodArgument
+  def self.change_table(table_name, _options = {}, &block) # standard:disable Lint/UnusedMethodArgument
     yield Adapter.new(@migration, table_name)
   end
 

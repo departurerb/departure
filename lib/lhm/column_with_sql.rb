@@ -1,4 +1,4 @@
-require 'forwardable'
+require "forwardable"
 
 module Lhm
   # Abstracts the details of a table column definition when specified with a MySQL
@@ -38,7 +38,7 @@ module Lhm
     #
     # @return [Hash]
     def column_options
-      { limit: column.limit, default: column.default, null: column.null }
+      {limit: column.limit, default: column.default, null: column.null}
     end
 
     # Returns the column instance with the provided data
@@ -67,14 +67,14 @@ module Lhm
     # @return [String, NilClass]
     def default_value
       match = if definition.match?(/timestamp|datetime/i)
-                /default '?(.+[^'])'?/i.match(definition)
-              else
-                /default '?(\w+)'?/i.match(definition)
-              end
+        /default '?(.+[^'])'?/i.match(definition)
+      else
+        /default '?(\w+)'?/i.match(definition)
+      end
 
       return unless match
 
-      match[1].downcase != 'null' ? match[1] : nil
+      (match[1].downcase != "null") ? match[1] : nil
     end
 
     # Checks whether the column accepts NULL as specified in the definition
@@ -84,7 +84,7 @@ module Lhm
       match = /((NOT)? NULL)/i.match(definition)
       return true unless match
 
-      match[2]&.downcase == 'not' ? false : true
+      !(match[2]&.downcase == "not")
     end
   end
 end

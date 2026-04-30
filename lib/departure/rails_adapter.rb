@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'forwardable'
+require "forwardable"
 
 module Departure
   class RailsAdapter
@@ -39,21 +39,21 @@ module Departure
     class BaseAdapter
       class << self
         def register_integrations
-          raise MustImplementError, 'adapter must implement register_integrations'
+          raise MustImplementError, "adapter must implement register_integrations"
         end
 
         # ActiveRecord::ConnectionAdapters::Mysql2Adapter
         def create_connection_adapter(**_config)
-          raise MustImplementError, 'adapter must implement create_connection_adapter'
+          raise MustImplementError, "adapter must implement create_connection_adapter"
         end
 
         # https://github.com/rails/rails/commit/9ad36e067222478090b36a985090475bb03e398c#diff-de807ece2205a84c0e3de66b0e5ab831325d567893b8b88ce0d6e9d498f923d1
         # Rails Column arity changed to require cast_type in position 2 which required us introducing this indirection
         def new_sql_column(name:,
-                           default_value:,
-                           mysql_metadata:,
-                           null_value:,
-                           **_kwargs)
+          default_value:,
+          mysql_metadata:,
+          null_value:,
+          **_kwargs)
           sql_column.new(name, default_value, mysql_metadata, null_value)
         end
 
@@ -63,11 +63,11 @@ module Departure
       end
     end
 
-    class V7_2_Adapter < BaseAdapter # rubocop:disable Naming/ClassAndModuleCamelCase
+    class V7_2_Adapter < BaseAdapter # standard:disable Naming/ClassAndModuleCamelCase
       class << self
         def register_integrations
-          require 'active_record/connection_adapters/rails_7_2_departure_adapter'
-          require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
+          require "active_record/connection_adapters/rails_7_2_departure_adapter"
+          require "departure/rails_patches/active_record_migrator_with_advisory_lock_patch"
 
           ActiveSupport.on_load(:active_record) do
             ActiveRecord::Migration.class_eval do
@@ -77,9 +77,9 @@ module Departure
             ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
           end
 
-          ActiveRecord::ConnectionAdapters.register 'percona',
-                                                    'ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter',
-                                                    'active_record/connection_adapters/rails_7_2_departure_adapter'
+          ActiveRecord::ConnectionAdapters.register "percona",
+            "ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter",
+            "active_record/connection_adapters/rails_7_2_departure_adapter"
         end
 
         def create_connection_adapter(**config)
@@ -92,11 +92,11 @@ module Departure
       end
     end
 
-    class V8_0_Adapter < BaseAdapter # rubocop:disable Naming/ClassAndModuleCamelCase
+    class V8_0_Adapter < BaseAdapter # standard:disable Naming/ClassAndModuleCamelCase
       class << self
         def register_integrations
-          require 'active_record/connection_adapters/rails_8_0_departure_adapter'
-          require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
+          require "active_record/connection_adapters/rails_8_0_departure_adapter"
+          require "departure/rails_patches/active_record_migrator_with_advisory_lock_patch"
 
           ActiveSupport.on_load(:active_record) do
             ActiveRecord::Migration.class_eval do
@@ -106,9 +106,9 @@ module Departure
             ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
           end
 
-          ActiveRecord::ConnectionAdapters.register 'percona',
-                                                    'ActiveRecord::ConnectionAdapters::Rails80DepartureAdapter',
-                                                    'active_record/connection_adapters/rails_8_0_departure_adapter'
+          ActiveRecord::ConnectionAdapters.register "percona",
+            "ActiveRecord::ConnectionAdapters::Rails80DepartureAdapter",
+            "active_record/connection_adapters/rails_8_0_departure_adapter"
         end
 
         def create_connection_adapter(**config)
@@ -121,11 +121,11 @@ module Departure
       end
     end
 
-    class V8_1_Adapter < BaseAdapter # rubocop:disable Naming/ClassAndModuleCamelCase
+    class V8_1_Adapter < BaseAdapter # standard:disable Naming/ClassAndModuleCamelCase
       class << self
         def register_integrations
-          require 'active_record/connection_adapters/rails_8_1_departure_adapter'
-          require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
+          require "active_record/connection_adapters/rails_8_1_departure_adapter"
+          require "departure/rails_patches/active_record_migrator_with_advisory_lock_patch"
 
           ActiveSupport.on_load(:active_record) do
             ActiveRecord::Migration.class_eval do
@@ -135,25 +135,25 @@ module Departure
             ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
           end
 
-          ActiveRecord::ConnectionAdapters.register 'percona',
-                                                    'ActiveRecord::ConnectionAdapters::Rails81DepartureAdapter',
-                                                    'active_record/connection_adapters/rails_8_1_departure_adapter'
+          ActiveRecord::ConnectionAdapters.register "percona",
+            "ActiveRecord::ConnectionAdapters::Rails81DepartureAdapter",
+            "active_record/connection_adapters/rails_8_1_departure_adapter"
         end
 
         def create_connection_adapter(**config)
           ActiveRecord::ConnectionAdapters::Rails81DepartureAdapter.new(config)
         end
 
-        # rubocop:disable Metrics/ParameterLists
+        # standard:disable Metrics/ParameterLists
         # https://github.com/rails/rails/commit/9ad36e067222478090b36a985090475bb03e398c#diff-de807ece2205a84c0e3de66b0e5ab831325d567893b8b88ce0d6e9d498f923d1
         # Rails Column arity changed to require cast_type in position 2 which required us introducing this indirection
         def new_sql_column(name:,
-                           cast_type:,
-                           default_value:,
-                           mysql_metadata:,
-                           null_value:,
-                           **_kwargs)
-          # rubocop:enable Metrics/ParameterLists
+          cast_type:,
+          default_value:,
+          mysql_metadata:,
+          null_value:,
+          **_kwargs)
+          # standard:enable Metrics/ParameterLists
           sql_column.new(name, cast_type, default_value, mysql_metadata, null_value)
         end
 

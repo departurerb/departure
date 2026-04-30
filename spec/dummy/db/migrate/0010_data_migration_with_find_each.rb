@@ -10,5 +10,6 @@ class DataMigrationWithFindEach < ActiveRecord::Migration[5.1]
     end
   end
 
-  def down; end
+  def down
+  end
 end

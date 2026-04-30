@@ -1,6 +1,6 @@
-require 'active_record'
-require 'active_record/connection_adapters/mysql2_adapter'
-require 'departure'
+require "active_record"
+require "active_record/connection_adapters/mysql2_adapter"
+require "departure"
 
 # Setups the test database with the schema_migrations table that ActiveRecord
 # requires for the migrations, plus a table for the Comment model used throught
@@ -12,7 +12,7 @@ class TestDatabase
   # @param config [Hash]
   def initialize(config)
     @config = config
-    @database = config['database']
+    @database = config["database"]
   end
 
   # Creates the test database, the schema_migrations and the comments tables.
@@ -34,8 +34,8 @@ class TestDatabase
   def drop_and_create_schema_migrations_table
     sql = [
       "USE #{@database}",
-      'DROP TABLE IF EXISTS schema_migrations',
-      'CREATE TABLE schema_migrations ( version varchar(255) COLLATE utf8_unicode_ci NOT NULL, UNIQUE KEY unique_schema_migrations (version)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci'
+      "DROP TABLE IF EXISTS schema_migrations",
+      "CREATE TABLE schema_migrations ( version varchar(255) COLLATE utf8_unicode_ci NOT NULL, UNIQUE KEY unique_schema_migrations (version)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci"
     ]
 
     run_commands(sql)
@@ -57,17 +57,17 @@ class TestDatabase
   def drop_and_create_comments_table
     sql = [
       "USE #{@database}",
-      'DROP TABLE IF EXISTS comments',
-      'CREATE TABLE comments ( id bigint(20) NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci'
+      "DROP TABLE IF EXISTS comments",
+      "CREATE TABLE comments ( id bigint(20) NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci"
     ]
 
     run_commands(sql)
   end
 
   def run_commands(sql)
-    conn.execute('START TRANSACTION')
+    conn.execute("START TRANSACTION")
     sql.each { |str| conn.execute(str) }
-    conn.execute('COMMIT')
+    conn.execute("COMMIT")
   end
 
   def conn

@@ -27,7 +27,7 @@ module Departure
     def ==(other)
       name == other.name
     end
-    alias eql? ==
+    alias_method :eql?, :==
 
     # Returns the option's hash
     #
@@ -50,7 +50,7 @@ module Departure
     #
     # @return [String]
     def normalize_option(name)
-      if name.start_with?('-')
+      if name.start_with?("-")
         name
       elsif name.length == 1
         "-#{name}"
@@ -64,8 +64,8 @@ module Departure
     # @return [String]
     def value_as_string
       if value.nil?
-        ''
-      elsif value.include?('=')
+        ""
+      elsif value.include?("=")
         " #{value}"
       else
         "=#{value}"

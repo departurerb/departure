@@ -213,6 +213,21 @@ When any errors occur, an `ActiveRecord::StatementInvalid` exception is
 raised and the migration is aborted, as all other ActiveRecord connection
 adapters.
 
+### Rails multi-database applications
+
+Rails multi-database applications expect `bin/rails db:migrate` to run
+migrations for every configured database. Rails 8.1 does this through
+`ActiveRecord::Tasks::DatabaseTasks.migrate_all`, which temporarily switches the
+migration connection to each database configuration before running that
+database's migrations.
+
+Departure supports that flow by restoring Rails' migration connection identity
+after each migration. During the migration body, Departure can still reconnect
+with the Percona adapter so `ALTER TABLE` statements go through
+`pt-online-schema-change`. After the migration finishes, Rails gets back the
+same `ActiveRecord::Base.connection_specification_name` it had before Departure
+swapped adapters, so the next configured database can be migrated normally.
+
 ### Diagram
 
 ```mermaid

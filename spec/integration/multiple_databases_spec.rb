@@ -3,8 +3,8 @@ require 'active_record/tasks/database_tasks'
 require 'tmpdir'
 
 describe Departure, 'multiple databases', integration: true, activerecord_compatibility: RAILS_8_1 do
-  attr_reader :data_contract_migrations_path, :db_dir, :original_configurations, :original_db_dir,
-              :primary_migrations_path
+  attr_reader :db_dir, :original_configurations, :original_db_dir, :primary_migrations_path,
+              :secondary_migrations_path
 
   let(:commands) { [] }
   let(:command) { instance_double(Departure::Command, run: status) }
@@ -15,20 +15,20 @@ describe Departure, 'multiple databases', integration: true, activerecord_compat
     @original_db_dir = ActiveRecord::Tasks::DatabaseTasks.instance_variable_get(:@db_dir)
     @db_dir = Dir.mktmpdir('departure-db')
     @primary_migrations_path = Dir.mktmpdir('departure-primary-migrations')
-    @data_contract_migrations_path = Dir.mktmpdir('departure-data-contract-migrations')
+    @secondary_migrations_path = Dir.mktmpdir('departure-secondary-migrations')
     ActiveRecord::Tasks::DatabaseTasks.db_dir = db_dir
 
     reset_database(primary_database)
-    reset_database(data_contract_database)
+    reset_database(secondary_database)
     write_migration(
       primary_migrations_path,
       '20260101000000_add_index_to_primary_comments.rb',
       'AddIndexToPrimaryComments'
     )
     write_migration(
-      data_contract_migrations_path,
-      '20260101000001_add_index_to_data_contract_comments.rb',
-      'AddIndexToDataContractComments'
+      secondary_migrations_path,
+      '20260101000001_add_index_to_secondary_comments.rb',
+      'AddIndexToSecondaryComments'
     )
     use_multiple_database_configuration
 
@@ -44,20 +44,20 @@ describe Departure, 'multiple databases', integration: true, activerecord_compat
     establish_mysql_connection
 
     drop_database(primary_database)
-    drop_database(data_contract_database)
+    drop_database(secondary_database)
     FileUtils.remove_entry(db_dir) if db_dir
     FileUtils.remove_entry(primary_migrations_path) if primary_migrations_path
-    FileUtils.remove_entry(data_contract_migrations_path) if data_contract_migrations_path
+    FileUtils.remove_entry(secondary_migrations_path) if secondary_migrations_path
   end
 
   it 'migrates every configured database' do
     ActiveRecord::Tasks::DatabaseTasks.migrate_all
 
     expect(primary_schema_versions).to include('20260101000000')
-    expect(data_contract_schema_versions).to include('20260101000001')
+    expect(secondary_schema_versions).to include('20260101000001')
     expect(commands).to contain_exactly(
       a_string_including("D=#{primary_database},t=comments"),
-      a_string_including("D=#{data_contract_database},t=comments")
+      a_string_including("D=#{secondary_database},t=comments")
     )
   end
 
@@ -65,11 +65,11 @@ describe Departure, 'multiple databases', integration: true, activerecord_compat
     database_config(name: 'primary', database: primary_database, migrations_path: primary_migrations_path)
   end
 
-  def data_contract_config
+  def secondary_config
     database_config(
-      name: 'data_contract',
-      database: data_contract_database,
-      migrations_path: data_contract_migrations_path
+      name: 'secondary',
+      database: secondary_database,
+      migrations_path: secondary_migrations_path
     )
   end
 
@@ -77,8 +77,8 @@ describe Departure, 'multiple databases', integration: true, activerecord_compat
     'departure_primary_test'
   end
 
-  def data_contract_database
-    'departure_data_contract_test'
+  def secondary_database
+    'departure_secondary_test'
   end
 
   def database_config(name:, database:, migrations_path:)
@@ -97,7 +97,7 @@ describe Departure, 'multiple databases', integration: true, activerecord_compat
     ActiveRecord::Base.configurations = ActiveRecord::DatabaseConfigurations.new(
       [
         primary_config,
-        data_contract_config
+        secondary_config
       ]
     )
   end
@@ -140,8 +140,8 @@ describe Departure, 'multiple databases', integration: true, activerecord_compat
     schema_versions_for(primary_database)
   end
 
-  def data_contract_schema_versions
-    schema_versions_for(data_contract_database)
+  def secondary_schema_versions
+    schema_versions_for(secondary_database)
   end
 
   def schema_versions_for(database)

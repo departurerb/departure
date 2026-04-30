@@ -65,8 +65,12 @@ end
 # This shim is for Rails 7.1 compatibility in the test
 module Rails7Compatibility
   module MigrationContext
-    def initialize(migrations_paths, schema_migration = nil)
-      super(migrations_paths)
+    def initialize(migrations_paths, schema_migration = nil, internal_metadata = nil)
+      if schema_migration.is_a?(Class)
+        super(migrations_paths)
+      else
+        super
+      end
     end
   end
 end

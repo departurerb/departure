@@ -6,6 +6,10 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [NEXT]
 
+## [8.0.2] - 2026-04-30
+
+- [Fix Rails multi-database migrations](https://github.com/departurerb/departure/pull/138)
+
 ## [8.0.1] - 2025-12-12
 
 - [Remove stderr message "Including for_alter statements"](https://github.com/departurerb/departure/pull/136)

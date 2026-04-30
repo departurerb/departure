@@ -3,8 +3,6 @@ require_relative './dummy/db/migrate/0022_add_timestamp_on_comments'
 
 # TODO: Handle #change_table syntax
 describe Departure, integration: true do
-  class Comment < ActiveRecord::Base; end
-
   let(:direction) { :up }
   let(:pool) { ActiveRecord::Base.connection_pool }
   let(:spec_config) do

@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe Departure, integration: true do
-  class Comment < ActiveRecord::Base; end
-
   let(:migration_fixtures) do
     ActiveRecord::MigrationContext.new([MIGRATION_FIXTURES], ActiveRecord::SchemaMigration).migrations
   end

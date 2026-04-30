@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe Departure, integration: true do
-  class Comment < ActiveRecord::Base; end
-
   let(:migration_paths) { [MIGRATION_FIXTURES] }
   let(:direction) { :up }
 

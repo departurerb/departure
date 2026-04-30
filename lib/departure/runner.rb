@@ -11,7 +11,7 @@ module Departure
   class Runner
     extend ::Forwardable
 
-    def_delegators :raw_connection, :execute, :escape, :close, :affected_rows
+    def_delegators :raw_connection, :escape, :close
 
     # Constructor
     #

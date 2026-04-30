@@ -14,6 +14,8 @@ require './test_database'
 require 'departure'
 require 'lhm'
 
+class Comment < ActiveRecord::Base; end
+
 require 'support/matchers/have_column'
 require 'support/matchers/have_index'
 require 'support/matchers/have_foreign_key_on'
@@ -24,7 +26,7 @@ require 'support/database_helpers'
 db_config = Configuration.new
 
 # Disables/enables the queries log you see in your rails server in dev mode
-fd = ENV['VERBOSE'] ? STDOUT : '/dev/null'
+fd = ENV['VERBOSE'] ? $stdout : File::NULL
 ActiveRecord::Base.logger = Logger.new(fd)
 
 test_database = TestDatabase.new(db_config)

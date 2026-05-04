@@ -58,9 +58,15 @@ describe Departure, integration: true do
   context 'when ActiveRecord is loaded' do
     let(:db_config) { Configuration.new }
 
-    it 'reconnects to the database using PerconaAdapter' do
+    it 'uses PerconaAdapter while preserving the application connection' do
+      expect(Departure::ConnectionBase)
+        .to receive(:establish_connection)
+        .with(hash_including(adapter: 'percona'))
+        .and_call_original
+
       run_a_migration(direction, 1)
-      expect(spec_config[:adapter]).to eq('percona')
+
+      expect(spec_config[:adapter]).to eq('mysql2')
     end
 
     context 'when a username is provided' do

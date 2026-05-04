@@ -53,11 +53,13 @@ module Departure
     # Migrate with or without Departure based on uses_departure class
     # attribute.
     def migrate(direction)
-      if uses_departure?
-        departure_migrate(direction)
-      else
-        reconnect_without_percona
-        active_record_migrate(direction)
+      with_restored_connection_specification_name do
+        if uses_departure?
+          departure_migrate(direction)
+        else
+          reconnect_without_percona
+          active_record_migrate(direction)
+        end
       end
     end
 
@@ -95,6 +97,14 @@ module Departure
 
     private def configuration_hash
       ActiveRecord::Base.connection_db_config.configuration_hash
+    end
+
+    private def with_restored_connection_specification_name
+      connection_specification_name = ActiveRecord::Base.connection_specification_name
+
+      yield
+    ensure
+      ActiveRecord::Base.connection_specification_name = connection_specification_name
     end
   end
 end

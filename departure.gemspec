@@ -8,9 +8,8 @@ require 'departure/version'
 Gem::Specification.new do |spec|
   spec.name          = 'departure'
   spec.version       = Departure::VERSION
-  spec.authors       = ['Ilya Zayats', 'Pau Pérez', 'Fran Casas', 'Jorge Morante', 'Enrico Stano', 'Adrian Serafin', 'Kirk Haines', 'Guillermo Iguaran']
-  spec.email         = ['ilya.zayats@redbooth.com', 'pau.perez@redbooth.com', 'nflamel@gmail.com', 'jorge.morante@redbooth.com', 'adrian@softmad.pl', 'wyhaines@gmail.com', 'guilleiguaran@gmail.com']
-
+  spec.authors       = ['Ilya Zayats', 'Pau Pérez', 'Fran Casas', 'Jorge Morante', 'Enrico Stano', 'Adrian Serafin', 'Kirk Haines', 'Guillermo Iguaran', 'Austin Story', 'Douglas Soares de Andrade']
+  spec.email         = ['ilya.zayats@redbooth.com', 'pau.perez@redbooth.com', 'nflamel@gmail.com', 'jorge.morante@redbooth.com', 'adrian@softmad.pl', 'wyhaines@gmail.com', 'guilleiguaran@gmail.com', 'lonnieastory@gmail.com', 'douglas@51street.dev']
   spec.summary       = %q(pt-online-schema-change runner for ActiveRecord migrations)
   spec.description   = %q(Execute your ActiveRecord migrations with Percona's pt-online-schema-change. Formerly known as Percona Migrator.)
   spec.homepage      = 'https://github.com/departurerb/departure'

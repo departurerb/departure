@@ -1,12 +1,6 @@
 require 'active_record/connection_adapters/mysql/schema_statements'
 
 module ForAlterStatements
-  class << self
-    def included(_)
-      STDERR.puts 'Including for_alter statements'
-    end
-  end
-
   def bulk_change_table(table_name, operations) #:nodoc:
     sqls = operations.flat_map do |command, args|
       table = args.shift

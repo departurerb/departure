@@ -1,10 +1,11 @@
 MIGRATION_FIXTURES = File.expand_path('../dummy/db/migrate', __dir__)
 
-def db_config_for(adapter:)
+def db_config_for(adapter:, **overrides)
   db_config = Configuration.new
   {
     adapter:,
-    **db_config.config
+    **db_config.config,
+    **overrides
   }
 end
 

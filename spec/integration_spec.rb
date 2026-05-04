@@ -66,7 +66,7 @@ describe Departure, integration: true do
 
       run_a_migration(direction, 1)
 
-      expect(spec_config[:adapter]).to eq('mysql2')
+      expect(spec_config[:adapter]).to eq(ENV.fetch('DB_ADAPTER', 'mysql2'))
     end
 
     context 'when a username is provided' do

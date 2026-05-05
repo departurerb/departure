@@ -43,6 +43,19 @@ describe Departure::Migration do
 
       expect(subject.migrated_direction).to eq(:up)
     end
+
+    it 'preserves the configured database adapter when reconnecting through percona' do
+      allow(migration).to receive(:connection_config).and_return(
+        adapter: 'trilogy',
+        database: 'departure_test'
+      )
+
+      expect(Departure::ConnectionBase)
+        .to receive(:establish_connection)
+        .with(hash_including(adapter: 'percona', db_adapter_name: 'trilogy'))
+
+      migration.reconnect_with_percona
+    end
   end
 
   context 'Departure disabled (uses_departure falsy)' do

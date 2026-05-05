@@ -8,7 +8,12 @@ describe ActiveRecord::ConnectionHandling do
       config = {
         adapter: 'percona',
         database: 'departure_test',
-        db_adapter_name: 'trilogy',
+        departure_original_adapter: 'trilogy',
+        username: 'root'
+      }
+      adapter_config = {
+        adapter: 'percona',
+        database: 'departure_test',
         username: 'root'
       }
 
@@ -18,7 +23,7 @@ describe ActiveRecord::ConnectionHandling do
         .and_return(adapter_class)
       expect(adapter_class)
         .to receive(:create_connection_adapter)
-        .with(**config)
+        .with(**adapter_config)
         .and_return(:connection_adapter)
 
       expect(ActiveRecord::Base.percona_connection(config)).to eq(:connection_adapter)

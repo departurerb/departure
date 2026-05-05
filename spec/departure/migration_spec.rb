@@ -44,15 +44,24 @@ describe Departure::Migration do
       expect(subject.migrated_direction).to eq(:up)
     end
 
-    it 'preserves the configured database adapter when reconnecting through percona' do
+    it 'uses the trilogy departure adapter when reconnecting from a trilogy database' do
+      adapter_class = class_double(
+        Departure::RailsAdapter::V8_1_TrilogyAdapter,
+        departure_adapter_name: 'percona_trilogy'
+      )
+
       allow(migration).to receive(:connection_config).and_return(
         adapter: 'trilogy',
         database: 'departure_test'
       )
+      allow(Departure::RailsAdapter)
+        .to receive(:for_current)
+        .with(db_connection_adapter: 'trilogy')
+        .and_return(adapter_class)
 
       expect(Departure::ConnectionBase)
         .to receive(:establish_connection)
-        .with(hash_including(adapter: 'percona', db_adapter_name: 'trilogy'))
+        .with(hash_including(adapter: 'percona_trilogy', departure_original_adapter: 'trilogy'))
 
       migration.reconnect_with_percona
     end

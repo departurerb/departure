@@ -7,12 +7,13 @@ module ActiveRecord
     # Establishes a connection to the database that's used by all Active
     # Record objects.
     def percona_connection(config)
-      if config[:username].nil?
-        config = config.dup if config.frozen?
-        config[:username] = 'root'
-      end
+      config = config.dup
+      original_adapter = config.delete(:departure_original_adapter)
+      config[:username] ||= 'root'
 
-      Departure::RailsAdapter.for_current.create_connection_adapter(**config)
+      Departure::RailsAdapter
+        .for_current(db_connection_adapter: original_adapter)
+        .create_connection_adapter(**config)
     end
   end
 end

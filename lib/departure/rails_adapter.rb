@@ -59,6 +59,10 @@ module Departure
           raise MustImplementError, 'adapter must implement create_connection_adapter'
         end
 
+        def departure_adapter_name
+          'percona'
+        end
+
         # https://github.com/rails/rails/commit/9ad36e067222478090b36a985090475bb03e398c#diff-de807ece2205a84c0e3de66b0e5ab831325d567893b8b88ce0d6e9d498f923d1
         # Rails Column arity changed to require cast_type in position 2 which required us introducing this indirection
         def new_sql_column(name:,
@@ -144,6 +148,9 @@ module Departure
           ActiveRecord::ConnectionAdapters.register 'percona',
                                                     'ActiveRecord::ConnectionAdapters::Rails81Mysql2Adapter',
                                                     'active_record/connection_adapters/rails_8_1_mysql2_adapter'
+          ActiveRecord::ConnectionAdapters.register 'percona_trilogy',
+                                                    'ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter',
+                                                    'active_record/connection_adapters/rails_8_1_trilogy_adapter'
         end
 
         def create_connection_adapter(**config)
@@ -182,12 +189,19 @@ module Departure
           ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
 
           ActiveRecord::ConnectionAdapters.register 'percona',
+                                                    'ActiveRecord::ConnectionAdapters::Rails81Mysql2Adapter',
+                                                    'active_record/connection_adapters/rails_8_1_mysql2_adapter'
+          ActiveRecord::ConnectionAdapters.register 'percona_trilogy',
                                                     'ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter',
                                                     'active_record/connection_adapters/rails_8_1_trilogy_adapter'
         end
 
         def create_connection_adapter(**config)
           ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter.new(config)
+        end
+
+        def departure_adapter_name
+          'percona_trilogy'
         end
       end
     end

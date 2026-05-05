@@ -143,6 +143,11 @@ RSpec.describe Departure::RailsAdapter, integration: true do
           'ActiveRecord::ConnectionAdapters::Rails81Mysql2Adapter',
           'active_record/connection_adapters/rails_8_1_mysql2_adapter'
         )
+        expect(ActiveRecord::ConnectionAdapters).to receive(:register).with(
+          'percona_trilogy',
+          'ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter',
+          'active_record/connection_adapters/rails_8_1_trilogy_adapter'
+        )
 
         described_class::V8_1_Mysql2Adapter.register_integrations
       end
@@ -154,6 +159,11 @@ RSpec.describe Departure::RailsAdapter, integration: true do
         expect(ActiveRecord::Migrator).to receive(:prepend).with(Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch)
         expect(ActiveRecord::ConnectionAdapters).to receive(:register).with(
           'percona',
+          'ActiveRecord::ConnectionAdapters::Rails81Mysql2Adapter',
+          'active_record/connection_adapters/rails_8_1_mysql2_adapter'
+        )
+        expect(ActiveRecord::ConnectionAdapters).to receive(:register).with(
+          'percona_trilogy',
           'ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter',
           'active_record/connection_adapters/rails_8_1_trilogy_adapter'
         )

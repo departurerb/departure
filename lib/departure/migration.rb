@@ -8,6 +8,8 @@ module Departure
   module Migration
     extend ActiveSupport::Concern
 
+    DEPARTURE_ADAPTERS = %w[percona percona_trilogy].freeze
+
     included do
       # Holds the name of the adapter that was configured by the app.
       mattr_accessor :original_adapter
@@ -75,15 +77,29 @@ module Departure
     # Make all connections in the connection pool to use PerconaAdapter
     # instead of the current adapter.
     def reconnect_with_percona
-      return if connection_config[:adapter] == 'percona'
-      Departure::ConnectionBase.establish_connection(connection_config.merge(adapter: 'percona'))
+      config = connection_config
+      return if departure_adapter_config?(config)
+
+      departure_adapter = Departure::RailsAdapter.for_current(db_connection_adapter: config[:adapter])
+      Departure::ConnectionBase.establish_connection(
+        config.merge(
+          adapter: departure_adapter.departure_adapter_name,
+          departure_original_adapter: config[:adapter]
+        )
+      )
     end
 
     # Reconnect without percona adapter when Departure is disabled but was
     # enabled in a previous migration.
     def reconnect_without_percona
-      return unless connection_config[:adapter] == 'percona'
-      Departure::OriginalAdapterConnection.establish_connection(connection_config.merge(adapter: original_adapter))
+      config = connection_config
+      return unless departure_adapter_config?(config)
+
+      Departure::OriginalAdapterConnection.establish_connection(
+        config
+          .except(:departure_original_adapter)
+          .merge(adapter: config[:departure_original_adapter] || original_adapter)
+      )
     end
 
     private
@@ -91,8 +107,12 @@ module Departure
     # Capture the type of the adapter configured by the app if not already set.
     def connection_config
       configuration_hash.tap do |config|
-        self.class.original_adapter ||= config[:adapter]
+        self.class.original_adapter ||= config[:departure_original_adapter] || config[:adapter]
       end
+    end
+
+    private def departure_adapter_config?(config)
+      DEPARTURE_ADAPTERS.include?(config[:adapter])
     end
 
     private def configuration_hash

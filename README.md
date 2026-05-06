@@ -248,7 +248,7 @@ swapped adapters, so the next configured database can be migrated normally.
       %% Core Departure Components
       subgraph "Departure System"
           RailsAdapter["RailsAdapter<br/>(Version Detection)"]
-          DepartureAdapter["Rails81MysqlAdapter<br/>(Connection Adapter)"]
+          DepartureAdapter["Rails81Mysql2Adapter<br/>(Connection Adapter)"]
           Runner["Runner<br/>(Query Interceptor)"]
           Command["Command<br/>(Process Executor)"]
           CliGenerator["CliGenerator<br/>(Command Builder)"]

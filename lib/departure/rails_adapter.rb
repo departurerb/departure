@@ -137,20 +137,7 @@ module Departure
       class << self
         def register_integrations
           require 'active_record/connection_adapters/rails_8_1_mysql2_adapter'
-          require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
-
-          ActiveRecord::Migration.class_eval do
-            include Departure::Migration
-          end
-
-          ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
-
-          ActiveRecord::ConnectionAdapters.register 'percona',
-                                                    'ActiveRecord::ConnectionAdapters::Rails81Mysql2Adapter',
-                                                    'active_record/connection_adapters/rails_8_1_mysql2_adapter'
-          ActiveRecord::ConnectionAdapters.register 'percona_trilogy',
-                                                    'ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter',
-                                                    'active_record/connection_adapters/rails_8_1_trilogy_adapter'
+          register_rails_8_1_integrations
         end
 
         def create_connection_adapter(**config)
@@ -173,13 +160,10 @@ module Departure
         def sql_column
           ::ActiveRecord::ConnectionAdapters::MySQL::Column
         end
-      end
-    end
 
-    class V8_1_TrilogyAdapter < V8_1_Mysql2Adapter # rubocop:disable Naming/ClassAndModuleCamelCase
-      class << self
-        def register_integrations
-          require 'active_record/connection_adapters/rails_8_1_trilogy_adapter'
+        private
+
+        def register_rails_8_1_integrations
           require 'departure/rails_patches/active_record_migrator_with_advisory_lock_patch'
 
           ActiveRecord::Migration.class_eval do
@@ -194,6 +178,15 @@ module Departure
           ActiveRecord::ConnectionAdapters.register 'percona_trilogy',
                                                     'ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter',
                                                     'active_record/connection_adapters/rails_8_1_trilogy_adapter'
+        end
+      end
+    end
+
+    class V8_1_TrilogyAdapter < V8_1_Mysql2Adapter # rubocop:disable Naming/ClassAndModuleCamelCase
+      class << self
+        def register_integrations
+          require 'active_record/connection_adapters/rails_8_1_trilogy_adapter'
+          register_rails_8_1_integrations
         end
 
         def create_connection_adapter(**config)

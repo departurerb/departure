@@ -59,14 +59,16 @@ describe Departure, integration: true do
     let(:db_config) { Configuration.new }
 
     it 'uses PerconaAdapter while preserving the application connection' do
+      departure_adapter = ENV.fetch('DB_ADAPTER', 'mysql2') == 'trilogy' ? 'percona_trilogy' : 'percona'
+
       expect(Departure::ConnectionBase)
         .to receive(:establish_connection)
-        .with(hash_including(adapter: 'percona'))
+        .with(hash_including(adapter: departure_adapter))
         .and_call_original
 
       run_a_migration(direction, 1)
 
-      expect(spec_config[:adapter]).to eq('mysql2')
+      expect(spec_config[:adapter]).to eq(ENV.fetch('DB_ADAPTER', 'mysql2'))
     end
 
     context 'when a username is provided' do

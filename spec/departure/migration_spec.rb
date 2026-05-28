@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe Departure::Migration do
+  before { setup_departure_integrations }
+
   let(:base) do
     Class.new do
       attr_accessor :migrated_direction
@@ -40,6 +42,28 @@ describe Departure::Migration do
       subject.migrate(:up)
 
       expect(subject.migrated_direction).to eq(:up)
+    end
+
+    it 'uses the trilogy departure adapter when reconnecting from a trilogy database' do
+      adapter_class = class_double(
+        Departure::RailsAdapter::V8_1_TrilogyAdapter,
+        departure_adapter_name: 'percona_trilogy'
+      )
+
+      allow(migration).to receive(:connection_config).and_return(
+        adapter: 'trilogy',
+        database: 'departure_test'
+      )
+      allow(Departure::RailsAdapter)
+        .to receive(:for_current)
+        .with(db_connection_adapter: 'trilogy')
+        .and_return(adapter_class)
+
+      expect(Departure::ConnectionBase)
+        .to receive(:establish_connection)
+        .with(hash_including(adapter: 'percona_trilogy', departure_original_adapter: 'trilogy'))
+
+      migration.reconnect_with_percona
     end
   end
 

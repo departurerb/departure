@@ -1,25 +1,6 @@
-require 'active_record/connection_adapters/abstract_mysql_adapter'
-require 'active_record/connection_adapters/mysql2_adapter'
-require 'active_record/connection_adapters/patch_connection_handling'
-require 'departure'
-require 'forwardable'
-
 module ActiveRecord
   module ConnectionAdapters
-    class Rails81DepartureAdapter < ActiveRecord::ConnectionAdapters::Mysql2Adapter
-      TYPE_MAP = Type::TypeMap.new.tap { |m| initialize_type_map(m) } if defined?(initialize_type_map)
-
-      class Column < ActiveRecord::ConnectionAdapters::MySQL::Column
-        def adapter
-          Rails81DepartureAdapter
-        end
-      end
-
-      # https://github.com/departurerb/departure/commit/f178ca26cd3befa1c68301d3b57810f8cdcff9eb
-      # For `DROP FOREIGN KEY constraint_name` with pt-online-schema-change requires specifying `_constraint_name`
-      # rather than the real constraint_name due to to a limitation in MySQL
-      # pt-online-schema-change adds a leading underscore to foreign key constraint names when creating the new table.
-      # https://www.percona.com/blog/2017/03/21/dropping-foreign-key-constraint-using-pt-online-schema-change-2/
+    module Rails81AdapterBehavior
       class SchemaCreation < ActiveRecord::ConnectionAdapters::MySQL::SchemaCreation
         def visit_DropForeignKey(name) # rubocop:disable Naming/MethodName
           fk_name =
@@ -33,16 +14,18 @@ module ActiveRecord
         end
       end
 
-      extend Forwardable
+      def self.included(adapter_class)
+        adapter_class.const_set(:SchemaCreation, SchemaCreation)
+        adapter_class.extend(ClassMethods)
+        adapter_class.include ForAlterStatements unless adapter_class.method_defined?(:change_column_for_alter)
+      end
 
-      include ForAlterStatements unless method_defined?(:change_column_for_alter)
+      module ClassMethods
+        def new_client(config)
+          original_client = super
 
-      ADAPTER_NAME = 'Percona'.freeze
-
-      def self.new_client(config)
-        original_client = super
-
-        Departure::DbClient.new(config, original_client)
+          Departure::DbClient.new(config, original_client)
+        end
       end
 
       # add_index is modified from the underlying mysql adapter implementation to ensure we add ALTER TABLE to it
@@ -64,12 +47,10 @@ module ActiveRecord
       end
 
       def schema_creation
-        SchemaCreation.new(self)
+        self.class::SchemaCreation.new(self)
       end
 
       private
-
-      attr_reader :mysql_adapter
 
       # rubocop:disable Metrics/ParameterLists
       def perform_query(raw_connection, sql, binds, type_casted_binds, prepare:, notification_payload:, batch: false)

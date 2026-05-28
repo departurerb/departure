@@ -3,8 +3,8 @@ require 'active_record/tasks/database_tasks'
 require 'tmpdir'
 
 describe Departure, 'multiple databases', integration: true, activerecord_compatibility: RAILS_8_1 do
-  attr_reader :db_dir, :original_configurations, :original_db_dir, :primary_migrations_path,
-              :secondary_migrations_path
+  attr_reader :db_dir, :original_configurations, :original_db_dir, :original_percona_db_name,
+              :primary_migrations_path, :secondary_migrations_path
 
   let(:commands) { [] }
   let(:command) { instance_double(Departure::Command, run: status) }
@@ -13,6 +13,7 @@ describe Departure, 'multiple databases', integration: true, activerecord_compat
   before do
     @original_configurations = ActiveRecord::Base.configurations
     @original_db_dir = ActiveRecord::Tasks::DatabaseTasks.instance_variable_get(:@db_dir)
+    @original_percona_db_name = ENV.delete('PERCONA_DB_NAME')
     @db_dir = Dir.mktmpdir('departure-db')
     @primary_migrations_path = Dir.mktmpdir('departure-primary-migrations')
     @secondary_migrations_path = Dir.mktmpdir('departure-secondary-migrations')
@@ -41,6 +42,7 @@ describe Departure, 'multiple databases', integration: true, activerecord_compat
   after do
     ActiveRecord::Base.configurations = original_configurations
     ActiveRecord::Tasks::DatabaseTasks.db_dir = original_db_dir
+    ENV['PERCONA_DB_NAME'] = original_percona_db_name if original_percona_db_name
     establish_mysql_connection
 
     drop_database(primary_database)

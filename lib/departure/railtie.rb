@@ -10,6 +10,8 @@ module Departure
       Departure.configure do |config|
         config.tmp_path = app.paths['tmp'].first
       end
+
+      Departure::RailsAdapter.register_integrations
     end
 
     config.after_initialize do

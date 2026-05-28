@@ -270,6 +270,7 @@ GEM
     stringio (3.1.7)
     thor (1.4.0)
     timeout (0.4.4)
+    trilogy (2.9.0)
     tsort (0.2.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
@@ -310,6 +311,7 @@ DEPENDENCIES
   rspec-its (~> 1.2)
   rubocop (~> 1.74.0)
   rubocop-performance (~> 1.20.2)
+  trilogy
   zeitwerk (< 2.7.0)
 
 BUNDLED WITH

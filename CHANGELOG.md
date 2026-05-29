@@ -6,6 +6,10 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [NEXT]
 
+## [8.1.0] - 2026-05-28
+
+- [Add Rails 8.1 Trilogy adapter support](https://github.com/departurerb/departure/pull/132)
+
 ## [8.0.2] - 2026-04-30
 
 - [Fix Rails multi-database migrations](https://github.com/departurerb/departure/pull/138)

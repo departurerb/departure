@@ -1,4 +1,4 @@
-shared_examples 'column-definition method' do |method_name|
+shared_examples "column-definition method" do |method_name|
   let(:migration) { double(:migration) }
   let(:table_name) { :comments }
   let(:adapter) { described_class.new(migration, table_name) }
@@ -7,7 +7,7 @@ shared_examples 'column-definition method' do |method_name|
     allow(column).to receive(:attributes).and_return(attributes)
   end
 
-  context 'when the definition is passed as a String' do
+  context "when the definition is passed as a String" do
     before { allow(Lhm::ColumnWithSql).to receive(:new).and_return(column) }
 
     before do
@@ -20,13 +20,13 @@ shared_examples 'column-definition method' do |method_name|
 
     let(:column) { instance_double(Lhm::ColumnWithSql) }
 
-    let(:definition) { 'INT(11) DEFAULT NULL' }
+    let(:definition) { "INT(11) DEFAULT NULL" }
     let(:column_name) { :some_id_field }
     let(:type) { :integer }
-    let(:options) { { limit: 4, default: nil, null: true } }
+    let(:options) { {limit: 4, default: nil, null: true} }
     let(:attributes) { [type, options] }
 
-    it 'gets the attributes from the column object' do
+    it "gets the attributes from the column object" do
       expect(column).to have_received(:attributes)
     end
 
@@ -38,7 +38,7 @@ shared_examples 'column-definition method' do |method_name|
     end
   end
 
-  context 'when the definition is passed as a Symbol' do
+  context "when the definition is passed as a Symbol" do
     before do
       allow(Lhm::ColumnWithType).to receive(:new).and_return(column)
     end
@@ -57,7 +57,7 @@ shared_examples 'column-definition method' do |method_name|
     let(:column_name) { :some_id_field }
     let(:attributes) { [definition] }
 
-    it 'gets the attributes from the column object' do
+    it "gets the attributes from the column object" do
       expect(column).to have_received(:attributes)
     end
 

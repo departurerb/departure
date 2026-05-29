@@ -1,4 +1,5 @@
 ruby_version: 3.2
+double_quotes: true
 ignore:
   - "spec/integration/**/*":
     - Lint/ConstantDefinitionInBlock

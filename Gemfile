@@ -1,11 +1,11 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
 gemspec
 
-gem 'base64'
-gem 'codeclimate-test-reporter', '~> 1.0.3', group: :test, require: nil
-gem 'lhm'
-gem 'logger'
-gem 'mutex_m', require: false
-gem 'standardrb', require: false
-gem 'zeitwerk', '< 2.7.0'
+gem "base64"
+gem "codeclimate-test-reporter", "~> 1.0.3", group: :test, require: nil
+gem "lhm"
+gem "logger"
+gem "mutex_m", require: false
+gem "standardrb", require: false
+gem "zeitwerk", "< 2.7.0"

@@ -13,7 +13,7 @@ module TableMethods
   end
 
   def tables
-    tables = ActiveRecord::Base.connection.select_all('SHOW TABLES')
+    tables = ActiveRecord::Base.connection.select_all("SHOW TABLES")
     tables.flat_map(&:values)
   end
 end

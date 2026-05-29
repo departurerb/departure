@@ -1,4 +1,4 @@
-require 'shellwords'
+require "shellwords"
 module Departure
   # Holds the parameters of the DB connection and formats them to string
   class ConnectionDetails
@@ -26,7 +26,7 @@ module Departure
     #
     # @return [String]
     def database
-      ENV.fetch('PERCONA_DB_NAME', connection_data[:database])
+      ENV.fetch("PERCONA_DB_NAME", connection_data[:database])
     end
 
     # Returns the password fragment of the details string if a password is passed
@@ -36,7 +36,7 @@ module Departure
       if password.present?
         %(--password #{Shellwords.escape(password)} )
       else
-        ''
+        ""
       end
     end
 
@@ -77,7 +77,7 @@ module Departure
     #
     # @return [String]
     def host
-      ENV.fetch('PERCONA_DB_HOST', connection_data[:host]) || 'localhost'
+      ENV.fetch("PERCONA_DB_HOST", connection_data[:host]) || "localhost"
     end
 
     # Returns the database user. If PERCONA_DB_USER is passed its value will be
@@ -85,7 +85,7 @@ module Departure
     #
     # @return [String]
     def user
-      ENV.fetch('PERCONA_DB_USER', connection_data[:username])
+      ENV.fetch("PERCONA_DB_USER", connection_data[:username])
     end
 
     # Returns the database user's password. If PERCONA_DB_PASSWORD is passed its
@@ -93,7 +93,7 @@ module Departure
     #
     # @return [String]
     def password
-      ENV.fetch('PERCONA_DB_PASSWORD', connection_data[:password])
+      ENV.fetch("PERCONA_DB_PASSWORD", connection_data[:password])
     end
 
     # Returns the database socket path. If PERCONA_DB_SOCKET is passed its value
@@ -101,7 +101,7 @@ module Departure
     #
     # @return [String]
     def socket
-      ENV.fetch('PERCONA_DB_SOCKET', connection_data[:socket])
+      ENV.fetch("PERCONA_DB_SOCKET", connection_data[:socket])
     end
 
     # Returns the database's port.

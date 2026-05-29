@@ -1,4 +1,4 @@
-require 'active_record/connection_adapters/mysql/schema_statements'
+require "active_record/connection_adapters/mysql/schema_statements"
 
 module ForAlterStatements
   def bulk_change_table(table_name, operations) #:nodoc:
@@ -10,7 +10,7 @@ module ForAlterStatements
 
       raise "Unknown method called : #{method}(#{arguments.inspect})" unless respond_to?(method, true)
       public_send(method, table, *arguments)
-    end.join(', ')
+    end.join(", ")
 
     execute("ALTER TABLE #{quote_table_name(table_name)} #{sqls}")
   end
@@ -31,7 +31,7 @@ module ForAlterStatements
   end
 
   def rename_column_for_alter(table_name, column_name, new_column_name)
-    column  = column_for(table_name, column_name)
+    column = column_for(table_name, column_name)
     options = {
       default: column.default,
       null: column.null,
@@ -39,7 +39,7 @@ module ForAlterStatements
     }
 
     columns_sql = "SHOW COLUMNS FROM #{quote_table_name(table_name)} LIKE #{quote(column_name)}"
-    current_type = exec_query(columns_sql, 'SCHEMA').first['Type']
+    current_type = exec_query(columns_sql, "SCHEMA").first["Type"]
     td = create_table_definition(table_name)
     cd = td.new_column_definition(new_column_name, current_type, **options)
     schema_creation.accept(ActiveRecord::ConnectionAdapters::ChangeColumnDefinition.new(cd, column.name))

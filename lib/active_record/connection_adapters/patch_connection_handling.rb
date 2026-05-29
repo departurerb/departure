@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'active_record/connection_handling'
+require "active_record/connection_handling"
 
 module ActiveRecord
   module ConnectionHandling
@@ -9,7 +9,7 @@ module ActiveRecord
     def percona_connection(config)
       config = config.dup
       original_adapter = config.delete(:departure_original_adapter)
-      config[:username] ||= 'root'
+      config[:username] ||= "root"
 
       Departure::RailsAdapter
         .for_current(db_connection_adapter: original_adapter)

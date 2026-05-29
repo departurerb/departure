@@ -1,26 +1,26 @@
-require 'spec_helper'
+require "spec_helper"
 
 if rails_version_under_test_matches?(RAILS_8_1, __FILE__)
-  require 'active_record/connection_adapters/rails_8_1_mysql2_adapter'
+  require "active_record/connection_adapters/rails_8_1_mysql2_adapter"
 
   describe ActiveRecord::ConnectionAdapters::Rails81Mysql2Adapter, activerecord_compatibility: RAILS_8_1 do
-    let(:adapter) { described_class.new(db_config_for(adapter: 'mysql2')) }
-    let(:client) { described_class.new_client(db_config_for(adapter: 'mysql2')) }
+    let(:adapter) { described_class.new(db_config_for(adapter: "mysql2")) }
+    let(:client) { described_class.new_client(db_config_for(adapter: "mysql2")) }
 
-    describe '#new_client' do
-      it 'wraps the underlying db_client and exposes a mysql_client' do
+    describe "#new_client" do
+      it "wraps the underlying db_client and exposes a mysql_client" do
         expect(client).to be_a(Departure::DbClient)
         expect(client.database_client).to be_a(Mysql2::Client)
       end
     end
 
-    describe 'database_statements' do
+    describe "database_statements" do
       let(:table_name) { :foo }
       let(:column_name) { :bar_id }
-      let(:index_name) { 'index_name' }
-      let(:options) { { type: 'index_type' } }
+      let(:index_name) { "index_name" }
+      let(:options) { {type: "index_type"} }
 
-      describe '#add_index' do
+      describe "#add_index" do
         let(:index_definition) do
           ActiveRecord::ConnectionAdapters::IndexDefinition.new(
             table_name,
@@ -35,7 +35,7 @@ if rails_version_under_test_matches?(RAILS_8_1, __FILE__)
         let(:index_type) { options[:type].upcase }
         let(:schema_creation_double) { instance_double(described_class::SchemaCreation) }
 
-        it 'passes the built ALTER TABLE SQL to #execute' do
+        it "passes the built ALTER TABLE SQL to #execute" do
           allow(adapter).to receive(:shard) { :default }
           allow(adapter).to receive(:role) { :writing }
 
@@ -45,7 +45,7 @@ if rails_version_under_test_matches?(RAILS_8_1, __FILE__)
           expect(adapter).to receive(:schema_creation) { schema_creation_double }
 
           expect(adapter).to receive(:add_index_options).with(table_name, column_name,
-                                                              options).and_return(index_options)
+            options).and_return(index_options)
           execute_sql = "ALTER TABLE `#{table_name}` ADD #{index_type} INDEX `#{index_name}` (`#{column_name}`)"
           expect(adapter).to receive(:execute).with(execute_sql).and_return(true)
 
@@ -53,11 +53,11 @@ if rails_version_under_test_matches?(RAILS_8_1, __FILE__)
         end
       end
 
-      describe '#remove_index' do
-        let(:options) { { column: column_name } }
+      describe "#remove_index" do
+        let(:options) { {column: column_name} }
         let(:sql) { "DROP INDEX `#{index_name}`" }
 
-        it 'passes the built ALTER TABLE SQL to #execute' do
+        it "passes the built ALTER TABLE SQL to #execute" do
           allow(adapter).to receive(:shard) { :default }
           allow(adapter).to receive(:role) { :writing }
           expect(adapter).to receive(:index_name_for_remove).with(table_name, nil, options).and_return(index_name.to_s)

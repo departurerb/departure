@@ -1,0 +1,8 @@
+ruby_version: 3.2
+ignore:
+  - "spec/integration/**/*":
+    - Lint/ConstantDefinitionInBlock
+  - "spec/integration_spec.rb":
+    - Lint/ConstantDefinitionInBlock
+  - "spec/lhm_integration_spec.rb":
+    - Lint/ConstantDefinitionInBlock

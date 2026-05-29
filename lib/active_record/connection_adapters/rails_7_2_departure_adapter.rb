@@ -18,7 +18,7 @@ module ActiveRecord
       end
 
       class SchemaCreation < ActiveRecord::ConnectionAdapters::MySQL::SchemaCreation
-        def visit_DropForeignKey(name) # rubocop:disable Style/MethodName
+        def visit_DropForeignKey(name) # standard:disable Naming/MethodName
           fk_name =
             if name =~ /^__(.+)/
               Regexp.last_match(1)
@@ -81,7 +81,7 @@ module ActiveRecord
       end
       alias exec_update exec_delete
 
-      def exec_insert(sql, name, binds, pky = nil, sequence_name = nil, returning: nil) # rubocop:disable Lint/UnusedMethodArgument, Metrics/Metrics/ParameterLists
+      def exec_insert(sql, name, binds, pky = nil, sequence_name = nil, returning: nil) # standard:disable Lint/UnusedMethodArgument
         execute(to_sql(sql, binds), name)
       end
 
@@ -153,7 +153,7 @@ module ActiveRecord
         get_full_version
       end
 
-      def get_full_version # rubocop:disable Style/AccessorMethodName
+      def get_full_version # standard:disable Naming/AccessorMethodName
         return @get_full_version if defined? @get_full_version
 
         with_raw_connection do |conn|

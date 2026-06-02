@@ -1,19 +1,19 @@
-require 'spec_helper'
+require "spec_helper"
 
-describe 'ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter', activerecord_compatibility: RAILS_8_1 do
+describe "ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter", activerecord_compatibility: RAILS_8_1 do
   let(:described_class) do
     # has to be required here because trilogy doesn't exist in older versions of rails
-    require 'active_record/connection_adapters/rails_8_1_trilogy_adapter'
+    require "active_record/connection_adapters/rails_8_1_trilogy_adapter"
 
     ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter
   end
 
-  let(:adapter) { described_class.new(db_config_for(adapter: 'trilogy')) }
-  let(:client) { described_class.new_client(db_config_for(adapter: 'trilogy')) }
+  let(:adapter) { described_class.new(db_config_for(adapter: "trilogy")) }
+  let(:client) { described_class.new_client(db_config_for(adapter: "trilogy")) }
   let(:trilogy_double) { instance_double(::Trilogy) }
 
-  describe '#new_client' do
-    it 'wraps the underlying db_client and exposes a mysql_client' do
+  describe "#new_client" do
+    it "wraps the underlying db_client and exposes a mysql_client" do
       expect_any_instance_of(::Trilogy).to receive(:_connect) { trilogy_double }
 
       expect(client).to be_a(Departure::DbClient)
@@ -21,13 +21,13 @@ describe 'ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter', activerecord
     end
   end
 
-  describe 'database_statements' do
+  describe "database_statements" do
     let(:table_name) { :foo }
     let(:column_name) { :bar_id }
-    let(:index_name) { 'index_name' }
-    let(:options) { { type: 'index_type' } }
+    let(:index_name) { "index_name" }
+    let(:options) { {type: "index_type"} }
 
-    describe '#add_index' do
+    describe "#add_index" do
       let(:index_definition) do
         ActiveRecord::ConnectionAdapters::IndexDefinition.new(
           table_name,
@@ -42,7 +42,7 @@ describe 'ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter', activerecord
       let(:index_type) { options[:type].upcase }
       let(:schema_creation_double) { instance_double(described_class::SchemaCreation) }
 
-      it 'passes the built ALTER TABLE SQL to #execute' do
+      it "passes the built ALTER TABLE SQL to #execute" do
         allow(adapter).to receive(:shard) { :default }
         allow(adapter).to receive(:role) { :writing }
 
@@ -59,11 +59,11 @@ describe 'ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter', activerecord
       end
     end
 
-    describe '#remove_index' do
-      let(:options) { { column: column_name } }
+    describe "#remove_index" do
+      let(:options) { {column: column_name} }
       let(:sql) { "DROP INDEX `#{index_name}`" }
 
-      it 'passes the built ALTER TABLE SQL to #execute' do
+      it "passes the built ALTER TABLE SQL to #execute" do
         allow(adapter).to receive(:shard) { :default }
         allow(adapter).to receive(:role) { :writing }
         expect(adapter).to receive(:index_name_for_remove).with(table_name, nil, options).and_return(index_name.to_s)

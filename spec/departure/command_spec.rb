@@ -1,9 +1,9 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Departure::Command do
-  shared_examples_for '#run' do
-    let(:command) { 'pt-online-schema-change command' }
-    let(:error_log_path) { 'departure_error.log' }
+  shared_examples_for "#run" do
+    let(:command) { "pt-online-schema-change command" }
+    let(:error_log_path) { "departure_error.log" }
     let(:logger) do
       instance_double(
         Departure::Logger, write: true, say: true, write_no_newline: true
@@ -13,7 +13,7 @@ describe Departure::Command do
     let(:runner) { described_class.new(command, error_log_path, logger, redirect_stderr) }
 
     let(:temp_file) do
-      file = Tempfile.new('faked_stdout')
+      file = Tempfile.new("faked_stdout")
       file.write('hello world\ntodo roto')
       file.rewind
       file.close
@@ -38,16 +38,16 @@ describe Departure::Command do
       )
     end
 
-    it 'executes the pt-online-schema-change command' do
+    it "executes the pt-online-schema-change command" do
       runner.run
       expect(Open3).to have_received(:popen3).with(expected_command)
     end
 
-    it 'returns the command status' do
+    it "returns the command status" do
       expect(runner.run).to eq(status)
     end
 
-    it 'logs that the execution started' do
+    it "logs that the execution started" do
       runner.run
       expect(logger).to have_received(:say).with(
         "Running pt-online-schema-change command\n\n",
@@ -55,23 +55,23 @@ describe Departure::Command do
       )
     end
 
-    it 'logs the command\'s output' do
+    it "logs the command's output" do
       runner.run
 
       expect(logger).to have_received(:write_no_newline).with('hello world\\ntodo roto')
     end
 
-    context 'when not redirecting stderr' do
+    context "when not redirecting stderr" do
       let(:expected_command) { "#{command} 2>&1" }
       let(:redirect_stderr) { false }
 
-      it 'executes the expected command' do
+      it "executes the expected command" do
         runner.run
         expect(Open3).to have_received(:popen3).with(expected_command)
       end
     end
 
-    context 'on failure' do
+    context "on failure" do
       before do
         allow(Open3).to(
           receive(:popen3)
@@ -80,28 +80,28 @@ describe Departure::Command do
         )
       end
 
-      context 'when the execution failed' do
-        let(:command) { 'sh -c \'echo ROTO >/dev/stderr && false\'' }
+      context "when the execution failed" do
+        let(:command) { "sh -c 'echo ROTO >/dev/stderr && false'" }
 
-        it 'raises a Departure::Error' do
+        it "raises a Departure::Error" do
           expect { runner.run }
-            .to raise_exception(Departure::Error, redirect_stderr ? "ROTO\n" : '')
+            .to raise_exception(Departure::Error, redirect_stderr ? "ROTO\n" : "")
         end
       end
 
-      context 'when the command was signaled' do
-        let(:command) { 'kill -9 $$' }
+      context "when the command was signaled" do
+        let(:command) { "kill -9 $$" }
 
-        it 'raises a SignalError specifying the status' do
+        it "raises a SignalError specifying the status" do
           expect { runner.run }
             .to raise_exception(Departure::SignalError)
         end
       end
 
-      context 'when pt-online-schema-change is not installed' do
-        let(:command) { 'whatevarrr666' }
+      context "when pt-online-schema-change is not installed" do
+        let(:command) { "whatevarrr666" }
 
-        it 'raises a detailed CommandNotFoundError' do
+        it "raises a detailed CommandNotFoundError" do
           expect { runner.run }.to raise_exception(
             Departure::CommandNotFoundError,
             /Please install pt-online-schema-change/
@@ -111,17 +111,17 @@ describe Departure::Command do
     end
   end
 
-  context 'redirect_stderr = true' do
+  context "redirect_stderr = true" do
     let(:redirect_stderr) { true }
     let(:expected_command) { "#{command} 2> #{error_log_path}" }
 
-    it_should_behave_like '#run'
+    it_should_behave_like "#run"
   end
 
-  context 'redirect_stderr = false' do
+  context "redirect_stderr = false" do
     let(:redirect_stderr) { false }
     let(:expected_command) { "#{command} 2>&1" }
 
-    it_should_behave_like '#run'
+    it_should_behave_like "#run"
   end
 end

@@ -1,7 +1,7 @@
-require 'byebug'
-require 'spec_helper'
+require "byebug"
+require "spec_helper"
 
-describe Lhm::Adapter, '#remove_column' do
+describe Lhm::Adapter, "#remove_column" do
   let(:migration) { double(:migration) }
   let(:table_name) { :comments }
 
@@ -17,7 +17,7 @@ describe Lhm::Adapter, '#remove_column' do
 
   let(:column_name) { :some_id_field }
 
-  it 'calls #remove_column in the migration' do
+  it "calls #remove_column in the migration" do
     expect(migration).to(
       have_received(:remove_column).with(table_name, column_name)
     )

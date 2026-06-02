@@ -86,7 +86,7 @@ module Departure
       if redirect_stderr
         File.read(error_log_path)
       else
-        ''
+        ""
       end
     end
 

@@ -1,5 +1,5 @@
-require 'open3'
-require 'forwardable'
+require "open3"
+require "forwardable"
 
 # Runner is deprecated and used in rails 8.0 and below
 # We will slowly reduce the responsibility of departure to be delegating
@@ -11,7 +11,7 @@ module Departure
   class Runner
     extend ::Forwardable
 
-    def_delegators :raw_connection, :execute, :escape, :close, :affected_rows
+    def_delegators :raw_connection, :escape, :close
 
     # Constructor
     #

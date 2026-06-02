@@ -1,8 +1,8 @@
-require 'active_record/connection_adapters/abstract_mysql_adapter'
-require 'active_record/connection_adapters/trilogy_adapter'
-require 'active_record/connection_adapters/patch_connection_handling'
-require 'departure'
-require 'active_record/connection_adapters/rails_8_1_adapter_behavior'
+require "active_record/connection_adapters/abstract_mysql_adapter"
+require "active_record/connection_adapters/trilogy_adapter"
+require "active_record/connection_adapters/patch_connection_handling"
+require "departure"
+require "active_record/connection_adapters/rails_8_1_adapter_behavior"
 
 module ActiveRecord
   module ConnectionAdapters
@@ -13,7 +13,7 @@ module ActiveRecord
         end
       end
 
-      ADAPTER_NAME = 'Percona'.freeze
+      ADAPTER_NAME = "Percona".freeze
 
       include Rails81AdapterBehavior
     end

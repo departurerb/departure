@@ -1,4 +1,4 @@
-MIGRATION_FIXTURES = File.expand_path('../dummy/db/migrate', __dir__)
+MIGRATION_FIXTURES = File.expand_path("../dummy/db/migrate", __dir__)
 
 def db_config_for(adapter:, **overrides)
   db_config = Configuration.new
@@ -10,10 +10,10 @@ def db_config_for(adapter:, **overrides)
 end
 
 def establish_default_database_connection(**config, &block)
-  case ENV['DB_ADAPTER']
-  when 'trilogy'
+  case ENV["DB_ADAPTER"]
+  when "trilogy"
     establish_trilogy_connection(**config, &block)
-  when 'percona'
+  when "percona"
     establish_percona_connection(**config, &block)
   else
     establish_mysql_connection(**config, &block)
@@ -32,19 +32,19 @@ def build_connection_config(adapter, **config)
 end
 
 def establish_trilogy_connection(**config, &block)
-  c = build_connection_config('trilogy', **config, &block)
+  c = build_connection_config("trilogy", **config, &block)
 
   ActiveRecord::Base.establish_connection(c)
 end
 
 def establish_percona_connection(**config, &block)
-  c = build_connection_config('percona', **config, &block)
+  c = build_connection_config("percona", **config, &block)
 
   ActiveRecord::Base.establish_connection(c)
 end
 
 def establish_mysql_connection(**config, &block)
-  c = build_connection_config('mysql2', **config, &block)
+  c = build_connection_config("mysql2", **config, &block)
 
   ActiveRecord::Base.establish_connection(c)
 end

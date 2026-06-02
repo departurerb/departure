@@ -1,4 +1,4 @@
-require 'lhm/adapter'
+require "lhm/adapter"
 
 # Defines the same global namespace as LHM's gem does to mimic its API
 # while providing a different behaviour. We delegate all LHM's methods to

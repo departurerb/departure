@@ -1,7 +1,7 @@
 module Departure
   module LogSanitizers
     class PasswordSanitizer
-      PASSWORD_REPLACEMENT = '[filtered_password]'.freeze
+      PASSWORD_REPLACEMENT = "[filtered_password]".freeze
 
       delegate :password_argument, to: :connection_details
 

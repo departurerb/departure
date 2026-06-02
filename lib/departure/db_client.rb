@@ -1,6 +1,6 @@
-require 'open3'
+require "open3"
 
-require 'forwardable'
+require "forwardable"
 
 module Departure
   # It executes pt-online-schema-change commands in a new process and gets its
@@ -40,9 +40,9 @@ module Departure
       command_line = @cli_generator.parse_statement(raw_sql_string)
 
       Command.new(command_line,
-                  Departure.configuration.error_log_path,
-                  @logger,
-                  Departure.configuration.redirect_stderr).run
+        Departure.configuration.error_log_path,
+        @logger,
+        Departure.configuration.redirect_stderr).run
     end
 
     def alter_statement?(raw_sql_string)

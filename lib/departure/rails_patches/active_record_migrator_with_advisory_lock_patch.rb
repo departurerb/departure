@@ -1,8 +1,8 @@
 module Departure
   module RailsPatches
     module ActiveRecordMigratorWithAdvisoryLockPatch
-      RELEASE_LOCK_FAILED_MESSAGE = 'Failed to release advisory lock from ActiveRecordMigratorWithAdvisoryLockPatch'
-                                      .freeze
+      RELEASE_LOCK_FAILED_MESSAGE = "Failed to release advisory lock from ActiveRecordMigratorWithAdvisoryLockPatch"
+        .freeze
 
       def with_advisory_lock
         return super if Departure.configuration.disable_rails_advisory_lock_patch

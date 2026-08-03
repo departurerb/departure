@@ -41,7 +41,11 @@ module Departure
         elsif ar_version::MAJOR == 8
           V8_0_Adapter
         elsif ar_version::MAJOR >= 7 && ar_version::MINOR >= 2
-          V7_2_Adapter
+          if db_connection_adapter == "trilogy"
+            V7_2_TrilogyAdapter
+          else
+            V7_2_Adapter
+          end
         else
           raise UnsupportedRailsVersionError, "Unsupported Rails version: #{ar_version}"
         end
@@ -83,6 +87,20 @@ module Departure
       class << self
         def register_integrations
           require "active_record/connection_adapters/rails_7_2_departure_adapter"
+          register_rails_7_2_integrations
+        end
+
+        def create_connection_adapter(**config)
+          ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter.new(config)
+        end
+
+        def sql_column
+          ::ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter::Column
+        end
+
+        private
+
+        def register_rails_7_2_integrations
           require "departure/rails_patches/active_record_migrator_with_advisory_lock_patch"
 
           ActiveRecord::Migration.class_eval do
@@ -94,14 +112,30 @@ module Departure
           ActiveRecord::ConnectionAdapters.register "percona",
             "ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter",
             "active_record/connection_adapters/rails_7_2_departure_adapter"
+          ActiveRecord::ConnectionAdapters.register "percona_trilogy",
+            "ActiveRecord::ConnectionAdapters::Rails72TrilogyAdapter",
+            "active_record/connection_adapters/rails_7_2_trilogy_adapter"
+        end
+      end
+    end
+
+    class V7_2_TrilogyAdapter < V7_2_Adapter # rubocop:disable Naming/ClassAndModuleCamelCase
+      class << self
+        def register_integrations
+          require "active_record/connection_adapters/rails_7_2_trilogy_adapter"
+          register_rails_7_2_integrations
         end
 
         def create_connection_adapter(**config)
-          ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter.new(config)
+          ActiveRecord::ConnectionAdapters::Rails72TrilogyAdapter.new(config)
+        end
+
+        def departure_adapter_name
+          "percona_trilogy"
         end
 
         def sql_column
-          ::ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter::Column
+          ::ActiveRecord::ConnectionAdapters::Rails72TrilogyAdapter::Column
         end
       end
     end

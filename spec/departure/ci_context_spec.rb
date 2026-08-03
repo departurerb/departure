@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe "CI Context" do
-  it "uses the proper runner in integration specs", integration: true, activerecord_compatibility: RAILS_8_1 do
+  it "uses the proper runner in integration specs", integration: true, activerecord_compatibility: ">= 7.2" do
     establish_default_database_connection
 
     case ENV.fetch("DB_ADAPTER", "mysql2")

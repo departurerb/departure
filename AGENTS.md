@@ -4,7 +4,7 @@ Departure is a Ruby gem that wraps Rails ActiveRecord migrations using `ALTER TA
 
 It must stay aware of how the ActiveRecord API changes across versions and supports all currently supported versions of Rails and Ruby.
 
-It supports both the `mysql2` and `trilogy` database adapter gems (trilogy on Rails 7.2 and 8.1+).
+It supports both the `mysql2` and `trilogy` database adapter gems (trilogy on Rails 7.2+).
 
 # Project Layout
 
@@ -12,9 +12,10 @@ It supports both the `mysql2` and `trilogy` database adapter gems (trilogy on Ra
   - `rails_7_2_departure_adapter.rb`
   - `rails_7_2_trilogy_adapter.rb`
   - `rails_8_0_departure_adapter.rb`
+  - `rails_8_0_trilogy_adapter.rb`
   - `rails_8_1_mysql2_adapter.rb`
   - `rails_8_1_trilogy_adapter.rb`
-  - `for_alter.rb`, `patch_connection_handling.rb` — shared behavior
+  - `departure_adapter_behavior.rb`, `for_alter.rb`, `patch_connection_handling.rb` — shared behavior. `DepartureAdapterBehavior` holds the composable pieces (SchemaStatements, DbClientConnection, PerformQuery, and the Rails8 composite for Rails >= 8.0 adapters); new adapters should reuse these instead of redefining schema statements or client wrapping.
 - `lib/departure/rails_adapter.rb` — version dispatch. `Departure::RailsAdapter.for(ar_version, db_connection_adapter:)` selects the right adapter class. New Rails/adapter combinations are wired in here.
 - `lib/departure/railtie.rb` — Rails integration entry point; calls `RailsAdapter.register_integrations`.
 - `lib/departure/runner.rb`, `cli_generator.rb`, `command.rb` — intercept ALTER statements and shell out to `pt-online-schema-change`.
@@ -24,10 +25,10 @@ It supports both the `mysql2` and `trilogy` database adapter gems (trilogy on Ra
 
 # Adapter Selection
 
-1. If the database config specifies `trilogy` (Rails 7.2 and 8.1+), use the trilogy adapter.
+1. If the database config specifies `trilogy` (Rails 7.2+), use the trilogy adapter.
 2. Otherwise default to `mysql2`.
 
-Selection lives in `Departure::RailsAdapter.for`. When adding a new Rails version, add a `V<MAJOR>_<MINOR>_*Adapter` subclass of `BaseAdapter` and update the dispatch logic.
+Selection lives in `Departure::RailsAdapter.for`. When adding a new Rails version, add a `V<MAJOR>_<MINOR>_*Adapter` subclass of `BaseAdapter` declaring its mysql2/trilogy `Registration`s and add the version to the dispatch table in `.for`.
 
 # Development
 
@@ -42,7 +43,7 @@ Set by `docker-compose.yml`; if running outside Docker, export them yourself:
 - `PERCONA_DB_PASSWORD`
 - `PERCONA_DB_HOST`
 - `PERCONA_DB_NAME`
-- `DB_ADAPTER=trilogy` — only when running against trilogy (Rails 7.2 or 8.1)
+- `DB_ADAPTER=trilogy` — only when running against trilogy
 
 ## External dependencies
 
@@ -54,12 +55,12 @@ Set by `docker-compose.yml`; if running outside Docker, export them yourself:
 - Be sure that changes are valid against both `rubocop` and the `rspec` suites.
 - The supported test matrix is defined in `.github/workflows/test.yml`:
   - **mysql2:** Ruby 3.2 / 3.3 / 3.4 × Rails 7.2 / 8.0 / 8.1
-  - **trilogy:** Ruby 3.2 / 3.3 / 3.4 × Rails 7.2 / 8.1
+  - **trilogy:** Ruby 3.2 / 3.3 / 3.4 × Rails 7.2 / 8.0 / 8.1
   - **lint:** Ruby 3.4 with the Rails 8.1 gemfile
 - Run inside Docker via `appraisal`:
   - Full suite: `docker compose exec rails bundle exec appraisal rails-8-1 bundle exec rspec spec`
   - Single example: `docker compose exec rails bundle exec appraisal rails-8-1 bundle exec rspec spec/path/to_spec.rb:LINE`
-  - Trilogy run: prepend `DB_ADAPTER=trilogy` to the rspec command (rails-7-2 or rails-8-1)
+  - Trilogy run: prepend `DB_ADAPTER=trilogy` to the rspec command
   - Lint: `docker compose exec rails bundle exec appraisal rails-8-1 bundle exec rubocop --parallel`
 
 # Adding a Rails version

@@ -157,7 +157,7 @@ All configuration options are configurable from the `Departure.configure` block 
 
 ### Trilogy Adapter Support
 
-The trilogy database adapter gem is supported on Rails 7.2 and 8.1.  Logic for selecting an adapter follows this logic
+The trilogy database adapter gem is supported on Rails 7.2 and newer.  Logic for selecting an adapter follows this logic
 
 1. If the database configuration specifies 'trilogy' use the trilogy adapter
 2. Default to mysql2

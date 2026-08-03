@@ -2,6 +2,7 @@ require "active_record/connection_adapters/abstract_mysql_adapter"
 require "active_record/connection_adapters/trilogy_adapter"
 require "active_record/connection_adapters/patch_connection_handling"
 require "departure"
+require "active_record/connection_adapters/departure_adapter_behavior"
 
 module ActiveRecord
   module ConnectionAdapters
@@ -12,53 +13,13 @@ module ActiveRecord
         end
       end
 
-      class SchemaCreation < ActiveRecord::ConnectionAdapters::MySQL::SchemaCreation
-        def visit_DropForeignKey(name) # standard:disable Naming/MethodName
-          fk_name =
-            if name =~ /^__(.+)/
-              Regexp.last_match(1)
-            else
-              "_#{name}"
-            end
-
-          "DROP FOREIGN KEY #{fk_name}"
-        end
-      end
-
       ADAPTER_NAME = "Percona".freeze
 
-      include ForAlterStatements unless method_defined?(:change_column_for_alter)
-
-      def self.new_client(config)
-        original_client = super
-
-        Departure::DbClient.new(config, original_client)
-      end
+      include DepartureAdapterBehavior::SchemaStatements
+      extend DepartureAdapterBehavior::DbClientConnection
 
       def new_column(...)
         Column.new(...)
-      end
-
-      # add_index is modified from the underlying mysql adapter implementation to ensure we add ALTER TABLE to it
-      def add_index(table_name, column_name, options = {})
-        index_definition, = add_index_options(table_name, column_name, **options)
-        execute <<-SQL.squish
-          ALTER TABLE #{quote_table_name(index_definition.table)}
-            ADD #{schema_creation.accept(index_definition)}
-        SQL
-      end
-
-      # remove_index is modified from the underlying mysql adapter implementation to ensure we add ALTER TABLE to it
-      def remove_index(table_name, column_name = nil, **options)
-        return if options[:if_exists] && !index_exists?(table_name, column_name, **options)
-
-        index_name = index_name_for_remove(table_name, column_name, options)
-
-        execute "ALTER TABLE #{quote_table_name(table_name)} DROP INDEX #{quote_column_name(index_name)}"
-      end
-
-      def schema_creation
-        SchemaCreation.new(self)
       end
 
       private

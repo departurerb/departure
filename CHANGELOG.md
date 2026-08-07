@@ -6,8 +6,7 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [NEXT]
 
-- Add Rails 7.2 Trilogy adapter support
-- Add Rails 8.0 Trilogy adapter support
+- [Add Rails 7.2 and 8.0 Trilogy adapter support](https://github.com/departurerb/departure/pull/145)
 
 ## [8.1.0] - 2026-05-28
 

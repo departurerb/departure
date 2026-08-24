@@ -88,7 +88,7 @@ describe Departure, "multiple databases", integration: true, activerecord_compat
       ActiveRecord::Tasks::DatabaseTasks.env,
       name,
       db_config_for(
-        adapter: "mysql2",
+        adapter: ENV.fetch("DB_ADAPTER", "mysql2"),
         database: database,
         migrations_paths: migrations_path
       )

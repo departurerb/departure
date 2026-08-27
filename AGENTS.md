@@ -19,7 +19,7 @@ It supports both the `mysql2` and `trilogy` database adapter gems (trilogy on Ra
 - `lib/departure/runner.rb`, `cli_generator.rb`, `command.rb` — intercept ALTER statements and shell out to `pt-online-schema-change`.
 - `lib/departure/rails_patches/` — targeted patches against ActiveRecord internals.
 - `lib/lhm/` — LHM DSL compatibility shim.
-- `spec/dummy/` — minimal Rails app used by integration specs.
+- `spec/dummy/` — minimal Rails app. The spec suite boots it (in `RAILS_ENV=test`) under the active Appraisal Rails version, so the railtie, the app's `database.yml`, and its `db/migrate` fixtures are what integration specs exercise.
 
 # Adapter Selection
 
@@ -50,7 +50,8 @@ Set by `docker-compose.yml`; if running outside Docker, export them yourself:
 
 # Testing
 
-- Be sure that changes are valid against both `rubocop` and the `rspec` suites.
+- Be sure that changes are valid against both `standardrb` and the `rspec` suites.
+- The suite boots `spec/dummy` once per process and drops/recreates the test database between integration examples (see `spec/spec_helper.rb` and `spec/support/test_database.rb`).
 - The supported test matrix is defined in `.github/workflows/test.yml`:
   - **mysql2:** Ruby 3.2 / 3.3 / 3.4 × Rails 7.2 / 8.0 / 8.1
   - **trilogy:** Ruby 3.2 / 3.3 / 3.4 × Rails 8.1 only
@@ -59,7 +60,7 @@ Set by `docker-compose.yml`; if running outside Docker, export them yourself:
   - Full suite: `docker compose exec rails bundle exec appraisal rails-8-1 bundle exec rspec spec`
   - Single example: `docker compose exec rails bundle exec appraisal rails-8-1 bundle exec rspec spec/path/to_spec.rb:LINE`
   - Trilogy run: prepend `DB_ADAPTER=trilogy` to the rspec command (rails-8-1 only)
-  - Lint: `docker compose exec rails bundle exec appraisal rails-8-1 bundle exec rubocop --parallel`
+  - Lint: `docker compose exec rails bundle exec appraisal rails-8-1 bundle exec standardrb`
 
 # Adding a Rails version
 

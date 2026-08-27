@@ -3,8 +3,6 @@ require_relative "dummy/db/migrate/0022_add_timestamp_on_comments"
 
 # TODO: Handle #change_table syntax
 describe Departure, integration: true do
-  class Comment < ActiveRecord::Base; end
-
   let(:direction) { :up }
   let(:pool) { ActiveRecord::Base.connection_pool }
   let(:spec_config) do
@@ -56,7 +54,7 @@ describe Departure, integration: true do
   end
 
   context "when ActiveRecord is loaded" do
-    let(:db_config) { Configuration.new }
+    let(:db_config) { app_database_config }
 
     it "uses PerconaAdapter while preserving the application connection" do
       departure_adapter = (ENV.fetch("DB_ADAPTER", "mysql2") == "trilogy") ? "percona_trilogy" : "percona"

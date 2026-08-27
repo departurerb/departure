@@ -1,10 +1,14 @@
-MIGRATION_FIXTURES = File.expand_path("../dummy/db/migrate", __dir__)
+MIGRATION_FIXTURES = Rails.root.join("db/migrate").to_s
+
+def app_database_config
+  config = Rails.application.config.database_configuration[Rails.env]
+  config.respond_to?(:configuration_hash) ? config.configuration_hash : config
+end
 
 def db_config_for(adapter:, **overrides)
-  db_config = Configuration.new
   {
+    **app_database_config.symbolize_keys.except(:adapter),
     adapter:,
-    **db_config.config,
     **overrides
   }
 end

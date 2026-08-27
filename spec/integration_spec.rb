@@ -1,21 +1,11 @@
 require "spec_helper"
-require_relative "dummy/db/migrate/0022_add_timestamp_on_comments"
+require "fileutils"
+require "tmpdir"
 
 # TODO: Handle #change_table syntax
 describe Departure, integration: true do
   let(:direction) { :up }
-  let(:pool) { ActiveRecord::Base.connection_pool }
-  let(:spec_config) do
-    ar_version = ActiveRecord::VERSION::STRING
-
-    if Departure::RailsAdapter.version_matches?(ar_version, "~> 8.0")
-      pool.connections.first.instance_variable_get(:@config)
-    elsif Departure::RailsAdapter.version_matches?(ar_version, ">= 6.1")
-      pool.connection.instance_variable_get(:@config)
-    else
-      pool.spec.config
-    end
-  end
+  let(:spec_config) { ActiveRecord::Base.connection_db_config.configuration_hash.symbolize_keys }
 
   it "has a version number" do
     expect(Departure::VERSION).not_to be nil
@@ -80,20 +70,40 @@ describe Departure, integration: true do
       end
     end
 
-    # TODO: Use dummy app so that we actually go through the railtie's code
-    context "when there is LHM" do
-      xit "patches it to use regular Rails migration methods" do
-        expect(Departure::Lhm::Fake::Adapter)
-          .to receive(:new).and_return(true)
-        run_a_migration(direction, 1)
-      end
-    end
+    it "runs an Lhm DSL migration through the railtie-patched migration runner" do
+      migrations_path = Dir.mktmpdir("departure-lhm-migrations")
 
-    context "when there is no LHM" do
-      xit "does not patch it" do
-        expect(Departure::Lhm::Fake).not_to receive(:patching_lhm)
-        run_a_migration(direction, 1)
-      end
+      migration_version = ActiveRecord::VERSION::STRING.split(".").first(2).join(".")
+
+      File.write(
+        File.join(migrations_path, "20260101000000_lhm_add_column.rb"),
+        <<~RUBY
+          class LhmAddColumn < ActiveRecord::Migration[#{migration_version}]
+            def up
+              Lhm.change_table(:comments) do |t|
+                t.add_column(:some_id_field, :integer)
+              end
+            end
+
+            def down
+              Lhm.change_table(:comments) do |t|
+                t.remove_column(:some_id_field)
+              end
+            end
+          end
+        RUBY
+      )
+
+      context = ActiveRecord::MigrationContext.new([migrations_path], ActiveRecord::SchemaMigration)
+      context.run(:up, 20_260_101_000_000)
+
+      expect(:comments).to have_column("some_id_field")
+
+      context.run(:down, 20_260_101_000_000)
+
+      expect(:comments).not_to have_column("some_id_field")
+    ensure
+      FileUtils.remove_entry(migrations_path) if migrations_path
     end
   end
 

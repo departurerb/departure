@@ -41,6 +41,50 @@ RSpec.describe Departure::RailsAdapter, integration: true do
       end
     end
 
+    context "rails 8.0 adapter" do
+      describe "returns trilogy adapter" do
+        it "when the config specifies an adapter of trilogy" do
+          expect(instance_for("8.0.0", "trilogy")).to be(Departure::RailsAdapter::V8_0_TrilogyAdapter)
+        end
+      end
+
+      describe "returns mysql2 adapter" do
+        it "by default" do
+          expect(instance_for("8.0.0")).to be(Departure::RailsAdapter::V8_0_Adapter)
+        end
+
+        it "when the config specifies an adapter of mysql2" do
+          expect(instance_for("8.0.0", "mysql2")).to be(Departure::RailsAdapter::V8_0_Adapter)
+        end
+
+        it "when the config specifies anything else" do
+          expect(instance_for("8.0.0", "percona")).to be(Departure::RailsAdapter::V8_0_Adapter)
+        end
+      end
+    end
+
+    context "rails 7.2 adapter" do
+      describe "returns trilogy adapter" do
+        it "when the config specifies an adapter of trilogy" do
+          expect(instance_for("7.2.0", "trilogy")).to be(Departure::RailsAdapter::V7_2_TrilogyAdapter)
+        end
+      end
+
+      describe "returns mysql2 adapter" do
+        it "by default" do
+          expect(instance_for("7.2.0")).to be(Departure::RailsAdapter::V7_2_Adapter)
+        end
+
+        it "when the config specifies an adapter of mysql2" do
+          expect(instance_for("7.2.0", "mysql2")).to be(Departure::RailsAdapter::V7_2_Adapter)
+        end
+
+        it "when the config specifies anything else" do
+          expect(instance_for("7.2.0", "percona")).to be(Departure::RailsAdapter::V7_2_Adapter)
+        end
+      end
+    end
+
     it "returns the correct adapater based on the gem version" do
       expect(instance_for("8.0.1")).to be(Departure::RailsAdapter::V8_0_Adapter)
       expect(instance_for("8.0.0")).to be(Departure::RailsAdapter::V8_0_Adapter)
@@ -121,8 +165,38 @@ RSpec.describe Departure::RailsAdapter, integration: true do
           "ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter",
           "active_record/connection_adapters/rails_7_2_departure_adapter"
         )
+        expect(ActiveRecord::ConnectionAdapters).to receive(:register).with(
+          "percona_trilogy",
+          "ActiveRecord::ConnectionAdapters::Rails72TrilogyAdapter",
+          "active_record/connection_adapters/rails_7_2_trilogy_adapter"
+        )
 
         described_class::V7_2_Adapter.register_integrations
+      end
+
+      it "requires the correct adapter file and registers components for V7_2_TrilogyAdapter" do
+        expect(described_class::V7_2_TrilogyAdapter).to receive(:require).with(
+          "active_record/connection_adapters/rails_7_2_trilogy_adapter"
+        )
+        expect(described_class::V7_2_TrilogyAdapter).to receive(:require).with(
+          "departure/rails_patches/active_record_migrator_with_advisory_lock_patch"
+        )
+        expect(ActiveRecord::Migration).to receive(:class_eval)
+        expect(ActiveRecord::Migrator).to receive(:prepend).with(
+          Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
+        )
+        expect(ActiveRecord::ConnectionAdapters).to receive(:register).with(
+          "percona",
+          "ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter",
+          "active_record/connection_adapters/rails_7_2_departure_adapter"
+        )
+        expect(ActiveRecord::ConnectionAdapters).to receive(:register).with(
+          "percona_trilogy",
+          "ActiveRecord::ConnectionAdapters::Rails72TrilogyAdapter",
+          "active_record/connection_adapters/rails_7_2_trilogy_adapter"
+        )
+
+        described_class::V7_2_TrilogyAdapter.register_integrations
       end
 
       it "requires the correct adapter file and registers components for V8_0_Adapter" do
@@ -141,8 +215,38 @@ RSpec.describe Departure::RailsAdapter, integration: true do
           "ActiveRecord::ConnectionAdapters::Rails80DepartureAdapter",
           "active_record/connection_adapters/rails_8_0_departure_adapter"
         )
+        expect(ActiveRecord::ConnectionAdapters).to receive(:register).with(
+          "percona_trilogy",
+          "ActiveRecord::ConnectionAdapters::Rails80TrilogyAdapter",
+          "active_record/connection_adapters/rails_8_0_trilogy_adapter"
+        )
 
         described_class::V8_0_Adapter.register_integrations
+      end
+
+      it "requires the correct adapter file and registers components for V8_0_TrilogyAdapter" do
+        expect(described_class::V8_0_TrilogyAdapter).to receive(:require).with(
+          "active_record/connection_adapters/rails_8_0_trilogy_adapter"
+        )
+        expect(described_class::V8_0_TrilogyAdapter).to receive(:require).with(
+          "departure/rails_patches/active_record_migrator_with_advisory_lock_patch"
+        )
+        expect(ActiveRecord::Migration).to receive(:class_eval)
+        expect(ActiveRecord::Migrator).to receive(:prepend).with(
+          Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
+        )
+        expect(ActiveRecord::ConnectionAdapters).to receive(:register).with(
+          "percona",
+          "ActiveRecord::ConnectionAdapters::Rails80DepartureAdapter",
+          "active_record/connection_adapters/rails_8_0_departure_adapter"
+        )
+        expect(ActiveRecord::ConnectionAdapters).to receive(:register).with(
+          "percona_trilogy",
+          "ActiveRecord::ConnectionAdapters::Rails80TrilogyAdapter",
+          "active_record/connection_adapters/rails_8_0_trilogy_adapter"
+        )
+
+        described_class::V8_0_TrilogyAdapter.register_integrations
       end
 
       it "requires the correct adapter file and registers components for V8_1_Mysql2Adapter" do

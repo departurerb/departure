@@ -9,6 +9,11 @@ module Departure
     class UnsupportedRailsVersionError < StandardError; end
     class MustImplementError < StandardError; end
 
+    # Describes how a Departure connection adapter is registered with
+    # ActiveRecord: the adapter name apps configure, the class implementing it
+    # and the file that defines the class.
+    Registration = Struct.new(:adapter_name, :class_name, :path)
+
     class << self
       def register_integrations(**args)
         for_current(**args).register_integrations
@@ -29,38 +34,62 @@ module Departure
         self.for(current_version, **args)
       end
 
-      # rubocop:disable Metrics/PerceivedComplexity
       def for(ar_version, db_connection_adapter: nil)
-        # rubocop:enable Metrics/PerceivedComplexity
-        if ar_version::MAJOR == 8 && ar_version::MINOR.positive?
-          if db_connection_adapter == "trilogy"
-            V8_1_TrilogyAdapter
+        adapters =
+          if ar_version::MAJOR == 8 && ar_version::MINOR.positive?
+            {mysql2: V8_1_Mysql2Adapter, trilogy: V8_1_TrilogyAdapter}
+          elsif ar_version::MAJOR == 8
+            {mysql2: V8_0_Adapter, trilogy: V8_0_TrilogyAdapter}
+          elsif ar_version::MAJOR >= 7 && ar_version::MINOR >= 2
+            {mysql2: V7_2_Adapter, trilogy: V7_2_TrilogyAdapter}
           else
-            V8_1_Mysql2Adapter
+            raise UnsupportedRailsVersionError, "Unsupported Rails version: #{ar_version}"
           end
-        elsif ar_version::MAJOR == 8
-          V8_0_Adapter
-        elsif ar_version::MAJOR >= 7 && ar_version::MINOR >= 2
-          V7_2_Adapter
-        else
-          raise UnsupportedRailsVersionError, "Unsupported Rails version: #{ar_version}"
-        end
+
+        (db_connection_adapter == "trilogy") ? adapters[:trilogy] : adapters[:mysql2]
       end
     end
 
     class BaseAdapter
       class << self
-        def register_integrations
-          raise MustImplementError, "adapter must implement register_integrations"
+        # The Registration for the database adapter this class drives.
+        # Subclasses must implement it.
+        def registration
+          raise MustImplementError, "adapter must implement registration"
         end
 
-        # ActiveRecord::ConnectionAdapters::Mysql2Adapter
-        def create_connection_adapter(**_config)
-          raise MustImplementError, "adapter must implement create_connection_adapter"
+        # Every Registration available for this Rails version, so all
+        # Departure adapter names resolve regardless of which one the app
+        # connects through. Registration is lazy: the adapter files are only
+        # loaded when ActiveRecord resolves the adapter name.
+        # Subclasses must implement it.
+        def registrations
+          raise MustImplementError, "adapter must implement registrations"
+        end
+
+        def register_integrations
+          require registration.path
+          require "departure/rails_patches/active_record_migrator_with_advisory_lock_patch"
+
+          ActiveRecord::Migration.class_eval do
+            include Departure::Migration
+          end
+
+          ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
+
+          registrations.each do |registration|
+            ActiveRecord::ConnectionAdapters.register registration.adapter_name,
+              registration.class_name,
+              registration.path
+          end
+        end
+
+        def create_connection_adapter(**config)
+          connection_adapter_class.new(config)
         end
 
         def departure_adapter_name
-          "percona"
+          registration.adapter_name
         end
 
         # https://github.com/rails/rails/commit/9ad36e067222478090b36a985090475bb03e398c#diff-de807ece2205a84c0e3de66b0e5ab831325d567893b8b88ce0d6e9d498f923d1
@@ -74,74 +103,98 @@ module Departure
         end
 
         def sql_column
-          ::ActiveRecord::ConnectionAdapters::DepartureAdapter::Column
+          connection_adapter_class::Column
+        end
+
+        private
+
+        def connection_adapter_class
+          require registration.path
+
+          Object.const_get(registration.class_name)
         end
       end
     end
 
     class V7_2_Adapter < BaseAdapter # rubocop:disable Naming/ClassAndModuleCamelCase
+      MYSQL2_REGISTRATION = Registration.new(
+        "percona",
+        "ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter",
+        "active_record/connection_adapters/rails_7_2_departure_adapter"
+      )
+      TRILOGY_REGISTRATION = Registration.new(
+        "percona_trilogy",
+        "ActiveRecord::ConnectionAdapters::Rails72TrilogyAdapter",
+        "active_record/connection_adapters/rails_7_2_trilogy_adapter"
+      )
+
       class << self
-        def register_integrations
-          require "active_record/connection_adapters/rails_7_2_departure_adapter"
-          require "departure/rails_patches/active_record_migrator_with_advisory_lock_patch"
-
-          ActiveRecord::Migration.class_eval do
-            include Departure::Migration
-          end
-
-          ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
-
-          ActiveRecord::ConnectionAdapters.register "percona",
-            "ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter",
-            "active_record/connection_adapters/rails_7_2_departure_adapter"
+        def registration
+          MYSQL2_REGISTRATION
         end
 
-        def create_connection_adapter(**config)
-          ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter.new(config)
+        def registrations
+          [MYSQL2_REGISTRATION, TRILOGY_REGISTRATION]
         end
+      end
+    end
 
-        def sql_column
-          ::ActiveRecord::ConnectionAdapters::Rails72DepartureAdapter::Column
-        end
+    class V7_2_TrilogyAdapter < V7_2_Adapter # rubocop:disable Naming/ClassAndModuleCamelCase
+      # def self so TRILOGY_REGISTRATION resolves through the superclass
+      def self.registration
+        TRILOGY_REGISTRATION
       end
     end
 
     class V8_0_Adapter < BaseAdapter # rubocop:disable Naming/ClassAndModuleCamelCase
+      MYSQL2_REGISTRATION = Registration.new(
+        "percona",
+        "ActiveRecord::ConnectionAdapters::Rails80DepartureAdapter",
+        "active_record/connection_adapters/rails_8_0_departure_adapter"
+      )
+      TRILOGY_REGISTRATION = Registration.new(
+        "percona_trilogy",
+        "ActiveRecord::ConnectionAdapters::Rails80TrilogyAdapter",
+        "active_record/connection_adapters/rails_8_0_trilogy_adapter"
+      )
+
       class << self
-        def register_integrations
-          require "active_record/connection_adapters/rails_8_0_departure_adapter"
-          require "departure/rails_patches/active_record_migrator_with_advisory_lock_patch"
-
-          ActiveRecord::Migration.class_eval do
-            include Departure::Migration
-          end
-
-          ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
-
-          ActiveRecord::ConnectionAdapters.register "percona",
-            "ActiveRecord::ConnectionAdapters::Rails80DepartureAdapter",
-            "active_record/connection_adapters/rails_8_0_departure_adapter"
+        def registration
+          MYSQL2_REGISTRATION
         end
 
-        def create_connection_adapter(**config)
-          ActiveRecord::ConnectionAdapters::Rails80DepartureAdapter.new(config)
-        end
-
-        def sql_column
-          ::ActiveRecord::ConnectionAdapters::Rails80DepartureAdapter::Column
+        def registrations
+          [MYSQL2_REGISTRATION, TRILOGY_REGISTRATION]
         end
       end
     end
 
+    class V8_0_TrilogyAdapter < V8_0_Adapter # rubocop:disable Naming/ClassAndModuleCamelCase
+      # def self so TRILOGY_REGISTRATION resolves through the superclass
+      def self.registration
+        TRILOGY_REGISTRATION
+      end
+    end
+
     class V8_1_Mysql2Adapter < BaseAdapter # rubocop:disable Naming/ClassAndModuleCamelCase
+      MYSQL2_REGISTRATION = Registration.new(
+        "percona",
+        "ActiveRecord::ConnectionAdapters::Rails81Mysql2Adapter",
+        "active_record/connection_adapters/rails_8_1_mysql2_adapter"
+      )
+      TRILOGY_REGISTRATION = Registration.new(
+        "percona_trilogy",
+        "ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter",
+        "active_record/connection_adapters/rails_8_1_trilogy_adapter"
+      )
+
       class << self
-        def register_integrations
-          require "active_record/connection_adapters/rails_8_1_mysql2_adapter"
-          register_rails_8_1_integrations
+        def registration
+          MYSQL2_REGISTRATION
         end
 
-        def create_connection_adapter(**config)
-          ActiveRecord::ConnectionAdapters::Rails81Mysql2Adapter.new(config)
+        def registrations
+          [MYSQL2_REGISTRATION, TRILOGY_REGISTRATION]
         end
 
         # rubocop:disable Metrics/ParameterLists
@@ -160,42 +213,13 @@ module Departure
         def sql_column
           ::ActiveRecord::ConnectionAdapters::MySQL::Column
         end
-
-        private
-
-        def register_rails_8_1_integrations
-          require "departure/rails_patches/active_record_migrator_with_advisory_lock_patch"
-
-          ActiveRecord::Migration.class_eval do
-            include Departure::Migration
-          end
-
-          ActiveRecord::Migrator.prepend Departure::RailsPatches::ActiveRecordMigratorWithAdvisoryLockPatch
-
-          ActiveRecord::ConnectionAdapters.register "percona",
-            "ActiveRecord::ConnectionAdapters::Rails81Mysql2Adapter",
-            "active_record/connection_adapters/rails_8_1_mysql2_adapter"
-          ActiveRecord::ConnectionAdapters.register "percona_trilogy",
-            "ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter",
-            "active_record/connection_adapters/rails_8_1_trilogy_adapter"
-        end
       end
     end
 
     class V8_1_TrilogyAdapter < V8_1_Mysql2Adapter # rubocop:disable Naming/ClassAndModuleCamelCase
-      class << self
-        def register_integrations
-          require "active_record/connection_adapters/rails_8_1_trilogy_adapter"
-          register_rails_8_1_integrations
-        end
-
-        def create_connection_adapter(**config)
-          ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter.new(config)
-        end
-
-        def departure_adapter_name
-          "percona_trilogy"
-        end
+      # def self so TRILOGY_REGISTRATION resolves through the superclass
+      def self.registration
+        TRILOGY_REGISTRATION
       end
     end
   end

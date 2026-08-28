@@ -5,6 +5,7 @@ require "active_record/connection_adapters/patch_connection_handling"
 require "active_support/core_ext/string/filters"
 require "departure"
 require "forwardable"
+require "active_record/connection_adapters/departure_adapter_behavior"
 
 module ActiveRecord
   module ConnectionAdapters
@@ -17,22 +18,9 @@ module ActiveRecord
         end
       end
 
-      class SchemaCreation < ActiveRecord::ConnectionAdapters::MySQL::SchemaCreation
-        def visit_DropForeignKey(name) # standard:disable Naming/MethodName
-          fk_name =
-            if name =~ /^__(.+)/
-              Regexp.last_match(1)
-            else
-              "_#{name}"
-            end
-
-          "DROP FOREIGN KEY #{fk_name}"
-        end
-      end
-
       extend Forwardable
 
-      include ForAlterStatements unless method_defined?(:change_column_for_alter)
+      include DepartureAdapterBehavior::SchemaStatements
 
       ADAPTER_NAME = "Percona".freeze
 
@@ -112,35 +100,6 @@ module ActiveRecord
 
       def new_column(...)
         Column.new(...)
-      end
-
-      # Adds a new index to the table
-      #
-      # @param table_name [String, Symbol]
-      # @param column_name [String, Symbol]
-      # @param options [Hash] optional
-      def add_index(table_name, column_name, options = {})
-        index_definition, = add_index_options(table_name, column_name, **options)
-        execute <<-SQL.squish
-          ALTER TABLE #{quote_table_name(index_definition.table)}
-            ADD #{schema_creation.accept(index_definition)}
-        SQL
-      end
-
-      # Remove the given index from the table.
-      #
-      # @param table_name [String, Symbol]
-      # @param options [Hash] optional
-      def remove_index(table_name, column_name = nil, **options)
-        return if options[:if_exists] && !index_exists?(table_name, column_name, **options)
-
-        index_name = index_name_for_remove(table_name, column_name, options)
-
-        execute "ALTER TABLE #{quote_table_name(table_name)} DROP INDEX #{quote_column_name(index_name)}"
-      end
-
-      def schema_creation
-        SchemaCreation.new(self)
       end
 
       def change_table(table_name, _options = {})

@@ -8,10 +8,11 @@ master, name it following the Rails repo convention, such as `v4.2`, and
 we'll keep it open for bug fixes.
 
 1. Update `lib/departure/version.rb` accordingly
-2. Review the `CHANGELOG.md` and add a new section following the format
+2. Run `bundle && bundle exec appraisal` to udpate the lock files
+3. Review the `CHANGELOG.md` and add a new section following the format
    `[version] - YYYY-MM-DD`. We conform to the guidelines of
    http://keepachangelog.com/
-3. Commit the changes with the message `Prepare release VERSION`
-4. Execute the release rake task as `bundle exec rake release`. It creates the
+4. Commit the changes with the message `Prepare release VERSION`
+5. Execute the release rake task as `bundle exec rake release`. It creates the
    tag, builds and pushes the gem to Rubygems.
-5. Announce it! :tada:
+6. Announce it! :tada:

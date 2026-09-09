@@ -6,10 +6,10 @@ require "active_record/connection_adapters/departure_adapter_behavior"
 
 module ActiveRecord
   module ConnectionAdapters
-    class Rails81TrilogyAdapter < ActiveRecord::ConnectionAdapters::TrilogyAdapter
+    class Rails80TrilogyAdapter < ActiveRecord::ConnectionAdapters::TrilogyAdapter
       class Column < ActiveRecord::ConnectionAdapters::MySQL::Column
         def adapter
-          Rails81TrilogyAdapter
+          Rails80TrilogyAdapter
         end
       end
 

@@ -1,11 +1,12 @@
 require "spec_helper"
 
-describe "ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter", activerecord_compatibility: RAILS_8_1 do
+describe "ActiveRecord::ConnectionAdapters::Rails72TrilogyAdapter", activerecord_compatibility: RAILS_7_2 do
   let(:described_class) do
-    # has to be required here because trilogy doesn't exist in older versions of rails
-    require "active_record/connection_adapters/rails_8_1_trilogy_adapter"
+    # has to be required here because trilogy is only installed for the
+    # appraisals that support it
+    require "active_record/connection_adapters/rails_7_2_trilogy_adapter"
 
-    ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter
+    ActiveRecord::ConnectionAdapters::Rails72TrilogyAdapter
   end
 
   let(:adapter) { described_class.new(db_config_for(adapter: "trilogy")) }
@@ -18,6 +19,25 @@ describe "ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter", activerecord
 
       expect(client).to be_a(Departure::DbClient)
       expect(client.database_client).to be(trilogy_double)
+    end
+  end
+
+  describe "#execute" do
+    let(:db_client) { double(:db_client, more_results_exist?: false, query_flags: 0) }
+
+    before do
+      allow(adapter).to receive(:with_raw_connection).and_yield(db_client)
+      allow(db_client).to receive(:query_flags=)
+    end
+
+    it "sends the SQL through the db client, which routes ALTER statements" do
+      sql = "ALTER TABLE `comments` ADD `foo` INT"
+      system("true", out: File::NULL)
+      process_status = $?
+
+      expect(db_client).to receive(:query).with(sql) { process_status }
+
+      expect(adapter.execute(sql)).to eq(process_status)
     end
   end
 
@@ -61,7 +81,6 @@ describe "ActiveRecord::ConnectionAdapters::Rails81TrilogyAdapter", activerecord
 
     describe "#remove_index" do
       let(:options) { {column: column_name} }
-      let(:sql) { "DROP INDEX `#{index_name}`" }
 
       it "passes the built ALTER TABLE SQL to #execute" do
         allow(adapter).to receive(:shard) { :default }

@@ -2,7 +2,7 @@ require "active_record/connection_adapters/abstract_mysql_adapter"
 require "active_record/connection_adapters/mysql2_adapter"
 require "active_record/connection_adapters/patch_connection_handling"
 require "departure"
-require "active_record/connection_adapters/rails_8_1_adapter_behavior"
+require "active_record/connection_adapters/departure_adapter_behavior"
 
 module ActiveRecord
   module ConnectionAdapters
@@ -17,7 +17,7 @@ module ActiveRecord
 
       ADAPTER_NAME = "Percona".freeze
 
-      include Rails81AdapterBehavior
+      include DepartureAdapterBehavior::Rails8
     end
   end
 end

@@ -149,10 +149,7 @@ RSpec.describe Departure::RailsAdapter, integration: true do
     end
 
     context "when called on specific adapters" do
-      it "requires the correct adapter file and registers components for V7_2_Adapter" do
-        expect(described_class::V7_2_Adapter).to receive(:require).with(
-          "active_record/connection_adapters/rails_7_2_departure_adapter"
-        )
+      it "registers components without loading the adapter file for V7_2_Adapter" do
         expect(described_class::V7_2_Adapter).to receive(:require).with(
           "departure/rails_patches/active_record_migrator_with_advisory_lock_patch"
         )
@@ -174,10 +171,7 @@ RSpec.describe Departure::RailsAdapter, integration: true do
         described_class::V7_2_Adapter.register_integrations
       end
 
-      it "requires the correct adapter file and registers components for V7_2_TrilogyAdapter" do
-        expect(described_class::V7_2_TrilogyAdapter).to receive(:require).with(
-          "active_record/connection_adapters/rails_7_2_trilogy_adapter"
-        )
+      it "registers components without loading the adapter file for V7_2_TrilogyAdapter" do
         expect(described_class::V7_2_TrilogyAdapter).to receive(:require).with(
           "departure/rails_patches/active_record_migrator_with_advisory_lock_patch"
         )
@@ -199,10 +193,7 @@ RSpec.describe Departure::RailsAdapter, integration: true do
         described_class::V7_2_TrilogyAdapter.register_integrations
       end
 
-      it "requires the correct adapter file and registers components for V8_0_Adapter" do
-        expect(described_class::V8_0_Adapter).to receive(:require).with(
-          "active_record/connection_adapters/rails_8_0_departure_adapter"
-        )
+      it "registers components without loading the adapter file for V8_0_Adapter" do
         expect(described_class::V8_0_Adapter).to receive(:require).with(
           "departure/rails_patches/active_record_migrator_with_advisory_lock_patch"
         )
@@ -224,10 +215,7 @@ RSpec.describe Departure::RailsAdapter, integration: true do
         described_class::V8_0_Adapter.register_integrations
       end
 
-      it "requires the correct adapter file and registers components for V8_0_TrilogyAdapter" do
-        expect(described_class::V8_0_TrilogyAdapter).to receive(:require).with(
-          "active_record/connection_adapters/rails_8_0_trilogy_adapter"
-        )
+      it "registers components without loading the adapter file for V8_0_TrilogyAdapter" do
         expect(described_class::V8_0_TrilogyAdapter).to receive(:require).with(
           "departure/rails_patches/active_record_migrator_with_advisory_lock_patch"
         )
@@ -249,10 +237,7 @@ RSpec.describe Departure::RailsAdapter, integration: true do
         described_class::V8_0_TrilogyAdapter.register_integrations
       end
 
-      it "requires the correct adapter file and registers components for V8_1_Mysql2Adapter" do
-        expect(described_class::V8_1_Mysql2Adapter).to receive(:require).with(
-          "active_record/connection_adapters/rails_8_1_mysql2_adapter"
-        )
+      it "registers components without loading the adapter file for V8_1_Mysql2Adapter" do
         expect(described_class::V8_1_Mysql2Adapter).to receive(:require).with(
           "departure/rails_patches/active_record_migrator_with_advisory_lock_patch"
         )
@@ -274,10 +259,7 @@ RSpec.describe Departure::RailsAdapter, integration: true do
         described_class::V8_1_Mysql2Adapter.register_integrations
       end
 
-      it "requires the correct adapter file and registers components for V8_1_TrilogyAdapter" do
-        expect(described_class::V8_1_TrilogyAdapter).to receive(:require).with(
-          "active_record/connection_adapters/rails_8_1_trilogy_adapter"
-        )
+      it "registers components without loading the adapter file for V8_1_TrilogyAdapter" do
         expect(described_class::V8_1_TrilogyAdapter).to receive(:require).with(
           "departure/rails_patches/active_record_migrator_with_advisory_lock_patch"
         )

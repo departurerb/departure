@@ -68,7 +68,6 @@ module Departure
         end
 
         def register_integrations
-          require registration.path
           require "departure/rails_patches/active_record_migrator_with_advisory_lock_patch"
 
           ActiveRecord::Migration.class_eval do

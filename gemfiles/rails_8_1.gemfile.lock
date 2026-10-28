@@ -3,7 +3,6 @@ PATH
   specs:
     departure (8.2.0)
       activerecord (>= 7.2.0)
-      mysql2 (>= 0.4.0, < 0.6.0)
       railties (>= 7.2.0)
 
 GEM
@@ -319,6 +318,7 @@ DEPENDENCIES
   lhm
   logger
   mutex_m
+  mysql2 (>= 0.4.0, < 0.6.0)
   pry-byebug
   rails (= 8.1.1)
   rake (>= 10.0)

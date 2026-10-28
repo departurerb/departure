@@ -6,7 +6,7 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [NEXT]
 
-- Drop the `mysql2` runtime dependency so apps can use departure with only `trilogy`; add `mysql2` or `trilogy` to your Gemfile yourself
+- [Drop the `mysql2` runtime dependency](https://github.com/departurerb/departure/pull/152) so apps can use departure with only `trilogy`; add `mysql2` or `trilogy` to your Gemfile yourself
 
 ## [8.2.0] - 2026-09-09
 

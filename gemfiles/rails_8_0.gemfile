@@ -11,6 +11,5 @@ gem "standardrb", require: false
 gem "zeitwerk", "< 2.7.0"
 gem "bigdecimal"
 gem "rails", "8.0.2.1"
-gem "trilogy"
 
 gemspec path: "../"

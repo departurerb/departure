@@ -324,7 +324,7 @@ DEPENDENCIES
   rspec (~> 3.4, >= 3.4.0)
   rspec-its (~> 1.2)
   standardrb
-  trilogy
+  trilogy (~> 2.7)
   zeitwerk (< 2.7.0)
 
 BUNDLED WITH

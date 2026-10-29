@@ -9,7 +9,6 @@ gem "logger"
 gem "mutex_m", require: false
 gem "rails", "8.1.1"
 gem "standardrb", require: false
-gem "trilogy"
 gem "zeitwerk", "< 2.7.0"
 
 gemspec path: "../"

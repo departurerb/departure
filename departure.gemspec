@@ -20,12 +20,13 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency "railties", ">= 7.2.0"
   spec.add_runtime_dependency "activerecord", ">= 7.2.0"
-  spec.add_runtime_dependency "mysql2", ">= 0.4.0", "< 0.6.0"
 
   spec.add_development_dependency "appraisal", "~> 2.5.0"
+  spec.add_development_dependency "mysql2", ">= 0.4.0", "< 0.6.0"
   spec.add_development_dependency "rake", ">= 10.0"
   spec.add_development_dependency "rspec", "~> 3.4", ">= 3.4.0"
   spec.add_development_dependency "rspec-its", "~> 1.2"
+  spec.add_development_dependency "trilogy", "~> 2.7"
   spec.add_development_dependency "pry-byebug"
   spec.add_development_dependency "climate_control", "~> 0.0.3"
 end

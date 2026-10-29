@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
-## [NEXT]
+## [8.3.0] - 2026-10-29
 
 - [Drop the `mysql2` runtime dependency](https://github.com/departurerb/departure/pull/152) so apps can use departure with only `trilogy`; add `mysql2` or `trilogy` to your Gemfile yourself
 
